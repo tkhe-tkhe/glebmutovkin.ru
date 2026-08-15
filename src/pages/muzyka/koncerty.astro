@@ -1,0 +1,44 @@
+---
+// Концерты. Порядок роликов внутри концерта — это сетлист, он задан в muzyka.json
+// и менять его местами нельзя.
+
+import Base from '../../layouts/Base.astro';
+import Facade from '../../components/Facade.astro';
+import m from '../../data/muzyka.json';
+
+const vsego = m.koncerty.reduce((n, k) => n + k.treki.length, 0);
+const dva = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base
+  title="Концерты — Музыка — Глеб Мутовкин"
+  description="Живые записи «Смешного времени»: электрический 2013 и акустический 2015."
+>
+  <main class="page" data-pagefind-ignore>
+    <section class="hero">
+      <div class="crumb"><a href="/muzyka/">Музыка</a> / Концерты</div>
+      <h1>Концерты</h1>
+      <p class="lede">
+        Две живые записи целиком, в том порядке, в каком игрались.
+      </p>
+    </section>
+
+    <section>
+      <div class="count">{m.koncerty.length} концерта · {vsego} записей</div>
+    </section>
+
+    {m.koncerty.map((k) => (
+      <section>
+        <div class="setlist-h">
+          <h2>{k.title}</h2>
+          <span class="sm">{k.god} · {dva(k.treki.length)} записей</span>
+        </div>
+        <div class="grid">
+          {k.treki.map((t, i) => (
+            <Facade id={t.id} title={t.title} dur={t.dur} n={dva(i + 1)} />
+          ))}
+        </div>
+      </section>
+    ))}
+  </main>
+</Base>

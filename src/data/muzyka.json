@@ -1,0 +1,68 @@
+{
+  "_comment": "Все данные раздела «Музыка». Порядок в массивах — это порядок на странице.",
+
+  "studiya": [
+    {
+      "slug": "dni",
+      "title": "Дни",
+      "god": "2026",
+      "dur": "2:53",
+      "mp3": "/audio/dni-320.mp3",
+      "m4a": "/audio/dni-192.m4a",
+      "ssylki": [
+        { "gde": "Яндекс.Музыка", "url": "https://music.yandex.ru/album/40462626" },
+        { "gde": "VK Музыка", "url": "https://vk.ru/music/album/-2000591813_26591813" },
+        { "gde": "Spotify", "url": "https://open.spotify.com/track/6I1qepd8Qeh04uWX0YJ1jS" },
+        { "gde": "ещё площадки", "url": "https://band.link/w3GUR" }
+      ]
+    }
+  ],
+
+  "klipy": [
+    { "id": "gtfGDSsJaqk", "title": "Как дети", "dur": "5:04" },
+    { "id": "3I8awhOeiXY", "title": "Не вернётся", "dur": "4:11" },
+    { "id": "iERTgBIFYWA", "title": "Преодоление", "dur": "3:01" },
+    { "id": "IFS8iZVKIJ8", "title": "Двойник", "dur": "6:27" }
+  ],
+
+  "koncerty": [
+    {
+      "slug": "elektricheskiy-2013",
+      "title": "Электрический концерт",
+      "god": "2013",
+      "treki": [
+        { "id": "FXejlqRCixw", "title": "Ведьма", "dur": "2:40" },
+        { "id": "JsyJrY33KpY", "title": "Вышел один", "dur": "3:54" },
+        { "id": "5Pv23O09RHw", "title": "Сон", "dur": "2:14" },
+        { "id": "Tn1EtIjVyH4", "title": "Орёл", "dur": "5:14" },
+        { "id": "nEVPbY5LZX0", "title": "Будет пусть по-твоему", "dur": "2:44" },
+        { "id": "BupJaUWlQTM", "title": "Это мой мир", "dur": "5:28" },
+        { "id": "T9Am6LYsUZA", "title": "Всё уходит", "dur": "4:14" },
+        { "id": "2uyCqtoKtcI", "title": "Забвение", "dur": "3:46" },
+        { "id": "pu63lD-ESyQ", "title": "Авалон", "dur": "3:29" }
+      ]
+    },
+    {
+      "slug": "akusticheskiy-2015",
+      "title": "Акустический концерт",
+      "god": "2015",
+      "treki": [
+        { "id": "81S6ndFsLJ8", "title": "Звери", "dur": "3:16" },
+        { "id": "MabI_5r-e4g", "title": "Как дети", "dur": "4:32" },
+        { "id": "e-UUllUyIPA", "title": "Орёл", "dur": "4:42" },
+        { "id": "SyyCQdTpwrQ", "title": "Двойник", "dur": "4:48" },
+        { "id": "sv6DWPkl0M4", "title": "Пьеро", "dur": "3:59" },
+        { "id": "NcqfS7xK7a0", "title": "Будет", "dur": "3:01" }
+      ]
+    }
+  ],
+
+  "instrumentaly": [
+    { "slug": "friendship", "title": "Friendship" },
+    { "slug": "psychosis", "title": "Psychosis" },
+    { "slug": "317-days-of-summer", "title": "317 Days Of Summer" },
+    { "slug": "singleness", "title": "Singleness" },
+    { "slug": "farewell", "title": "Farewell" },
+    { "slug": "overcome", "title": "Overcome" }
+  ]
+}

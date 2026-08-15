@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import Facade from '../../components/Facade.astro';
+import m from '../../data/muzyka.json';
+---
+
+<Base title="Клипы — Музыка — Глеб Мутовкин" description="Видео на песни «Смешного времени».">
+  <main class="page" data-pagefind-ignore>
+    <section class="hero">
+      <div class="crumb"><a href="/muzyka/">Музыка</a> / Клипы</div>
+      <h1>Клипы</h1>
+      <p class="lede">
+        Видео на песни. Плеер грузится по нажатию — до этого на странице только превью.
+      </p>
+    </section>
+
+    <section>
+      <div class="count" style="margin-bottom:1.6rem">{m.klipy.length} ролика</div>
+      <div class="grid">
+        {m.klipy.map((v) => <Facade id={v.id} title={v.title} dur={v.dur} />)}
+      </div>
+    </section>
+  </main>
+</Base>

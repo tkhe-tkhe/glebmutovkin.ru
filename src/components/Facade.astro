@@ -1,0 +1,60 @@
+---
+// Фасад ролика YouTube.
+// Голый <iframe> тянет больше мегабайта скриптов ещё до нажатия play — и делает это
+// для каждого ролика на странице. Здесь вместо плеера лежит превью (15–30 КБ),
+// а настоящий плеер подставляется по нажатию.
+
+interface Props {
+  id: string;      // идентификатор ролика на YouTube
+  title: string;
+  dur?: string;
+  n?: string;      // номер в сетлисте концерта
+}
+
+const { id, title, dur, n } = Astro.props;
+---
+
+<figure class="vid">
+  <button type="button" class="embed" data-yt={id} data-title={title}>
+    <img
+      src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      width="480"
+      height="360"
+      onerror="this.remove()"
+    />
+    <span class="play">Смотреть</span>
+  </button>
+  <figcaption>
+    <span class="vt">{title}</span>
+    <span class="vm">{n && <span class="vn">{n}</span>}{dur}</span>
+  </figcaption>
+</figure>
+
+<script>
+  // Один обработчик на всю страницу: слушаем документ, а не каждый фасад.
+  // Astro собирает этот скрипт один раз, сколько бы фасадов ни было на странице.
+  document.addEventListener('click', (e) => {
+    const box = (e.target as HTMLElement).closest<HTMLElement>('.embed[data-yt]');
+    if (!box) return;
+
+    const id = box.dataset.yt;
+    const frame = document.createElement('iframe');
+    // Домен обычный, а не youtube-nocookie.com. Проверено 15 августа в Chrome Глеба:
+    // на nocookie ролик отвечает «Войдите в аккаунт, чтобы подтвердить, что вы не бот»,
+    // на обычном домене тот же ролик открывается сразу. Приватность обменяна
+    // на то, что видео вообще играет.
+    frame.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+    frame.title = box.dataset.title ?? '';
+    frame.allow =
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    frame.allowFullscreen = true;
+
+    const live = document.createElement('div');
+    live.className = 'embed live';
+    live.appendChild(frame);
+    box.replaceWith(live);
+  });
+</script>

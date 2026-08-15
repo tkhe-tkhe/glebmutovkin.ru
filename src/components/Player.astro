@@ -1,0 +1,122 @@
+---
+// Свой плеер для студийных записей.
+// Мастера у Глеба на руках, и личный сайт не должен зависеть ни от одной площадки —
+// поэтому файл свой, а ссылки на сервисы стоят рядом текстом.
+//
+// Волна рисуется на сборке, а не в браузере: полоски приезжают готовыми в HTML.
+// В огибающей 400 точек, а полоса шириной 42rem держит около 120 полосок с зазором 2px —
+// поэтому точки складываются группами, в каждой берётся максимум (пики важнее среднего).
+
+import peaks from '../data/dni-peaks.json';
+
+interface Props {
+  title: string;
+  god: string;
+  dur: string;
+  mp3: string;
+  m4a: string;
+  ssylki?: { gde: string; url: string }[];
+}
+
+const { title, god, dur, mp3, m4a, ssylki = [] } = Astro.props;
+
+const N = 120;
+const step = peaks.peaks.length / N;
+const bars = Array.from({ length: N }, (_, i) =>
+  Math.max(...peaks.peaks.slice(Math.floor(i * step), Math.floor((i + 1) * step)))
+);
+---
+
+<div class="player" data-player>
+  <div class="ph">
+    <span class="pt2">{title}</span>
+    <span class="pm">{god} · {dur}</span>
+  </div>
+
+  <div class="wave" data-wave role="slider" tabindex="0"
+       aria-label={`Перемотка: ${title}`}
+       aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    {bars.map((p) => <i style={`height:${Math.max(2, Math.round(p * 44))}px`}></i>)}
+  </div>
+
+  <div class="pctl">
+    <button type="button" data-play>Играть</button>
+    <span class="dur"><span data-now>0:00</span> / {dur}</span>
+    {ssylki.length > 0 && (
+      <span class="pls">
+        {ssylki.map((s, i) => (
+          <>
+            {i > 0 && ' · '}
+            <a class="link" href={s.url} target="_blank" rel="noopener">{s.gde}</a>
+          </>
+        ))}
+      </span>
+    )}
+  </div>
+
+  <audio preload="none" data-audio>
+    <source src={m4a} type="audio/mp4" />
+    <source src={mp3} type="audio/mpeg" />
+  </audio>
+</div>
+
+<script>
+  const mmss = (s: number) => {
+    const m = Math.floor(s / 60);
+    return `${m}:${String(Math.floor(s - m * 60)).padStart(2, '0')}`;
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-player]').forEach((root) => {
+    const audio = root.querySelector<HTMLAudioElement>('[data-audio]')!;
+    const wave = root.querySelector<HTMLElement>('[data-wave]')!;
+    const play = root.querySelector<HTMLButtonElement>('[data-play]')!;
+    const now = root.querySelector<HTMLElement>('[data-now]')!;
+    const bars = [...wave.querySelectorAll('i')];
+
+    const draw = () => {
+      const d = audio.duration;
+      const part = d ? audio.currentTime / d : 0;
+      const upto = Math.round(part * bars.length);
+      bars.forEach((b, i) => b.classList.toggle('on', i < upto));
+      now.textContent = mmss(audio.currentTime || 0);
+      wave.setAttribute('aria-valuenow', String(Math.round(part * 100)));
+    };
+
+    play.addEventListener('click', () => {
+      if (audio.paused) audio.play();
+      else audio.pause();
+    });
+
+    audio.addEventListener('play', () => (play.textContent = 'Пауза'));
+    audio.addEventListener('pause', () => (play.textContent = 'Играть'));
+    audio.addEventListener('ended', () => {
+      play.textContent = 'Играть';
+      audio.currentTime = 0;
+      draw();
+    });
+    audio.addEventListener('timeupdate', draw);
+
+    // перемотка по щелчку в волну
+    const seek = (x: number) => {
+      const r = wave.getBoundingClientRect();
+      const part = Math.min(1, Math.max(0, (x - r.left) / r.width));
+      // Длительность известна только после загрузки метаданных, а preload="none".
+      // Пока её нет — берём из файла огибающей через data-атрибут не нужно:
+      // просто ждём метаданные и перематываем следом.
+      if (audio.readyState === 0) {
+        audio.addEventListener('loadedmetadata', () => { audio.currentTime = part * audio.duration; }, { once: true });
+        audio.load();
+      } else {
+        audio.currentTime = part * audio.duration;
+      }
+    };
+
+    wave.addEventListener('click', (e) => seek((e as MouseEvent).clientX));
+    wave.addEventListener('keydown', (e) => {
+      const k = (e as KeyboardEvent).key;
+      if (k !== 'ArrowLeft' && k !== 'ArrowRight') return;
+      e.preventDefault();
+      audio.currentTime = Math.max(0, audio.currentTime + (k === 'ArrowRight' ? 5 : -5));
+    });
+  });
+</script>

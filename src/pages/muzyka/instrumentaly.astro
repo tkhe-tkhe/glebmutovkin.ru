@@ -1,0 +1,65 @@
+---
+// Инструменталы лежат на SoundCloud. Виджет тяжёлый, поэтому здесь тот же приём,
+// что и с YouTube: в строке лежит только название, плеер приезжает по нажатию.
+// Длительности не указаны намеренно — на профиле их нет, а выдумывать нечего.
+
+import Base from '../../layouts/Base.astro';
+import m from '../../data/muzyka.json';
+
+const dva = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base
+  title="Инструментальная музыка — Глеб Мутовкин"
+  description="Инструментальная музыка «Смешного времени» на SoundCloud."
+>
+  <main class="page" data-pagefind-ignore>
+    <section class="hero">
+      <div class="crumb"><a href="/muzyka/">Музыка</a> / Инструментальная музыка</div>
+      <h1>Инструментальная музыка</h1>
+    </section>
+
+    <section>
+      <div class="count" style="margin-bottom:1.2rem">{m.instrumentaly.length} пьес</div>
+
+      <ul class="shelf">
+        {m.instrumentaly.map((t, i) => (
+          <li data-sc={t.slug}>
+            <span class="num">{dva(i + 1)}</span>
+            <div>
+              <div class="tt">{t.title}</div>
+              <div class="tm">SoundCloud</div>
+            </div>
+            <button type="button" class="slushat" data-play={t.slug}>Слушать</button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Base>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('.slushat[data-play]');
+    if (!btn) return;
+
+    const row = btn.closest('li')!;
+    const slug = btn.dataset.play;
+    const url = encodeURIComponent(`https://soundcloud.com/gleb-mutovkin/${slug}`);
+
+    const frame = document.createElement('iframe');
+    frame.className = 'sc';
+    frame.width = '100%';
+    frame.height = '120';
+    frame.allow = 'autoplay';
+    frame.src =
+      `https://w.soundcloud.com/player/?url=${url}` +
+      '&color=%2323211E&auto_play=true&hide_related=true&show_comments=false' +
+      '&show_user=false&show_reposts=false&show_teaser=false';
+
+    // Виджет встаёт на место всей строки: два плеера сразу не нужны.
+    row.classList.add('live');
+    row.innerHTML = '';
+    row.appendChild(frame);
+  });
+</script>

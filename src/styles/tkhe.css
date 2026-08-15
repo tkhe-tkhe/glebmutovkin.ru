@@ -399,10 +399,78 @@ details.toc-m a{
 /* фасад видео: грузим ролик только по нажатию */
 .embed{
   position:relative;aspect-ratio:16/9;border:1px solid var(--line);
-  display:grid;place-items:center;cursor:pointer;
+  display:grid;place-items:center;cursor:pointer;overflow:hidden;
   font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--fg-3);
 }
 .embed:hover{border-color:var(--fg-3)}
+
+/* фасад — кнопка, поэтому гасим всё, что браузер рисует у кнопок */
+button.embed{background:transparent;padding:0;width:100%;text-align:center;-webkit-appearance:none}
+button.embed:focus-visible{outline:1px solid var(--fg);outline-offset:2px}
+
+/* превью: серое, пока на него не навели. Цвет появляется как ответ на намерение,
+   а не сам по себе — так пятнадцать превью подряд не превращаются в витраж. */
+.embed>img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:grayscale(1) contrast(.92);opacity:.85;transition:filter .3s,opacity .3s;
+}
+.embed:hover>img,.embed:focus-visible>img{filter:none;opacity:1}
+.embed .play{
+  position:relative;z-index:1;background:var(--bg);color:var(--fg-2);
+  padding:.5rem 1rem;border:1px solid var(--line);
+}
+.embed:hover .play{border-color:var(--fg);color:var(--fg)}
+
+/* когда плеер уже подставлен — рамки и курсора больше нет */
+.embed.live{cursor:default;border-color:var(--line)}
+.embed.live iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* сетка роликов */
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));
+  gap:2.4rem 2rem;max-width:var(--page);
+}
+.vid{margin:0;min-width:0}
+.vid figcaption{margin-top:.7rem}
+.vid .vt{display:block;font:500 1rem/1.3 var(--serif)}
+.vid .vm{
+  display:block;font-family:var(--mono);font-size:.65rem;color:var(--fg-3);
+  margin-top:.25rem;letter-spacing:.04em;font-variant-numeric:tabular-nums;
+}
+.vid .vn::after{content:" · "}
+
+/* заголовок концерта: название антиквой, год и счётчик — моноширинным справа */
+.setlist-h{
+  display:flex;align-items:baseline;gap:1.5rem;flex-wrap:wrap;
+  border-top:1px solid var(--line);padding-top:1.1rem;margin-bottom:1.8rem;
+}
+.setlist-h h2{font-size:1.35rem}
+.setlist-h .sm{
+  margin-left:auto;font-family:var(--mono);font-size:.68rem;
+  color:var(--fg-3);letter-spacing:.05em;font-variant-numeric:tabular-nums;
+}
+
+/* путь наверху подстраницы */
+.crumb{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;
+  color:var(--fg-3);margin-bottom:1.2rem;
+}
+.crumb a{color:var(--fg-2);text-decoration:none}
+.crumb a:hover{color:var(--fg);text-decoration:underline;text-underline-offset:4px}
+
+/* кнопка «Слушать» в полке инструменталов */
+.shelf .slushat{
+  all:unset;cursor:pointer;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--fg-2);border-bottom:1px solid var(--line);padding-bottom:2px;
+}
+.shelf .slushat:hover{color:var(--fg);border-bottom-color:var(--fg)}
+.shelf .slushat:focus-visible{outline:1px solid var(--fg);outline-offset:3px}
+.shelf li.live{display:block;padding:.6rem 0}
+.shelf iframe.sc{display:block;width:100%;border:0}
+
+/* ссылки на площадки в строке управления плеером */
+.player .pls{margin-left:auto;text-align:right}
 
 /* --------------------------------------------------------------------------
    8a. Поиск
@@ -495,6 +563,11 @@ footer.site a:hover{color:var(--fg)}
   .feed .side{padding-top:0}
   .cat li{grid-template-columns:2.4rem minmax(0,1fr);gap:1rem}
   .cat .cn{grid-column:2;margin-top:.3rem}
+  .grid{grid-template-columns:1fr;gap:2rem}
+  .setlist-h{gap:.4rem}
+  .setlist-h .sm{margin-left:0;width:100%}
+  .player .pls{width:100%;margin-left:0;text-align:left;margin-top:.5rem}
+  .pctl{flex-wrap:wrap}
 }
 
 /* --------------------------------------------------------------------------

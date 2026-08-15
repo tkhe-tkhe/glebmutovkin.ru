@@ -1,15 +1,84 @@
 ---
+// Витрина музыки. Короткая входная страница: студийная запись звучит сразу,
+// остальное разложено по полкам. Полки живут на отдельных страницах —
+// вместе они дают простыню в три тысячи пикселей.
+
 import Base from '../../layouts/Base.astro';
+import Player from '../../components/Player.astro';
+import m from '../../data/muzyka.json';
+
+const dni = m.studiya[0];
+
+const koncertnyh = m.koncerty.reduce((n, k) => n + k.treki.length, 0);
+const vsego = m.studiya.length + m.klipy.length + koncertnyh + m.instrumentaly.length;
+
+const polki = [
+  {
+    n: '01',
+    title: 'Клипы',
+    href: '/muzyka/klipy/',
+    meta: 'видео на песни · YouTube',
+    kolvo: m.klipy.length,
+  },
+  {
+    n: '02',
+    title: 'Концерты',
+    href: '/muzyka/koncerty/',
+    meta: `живые записи · ${m.koncerty.length} концерта · YouTube`,
+    kolvo: koncertnyh,
+  },
+  {
+    n: '03',
+    title: 'Инструментальная музыка',
+    href: '/muzyka/instrumentaly/',
+    meta: 'гитарные пьесы · SoundCloud',
+    kolvo: m.instrumentaly.length,
+  },
+];
+
+const dva = (n: number) => String(n).padStart(2, '0');
 ---
 
-<Base title="Музыка — Глеб Мутовкин" description="Треки, демо и клипы. То, что не выражается словами.">
+<Base
+  title="Музыка — Глеб Мутовкин"
+  description="«Смешное время»: студийные записи, клипы, концерты и гитарные пьесы."
+>
   <main class="page" data-pagefind-ignore>
     <section class="hero">
       <h1>Музыка</h1>
-      <p class="lede">Треки, демо и клипы. То, что не выражается словами.</p>
+      <p class="lede">
+        Всё музыкальное — «Смешное время». Музыка, тексты и аранжировки мои;
+        играю один или с командой, но проект всегда называется так.
+      </p>
     </section>
+
     <section>
-      <div class="count">Раздел готовится</div>
+      <div class="count" style="margin-bottom:1rem">Студийная запись</div>
+      <Player
+        title={dni.title}
+        god={dni.god}
+        dur={dni.dur}
+        mp3={dni.mp3}
+        m4a={dni.m4a}
+        ssylki={dni.ssylki}
+      />
+    </section>
+
+    <section>
+      <div class="count" style="margin-bottom:1.2rem">Собрание — {vsego} записей</div>
+
+      <ul class="cat">
+        {polki.map((p) => (
+          <li>
+            <span class="num">{p.n}</span>
+            <a href={p.href}>
+              <span class="ct">{p.title}</span>
+              <div class="cm">{p.meta}</div>
+            </a>
+            <span class="cn">{dva(p.kolvo)}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   </main>
 </Base>
