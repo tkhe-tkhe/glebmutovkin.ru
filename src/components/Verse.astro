@@ -1,0 +1,55 @@
+---
+// Стихи не проходят через Markdown: там одиночные переносы строк,
+// а Markdown схлопывает их в один абзац — стих ломается.
+// Поэтому берём исходный текст записи и разбиваем по строкам сами.
+// Строка «***» — авторский разделитель между стихами внутри одной записи.
+
+interface Props {
+  body: string;
+}
+
+const { body } = Astro.props;
+
+// Группируем строки в блоки: разделитель обрывает блок.
+type Block = { type: 'verse'; lines: string[] } | { type: 'sep' };
+
+const blocks: Block[] = [];
+for (const raw of body.trim().split('\n')) {
+  const line = raw.trimEnd();
+  if (line.trim() === '***') {
+    // Разделитель перед первым стихом не нужен — он ничего не разделяет.
+    if (blocks.length > 0) blocks.push({ type: 'sep' });
+    continue;
+  }
+  const last = blocks[blocks.length - 1];
+  if (line.trim() === '') {
+    // Пустая строка внутри блока — пауза, сохраняем её.
+    if (last?.type === 'verse') last.lines.push('');
+    continue;
+  }
+  if (last?.type === 'verse') last.lines.push(line);
+  else blocks.push({ type: 'verse', lines: [line] });
+}
+
+// Пустые строки по краям блока дают лишний отбив — убираем.
+for (const b of blocks) {
+  if (b.type !== 'verse') continue;
+  while (b.lines.at(-1) === '') b.lines.pop();
+  while (b.lines[0] === '') b.lines.shift();
+}
+---
+
+{blocks.map((block) =>
+  block.type === 'sep' ? (
+    <span class="verse-sep">* * *</span>
+  ) : (
+    <p class="verse">
+      {block.lines.map((line, i) => (
+        <>
+          {i > 0 && <br />}
+          {line}
+        </>
+      ))}
+    </p>
+  )
+)}

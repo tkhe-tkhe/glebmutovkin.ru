@@ -1,0 +1,353 @@
+/* ==========================================================================
+   tkhe-tkhe.ru — дизайн-система
+   Утверждено 15 августа 2026. Вариант A, охра только в сносках.
+
+   Принципы, из которых всё выведено:
+   1. Ни одной коробки: нет карточек, теней, скруглений и кнопок.
+      Границы блоков — волосяная линия или пустота.
+   2. Состояние показывается меткой, а не заливкой. Активный пункт меню
+      подчёркнут, а не покрашен.
+   3. Цвета почти нет. Охра живёт ровно в одном месте — номера сносок,
+      единственное, на что можно нажать внутри текста.
+   4. Тело набирается антиквой (Literata), всё служебное —
+      моноширинным (JetBrains Mono): меню, даты, метки, счётчики, номера.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Переменные
+   -------------------------------------------------------------------------- */
+:root{
+  /* бумага и чернила */
+  --bg:#F6F4EF;          /* фон страницы */
+  --fg:#23211E;          /* основной текст */
+  --fg-2:#6E6961;        /* второстепенный текст, подводки */
+  --fg-3:#A29B90;        /* даты, счётчики, служебное */
+  --line:#E1DCD2;        /* волосяная линия */
+  --line-soft:#EDE9E1;   /* линия там, где обычная слишком громкая */
+
+  /* единственный акцент */
+  --ochre:#8C6A3F;       /* только номера сносок */
+
+  --serif:"Literata Variable","Literata",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono Variable","JetBrains Mono",ui-monospace,Consolas,"Courier New",monospace;
+
+  --size:19px;           /* кегль тела */
+  --lead:1.75;           /* интерлиньяж тела */
+  --measure:34rem;       /* колонка чтения, ~65 знаков */
+  --measure-wide:42rem;  /* термины, таблицы, источники */
+  --page:62rem;          /* ширина полотна страницы */
+  --pad:2.25rem;         /* поле страницы на десктопе */
+  --gap:4rem;            /* воздух между блоками */
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+img,video,iframe{max-width:100%;height:auto}
+
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font:400 var(--size)/var(--lead) var(--serif);
+  font-feature-settings:"onum" 1;      /* минускульные цифры в тексте */
+  -webkit-font-smoothing:antialiased;
+}
+
+::selection{background:var(--fg);color:var(--bg)}
+
+/* --------------------------------------------------------------------------
+   2. Типографика
+   -------------------------------------------------------------------------- */
+h1,h2,h3,h4{
+  font-family:var(--serif);font-weight:600;
+  letter-spacing:-.015em;line-height:1.2;text-wrap:balance;margin:0;
+}
+h1{font-size:clamp(2rem,4.4vw,2.9rem)}
+h2{font-size:clamp(1.35rem,2.4vw,1.7rem)}
+h3{font-size:1.15rem}
+h4{font-size:1rem}
+p{margin:0 0 1.15rem}
+strong{font-weight:600}
+hr{border:0;height:1px;background:var(--line);margin:var(--gap) 0}
+
+a{color:inherit}
+
+/* ссылка в тексте: подчёркивание чернилами, не цветом */
+a.link{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+
+/* служебная типографика — вся моноширинная */
+.tag,.date,.count,.num,.dur{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.tag{
+  display:block;font-size:.66rem;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--fg-2);margin-bottom:.3rem;
+}
+.date{font-size:.7rem;letter-spacing:.04em;color:var(--fg-3)}
+.count{
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-3);
+}
+.lede{font-size:1.08rem;line-height:1.62;color:var(--fg-2);max-width:44ch;margin:0}
+
+/* заголовок раздела: короткая строка, длинный заголовок ломается сам */
+.hero h1{max-width:18ch;margin-bottom:1.2rem}
+
+/* --------------------------------------------------------------------------
+   3. Каркас
+   -------------------------------------------------------------------------- */
+.page{max-width:var(--page);margin:0 auto;padding:4rem var(--pad) 0}
+section{margin-bottom:var(--gap)}
+.col{max-width:var(--measure)}
+.col-wide{max-width:var(--measure-wide)}
+
+/* --------------------------------------------------------------------------
+   4. Шапка
+   Одна строка, волосяная линия под ней. Тянется во всю ширину окна,
+   но содержимое выровнено по колонке страницы.
+   -------------------------------------------------------------------------- */
+.chrome{
+  border-bottom:1px solid var(--line);
+  padding:1.15rem max(var(--pad),calc((100% - var(--page))/2 + var(--pad)));
+  display:flex;align-items:baseline;gap:2rem;
+}
+.chrome .brand{
+  text-decoration:none;color:var(--fg);
+  font:600 1rem/1.2 var(--serif);letter-spacing:-.015em;white-space:nowrap;
+}
+.chrome nav{margin-left:auto;display:flex;gap:1.6rem;flex-wrap:wrap}
+.chrome nav a{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--fg-2);text-decoration:none;transition:color .2s;
+}
+.chrome nav a:hover{color:var(--fg)}
+.chrome nav a[aria-current]{
+  color:var(--fg);text-decoration:underline;
+  text-underline-offset:5px;text-decoration-thickness:1px;
+}
+
+/* --------------------------------------------------------------------------
+   5. Лента
+   Длинные тексты — заголовком со ссылкой. Короткие формы (стихи, мысли) —
+   целиком, обрезанный стих выглядит сломанным.
+   -------------------------------------------------------------------------- */
+.feed{list-style:none;margin:0;padding:0}
+.feed li{border-top:1px solid var(--line);padding:1.7rem 0}
+.feed li:last-child{border-bottom:1px solid var(--line)}
+.feed .row{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:1.8rem}
+.feed .side{padding-top:.35rem}
+.feed h2{font-size:1.2rem;margin:0 0 .4rem}
+.feed a.tt{text-decoration:none;display:block}
+.feed a.tt:hover h2{
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;
+}
+.feed .dek{font-size:.95rem;line-height:1.6;color:var(--fg-2);margin:0}
+.feed .verse{
+  font:400 1.1rem/1.85 var(--serif);margin:0;
+  padding-left:1.1rem;border-left:1px solid var(--line);
+}
+.feed .short{font:400 1.02rem/1.72 var(--serif);max-width:var(--measure)}
+.feed .short p{margin:0 0 1rem}
+.feed .short p:last-child{margin:0}
+
+/* тихий заголовок над записью, показанной целиком */
+.feed .ft-s{
+  font:500 1.02rem/1.35 var(--serif);letter-spacing:-.01em;
+  color:var(--fg-2);margin:0 0 .7rem;
+}
+
+/* авторский разделитель между стихами внутри одной записи */
+.verse-sep{
+  display:block;margin:1.6rem 0 1.1rem;color:var(--fg-3);
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.5em;
+}
+
+/* --------------------------------------------------------------------------
+   6. Каталог со счётчиками
+   Применяется к разборам, гайдам и полкам музыки.
+   -------------------------------------------------------------------------- */
+.cat{list-style:none;margin:0;padding:0}
+.cat li{
+  display:grid;grid-template-columns:3.2rem minmax(0,1fr) auto;gap:1.5rem;
+  align-items:baseline;padding:1.15rem 0;border-top:1px solid var(--line);
+}
+.cat li:last-child{border-bottom:1px solid var(--line)}
+.cat .num{font-size:.7rem;color:var(--fg-3)}
+.cat a{text-decoration:none;display:block}
+.cat a:hover .ct{
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;
+}
+.cat .ct{font:600 1.08rem/1.3 var(--serif);letter-spacing:-.015em}
+.cat .cm{font-family:var(--mono);font-size:.68rem;color:var(--fg-3);margin-top:.35rem;letter-spacing:.04em}
+.cat .cn{font-family:var(--mono);font-size:.68rem;color:var(--fg-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* --------------------------------------------------------------------------
+   7. Разбор
+   -------------------------------------------------------------------------- */
+.reading{display:grid;grid-template-columns:minmax(0,1fr);gap:3rem}
+@media(min-width:1180px){
+  .reading{grid-template-columns:13rem minmax(0,1fr);gap:3.5rem}
+}
+
+/* оглавление сбоку */
+.toc b{
+  display:block;font-family:var(--mono);font-size:.62rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--fg-3);margin-bottom:1rem;
+}
+.toc a{
+  display:block;font-family:var(--mono);font-size:.7rem;line-height:1.5;
+  letter-spacing:.02em;color:var(--fg-2);text-decoration:none;padding:.3rem 0;
+}
+.toc a:hover{color:var(--fg)}
+.toc a.on{color:var(--fg);text-decoration:underline;text-underline-offset:4px}
+
+/* плашка происхождения материала */
+.origin{
+  margin:1.6rem 0 2.4rem;max-width:var(--measure);
+  padding-left:1.1rem;border-left:1px solid var(--line);
+}
+.origin b{
+  display:block;font-family:var(--mono);font-size:.62rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--fg-3);margin-bottom:.6rem;
+}
+.origin p{margin:0 0 .5rem;font-size:.9rem;line-height:1.65;color:var(--fg-2)}
+.origin p:last-child{
+  margin:0;font-family:var(--mono);font-size:.66rem;color:var(--fg-3);letter-spacing:.05em;
+}
+
+/* колонка чтения */
+.body-text{max-width:var(--measure)}
+.body-text h2{margin:3.2rem 0 1rem}
+.body-text h2 .secn{
+  font-family:var(--mono);font-size:.62em;font-weight:400;
+  color:var(--fg-3);margin-right:.8em;letter-spacing:.05em;
+}
+
+/* карточка термина — без коробки, только линия сверху */
+.term{margin:2.6rem 0;max-width:var(--measure-wide);border-top:1px solid var(--line)}
+.term h4{font:600 1.08rem/1.3 var(--serif);letter-spacing:0;margin:1.1rem 0 .9rem;scroll-margin-top:2rem}
+.term dl{display:grid;grid-template-columns:1fr;gap:.1rem;margin:0}
+@media(min-width:820px){
+  .term dl{grid-template-columns:8rem minmax(0,1fr);gap:.8rem 1.6rem}
+  .term dt{margin-top:.15rem}
+}
+.term dt{
+  font-family:var(--mono);font-size:.62rem;font-weight:500;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--fg-3);margin-top:.9rem;
+}
+.term dd{margin:0;font-size:.94rem;line-height:1.68}
+.term dd p{margin:0}
+
+/* возврат к определению термина — незаметно, пока не нужен */
+a.tref{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+a.tref:hover{border-bottom-color:var(--fg)}
+
+/* сноска — единственное место, где живёт охра */
+button.ref{
+  all:unset;cursor:pointer;
+  font-family:var(--mono);font-size:.6em;vertical-align:super;padding:0 .15em;
+  color:var(--ochre);border-bottom:1px dotted currentColor;
+}
+button.ref:hover{color:var(--fg)}
+button.ref:focus-visible{outline:1px solid var(--fg);outline-offset:2px}
+
+/* всплывающая карточка источника */
+.pop{
+  position:fixed;z-index:70;max-width:23rem;
+  background:var(--bg);border:1px solid var(--fg);padding:1rem 1.15rem;
+}
+.pop .pn{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--fg-3);margin-bottom:.5rem;
+}
+.pop .pt{font-size:.88rem;line-height:1.6;margin-bottom:.6rem}
+.pop .pa{font-family:var(--mono);font-size:.7rem;text-decoration:underline;text-underline-offset:3px}
+.pop .px{
+  position:absolute;top:.3rem;right:.5rem;border:0;background:none;
+  color:var(--fg-3);cursor:pointer;font-size:1rem;line-height:1;
+}
+
+/* полный список источников внизу разбора */
+.srclist{list-style:none;margin:1.4rem 0 0;padding:0;max-width:var(--measure-wide)}
+.srclist li{
+  display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:.9rem;
+  padding:.85rem 0;border-top:1px solid var(--line);
+  font-size:.88rem;line-height:1.55;scroll-margin-top:2rem;
+}
+.srclist li:last-child{border-bottom:1px solid var(--line)}
+.srclist .sn{font-family:var(--mono);font-size:.7rem;color:var(--ochre);font-variant-numeric:tabular-nums}
+.srclist .su{font-family:var(--mono);font-size:.68rem;color:var(--fg-3);word-break:break-all}
+
+/* --------------------------------------------------------------------------
+   8. Музыка
+   -------------------------------------------------------------------------- */
+.shelf{list-style:none;margin:0;padding:0;max-width:var(--measure-wide)}
+.shelf li{
+  display:grid;grid-template-columns:2.4rem minmax(0,1fr) auto;gap:1.3rem;
+  align-items:center;padding:.95rem 0;border-top:1px solid var(--line);
+}
+.shelf li:last-child{border-bottom:1px solid var(--line)}
+.shelf .num{font-size:.68rem;color:var(--fg-3)}
+.shelf .tt{font:500 1rem/1.3 var(--serif)}
+.shelf .tm{font-family:var(--mono);font-size:.65rem;color:var(--fg-3);margin-top:.25rem;letter-spacing:.04em}
+.shelf .dur{font-size:.68rem;color:var(--fg-3)}
+
+/* свой плеер с волной */
+.player{max-width:var(--measure-wide);margin-top:2.2rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+.player .ph{display:flex;align-items:baseline;gap:1rem;margin-bottom:1rem}
+.player .ph .pt2{font:500 1.05rem/1.2 var(--serif)}
+.player .ph .pm{
+  font-family:var(--mono);font-size:.66rem;color:var(--fg-3);
+  margin-left:auto;letter-spacing:.05em;
+}
+.wave{display:flex;align-items:flex-end;gap:2px;height:44px;cursor:pointer}
+.wave i{flex:1;display:block;background:var(--fg-3)}
+.wave i.on{background:var(--fg)}          /* проигранная часть */
+.pctl{
+  margin-top:.9rem;display:flex;align-items:center;gap:1.2rem;
+  font-family:var(--mono);font-size:.68rem;color:var(--fg-3);letter-spacing:.05em;
+}
+.pctl button{
+  all:unset;cursor:pointer;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--fg);border-bottom:1px solid var(--line);padding-bottom:2px;
+}
+.pctl button:hover{border-bottom-color:var(--fg)}
+
+/* фасад видео: грузим ролик только по нажатию */
+.embed{
+  position:relative;aspect-ratio:16/9;border:1px solid var(--line);
+  display:grid;place-items:center;cursor:pointer;
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--fg-3);
+}
+.embed:hover{border-color:var(--fg-3)}
+
+/* --------------------------------------------------------------------------
+   9. Подвал
+   -------------------------------------------------------------------------- */
+footer.site{
+  margin-top:var(--gap);border-top:1px solid var(--line);
+  padding:2.2rem max(var(--pad),calc((100% - var(--page))/2 + var(--pad))) 4rem;
+  font-family:var(--mono);font-size:.68rem;line-height:1.9;
+  color:var(--fg-3);letter-spacing:.03em;
+}
+footer.site a{color:var(--fg-2);text-decoration:none}
+footer.site a:hover{color:var(--fg)}
+
+/* --------------------------------------------------------------------------
+   10. Телефон
+   -------------------------------------------------------------------------- */
+@media(max-width:720px){
+  :root{--size:17.5px;--lead:1.68;--pad:1.25rem;--gap:3.5rem}
+  .page{padding-top:2.5rem}
+  .chrome{flex-wrap:wrap;gap:1rem}
+  .chrome nav{gap:1.2rem}
+  .feed .row{grid-template-columns:1fr;gap:.6rem}
+  .feed .side{padding-top:0}
+  .cat li{grid-template-columns:2.4rem minmax(0,1fr);gap:1rem}
+  .cat .cn{grid-column:2;margin-top:.3rem}
+}
+
+/* --------------------------------------------------------------------------
+   11. Вспомогательное
+   -------------------------------------------------------------------------- */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+@media(prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important;scroll-behavior:auto !important}
+}

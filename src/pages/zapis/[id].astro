@@ -1,0 +1,36 @@
+---
+// Страница отдельной записи. Своя ссылка есть у каждой записи,
+// даже у тех, что в ленте показаны целиком.
+
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Verse from '../../components/Verse.astro';
+import { KIND_LABEL, formatDate, excerpt } from '../../lib/lenta';
+
+// Astro статический: список страниц надо отдать заранее, на сборке.
+export const getStaticPaths: GetStaticPaths = async () => {
+  const entries = await getCollection('lenta');
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+};
+
+const { entry } = Astro.props;
+const isVerse = entry.data.kind === 'stihi';
+const { Content } = isVerse ? { Content: null } : await render(entry);
+---
+
+<Base title={`${entry.data.title} — Глеб Мутовкин`} description={excerpt(entry.body ?? '', 24)}>
+  <main class="page">
+    <article>
+      <div class="count" style="margin-bottom:1.1rem">
+        {KIND_LABEL[entry.data.kind]} — {formatDate(entry.data.date)}
+      </div>
+
+      <h1 style="max-width:22ch">{entry.data.title}</h1>
+
+      <div class="body-text" style="margin-top:2rem">
+        {isVerse ? <Verse body={entry.body ?? ''} /> : <Content />}
+      </div>
+    </article>
+  </main>
+</Base>

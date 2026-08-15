@@ -1,0 +1,72 @@
+---
+// Лента — главная страница.
+// Короткие формы (стихи, заметки) показываются целиком, длинные — заголовком со ссылкой.
+
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Verse from '../components/Verse.astro';
+import { KIND_LABEL, FULL_KINDS, formatDate, excerpt } from '../lib/lenta';
+
+const entries = await getCollection('lenta');
+
+// Свежие сверху.
+const sorted = entries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// render() асинхронный, а в разметке await использовать нельзя —
+// поэтому готовим компоненты заранее.
+const items = await Promise.all(
+  sorted.map(async (entry) => {
+    const full = FULL_KINDS.includes(entry.data.kind);
+    const isVerse = entry.data.kind === 'stihi';
+    const Content = full && !isVerse ? (await render(entry)).Content : null;
+    return { entry, full, isVerse, Content };
+  })
+);
+---
+
+<Base title="Глеб Мутовкин — исследования, музыка, заметки">
+  <main class="page">
+    <section class="hero">
+      <h1>Пишу о том, что не помещается в разговор</h1>
+      <p class="lede">
+        Богословские исследования, музыка и заметки на полях. Здесь нет расписания публикаций —
+        есть только то, что успело додуматься до конца.
+      </p>
+    </section>
+
+    <section>
+      <ul class="feed">
+        {items.map(({ entry, full, isVerse, Content }) => (
+          <li>
+            <div class="row">
+              <div class="side">
+                <span class="tag">{KIND_LABEL[entry.data.kind]}</span>
+                <span class="date">{formatDate(entry.data.date)}</span>
+              </div>
+
+              <div>
+                {full ? (
+                  <>
+                    <a class="tt" href={`/zapis/${entry.id}/`}>
+                      <h2 class="ft-s">{entry.data.title}</h2>
+                    </a>
+                    {isVerse ? <Verse body={entry.body ?? ''} /> : (
+                      <div class="short"><Content /></div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <a class="tt" href={`/zapis/${entry.id}/`}>
+                      <h2>{entry.data.title}</h2>
+                    </a>
+                    <p class="dek">{excerpt(entry.body ?? '')}</p>
+                  </>
+                )}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Base>
