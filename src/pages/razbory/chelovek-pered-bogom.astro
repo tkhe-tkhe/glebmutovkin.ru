@@ -1,0 +1,150 @@
+---
+// Разбор «Человек перед Богом».
+//
+// Тело разбора лежит отдельным HTML-файлом и подставляется как есть.
+// Причина: в нём 176 сносок-кнопок, 46 карточек терминов и 116 перекрёстных
+// ссылок на определения. В Markdown это не выражается без своего слоя
+// компонентов, а текст уже вычитан — лишний прогон через конвертер только
+// добавит риска. Оформление при этом полностью новое: классы переписаны
+// под дизайн-систему.
+
+import Base from '../../layouts/Base.astro';
+import article from '../../content/razbory/chelovek-pered-bogom.html?raw';
+import toc from '../../data/razbor-toc.json';
+import istochniki from '../../data/istochniki.json';
+
+const title = 'Человек перед Богом: тело, душа, дух и путь исцеления';
+const lede =
+  'Православная антропология: нравственный закон, совесть, грех, страсти, заповеди и обожение';
+---
+
+<Base title={`${title} — Глеб Мутовкин`} description={lede}>
+  <!-- Сколько текста пройдено. Единственный указатель «где я» на 79 минутах чтения. -->
+  <div class="progress" id="pb"></div>
+
+  <main class="page numbered">
+    <div style="max-width:44rem;margin-bottom:3rem">
+      <div class="count" style="margin-bottom:1.1rem">Разбор — 01 / 06</div>
+      <h1>{title}</h1>
+      <p class="lede" style="margin:1.2rem 0 1rem">{lede}</p>
+      <p class="meta">Апрель 2026 · 14 209 слов · ~79 мин чтения</p>
+
+      <div class="origin">
+        <b>Как читать этот разбор</b>
+        <p>
+          Это свод по теме, собранный из 38 проверенных источников. Богословские положения
+          приводятся по источникам и не являются авторской позицией. Отбор источников,
+          сверка и структура — мои.
+        </p>
+        <p>Область: богословие</p>
+      </div>
+    </div>
+
+    <div class="reading">
+      <aside class="toc">
+        <b>Содержание</b>
+        {toc.map((t) => <a href={t.href}>{t.label}</a>)}
+      </aside>
+
+      <article class="razbor" data-pagefind-body>
+        <details class="toc-m">
+          <summary>Содержание</summary>
+          {toc.map((t) => <a href={t.href}>{t.label}</a>)}
+        </details>
+
+        <Fragment set:html={article} />
+      </article>
+    </div>
+  </main>
+
+  <!-- Карточка источника: всплывает по нажатию на номер сноски -->
+  <div class="pop" id="pop" hidden>
+    <button class="px" id="popx" aria-label="Закрыть">×</button>
+    <div class="pn" id="popn"></div>
+    <div class="pt" id="popt"></div>
+    <div class="pt" id="popu" style="color:var(--fg-3);font-size:.8rem"></div>
+    <a class="pa" id="popa" target="_blank" rel="noopener">Открыть источник</a>
+  </div>
+
+  <script is:inline define:vars={{ istochniki }}>
+    const pop = document.getElementById('pop');
+
+    function show(btn) {
+      const n = btn.dataset.n;
+      const s = istochniki[n];
+      if (!s) return;
+
+      document.getElementById('popn').textContent = 'Источник ' + n;
+      document.getElementById('popt').textContent = s.title;
+      document.getElementById('popu').textContent = s.used || '';
+      const a = document.getElementById('popa');
+      if (s.url) {
+        a.href = s.url;
+        a.hidden = false;
+      } else {
+        a.hidden = true;
+      }
+
+      pop.hidden = false;
+
+      // Ставим карточку под сноской, а если снизу не помещается — над ней.
+      const r = btn.getBoundingClientRect();
+      const w = Math.min(360, innerWidth - 24);
+      pop.style.width = w + 'px';
+
+      if (innerWidth < 640) {
+        pop.style.left = '12px';
+        pop.style.top = '';
+        pop.style.bottom = '12px';
+      } else {
+        pop.style.bottom = '';
+        pop.style.left = Math.max(12, Math.min(r.left - w / 2, innerWidth - w - 12)) + 'px';
+        const h = pop.offsetHeight || 190;
+        pop.style.top = (r.bottom + 10 + h > innerHeight ? Math.max(12, r.top - h - 10) : r.bottom + 10) + 'px';
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      const b = e.target.closest('button.ref');
+      if (b) {
+        show(b);
+        e.stopPropagation();
+        return;
+      }
+      if (!e.target.closest('#pop')) pop.hidden = true;
+    });
+
+    document.getElementById('popx').onclick = () => (pop.hidden = true);
+    addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') pop.hidden = true;
+    });
+
+    // Полоса прочитанного.
+    const pb = document.getElementById('pb');
+    addEventListener(
+      'scroll',
+      () => {
+        const h = document.body.scrollHeight - innerHeight;
+        pb.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
+      },
+      { passive: true }
+    );
+
+    // Подсветка текущего раздела в оглавлении.
+    const links = [...document.querySelectorAll('.toc a')];
+    const heads = [...document.querySelectorAll('article.razbor h2[id]')];
+    if (links.length && heads.length) {
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (!e.isIntersecting) return;
+            links.forEach((l) => l.classList.remove('on'));
+            const a = links.find((l) => l.getAttribute('href') === '#' + e.target.id);
+            if (a) a.classList.add('on');
+          }),
+        { rootMargin: '-8% 0px -75% 0px' }
+      );
+      heads.forEach((h) => io.observe(h));
+    }
+  </script>
+</Base>

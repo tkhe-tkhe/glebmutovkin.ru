@@ -1,0 +1,63 @@
+---
+// Поиск по сайту.
+//
+// Индекс строит Pagefind — после сборки он проходит по готовым HTML
+// и кладёт свой индекс в dist/pagefind. Сервер для поиска не нужен:
+// браузер скачивает только те куски индекса, которые нужны под запрос.
+//
+// В режиме разработки (npm run dev) индекса ещё нет — поиск заработает
+// после `npm run build` и `npm run preview`.
+
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Поиск — Глеб Мутовкин" description="Поиск по разборам, записям и заметкам.">
+  <main class="page" data-pagefind-ignore>
+    <section class="hero">
+      <h1>Поиск</h1>
+      <p class="lede">
+        По всем текстам сайта: разборам, эссе, стихам и заметкам. Индекс собран заранее,
+        запросы никуда не отправляются.
+      </p>
+    </section>
+
+    <section>
+      <div id="search" class="poisk"></div>
+      <noscript>
+        <p class="meta">Для поиска нужен включённый JavaScript.</p>
+      </noscript>
+    </section>
+  </main>
+
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof PagefindUI === 'undefined') {
+        document.getElementById('search').innerHTML =
+          '<p class="meta">Индекс поиска собирается при сборке сайта. ' +
+          'Выполни npm run build и открой npm run preview.</p>';
+        return;
+      }
+      new PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: false,
+        pageSize: 8,
+        translations: {
+          placeholder: 'Что ищем',
+          clear_search: 'Очистить',
+          load_more: 'Показать ещё',
+          search_label: 'Поиск по сайту',
+          filters_label: 'Фильтры',
+          zero_results: 'Ничего не нашлось по запросу [SEARCH_TERM]',
+          many_results: 'Найдено [COUNT] по запросу [SEARCH_TERM]',
+          one_result: 'Найдено [COUNT] по запросу [SEARCH_TERM]',
+          alt_search: 'Ничего по [SEARCH_TERM]. Показано по запросу [DIFFERENT_TERM]',
+          search_suggestion: 'Ничего по [SEARCH_TERM]. Попробуй другой запрос',
+          searching: 'Ищу…',
+        },
+      });
+    });
+  </script>
+</Base>

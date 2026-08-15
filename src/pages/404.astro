@@ -1,0 +1,22 @@
+---
+// Страница «не найдено». Astro собирает её в 404.html —
+// хостинг отдаёт этот файл вместо своей заглушки.
+
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Страница не найдена — Глеб Мутовкин" description="Такой страницы здесь нет.">
+  <main class="page" data-pagefind-ignore>
+    <section class="hero">
+      <div class="count" style="margin-bottom:1.1rem">Ошибка — 404</div>
+      <h1>Такой страницы здесь нет</h1>
+      <p class="lede">
+        Возможно, адрес набран с опечаткой, или запись переехала. Всё, что есть на сайте,
+        видно в ленте — она же поиск по началу.
+      </p>
+      <p style="margin-top:2rem">
+        <a class="link" href="/">Вернуться в ленту</a> · <a class="link" href="/poisk/">Искать по сайту</a>
+      </p>
+    </section>
+  </main>
+</Base>

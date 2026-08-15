@@ -184,7 +184,14 @@ section{margin-bottom:var(--gap)}
   .reading{grid-template-columns:13rem minmax(0,1fr);gap:3.5rem}
 }
 
-/* оглавление сбоку */
+/* оглавление сбоку: едет за текстом, пока читаешь */
+@media(min-width:1180px){
+  .toc{
+    position:sticky;top:2.5rem;align-self:start;
+    max-height:calc(100vh - 5rem);overflow-y:auto;
+    scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+  }
+}
 .toc b{
   display:block;font-family:var(--mono);font-size:.62rem;font-weight:500;
   letter-spacing:.16em;text-transform:uppercase;color:var(--fg-3);margin-bottom:1rem;
@@ -218,6 +225,12 @@ section{margin-bottom:var(--gap)}
   color:var(--fg-3);margin-right:.8em;letter-spacing:.05em;
 }
 
+/* полоса прочитанного: волосяная линия по верхней кромке окна */
+.progress{
+  position:fixed;top:0;left:0;height:2px;width:0;
+  background:var(--fg);z-index:60;transition:width .1s linear;
+}
+
 /* карточка термина — без коробки, только линия сверху */
 .term{margin:2.6rem 0;max-width:var(--measure-wide);border-top:1px solid var(--line)}
 .term h4{font:600 1.08rem/1.3 var(--serif);letter-spacing:0;margin:1.1rem 0 .9rem;scroll-margin-top:2rem}
@@ -231,7 +244,8 @@ section{margin-bottom:var(--gap)}
   text-transform:uppercase;color:var(--fg-3);margin-top:.9rem;
 }
 .term dd{margin:0;font-size:.94rem;line-height:1.68}
-.term dd p{margin:0}
+.term dd p{margin:0 0 .7rem}
+.term dd p:last-child{margin:0}
 
 /* возврат к определению термина — незаметно, пока не нужен */
 a.tref{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
@@ -271,7 +285,80 @@ button.ref:focus-visible{outline:1px solid var(--fg);outline-offset:2px}
 }
 .srclist li:last-child{border-bottom:1px solid var(--line)}
 .srclist .sn{font-family:var(--mono);font-size:.7rem;color:var(--ochre);font-variant-numeric:tabular-nums}
-.srclist .su{font-family:var(--mono);font-size:.68rem;color:var(--fg-3);word-break:break-all}
+.srclist br{display:none}          /* подпись и адрес и так блочные */
+.srclist .su{
+  display:block;font-family:var(--mono);font-size:.66rem;line-height:1.6;
+  color:var(--fg-3);margin:.4rem 0 .1rem;
+}
+.srclist a{
+  display:block;margin-top:.3rem;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.01em;
+  word-break:break-all;text-underline-offset:3px;
+}
+
+/* --------------------------------------------------------------------------
+   7a. Разбор: широкая статья, узкая колонка чтения
+   Абзацы держат 34rem, а карточки терминов, таблицы и источники выходят шире.
+   -------------------------------------------------------------------------- */
+article.razbor{max-width:var(--measure-wide);min-width:0}
+article.razbor > p,
+article.razbor > h2,
+article.razbor > h3,
+article.razbor > h4,
+article.razbor > ul,
+article.razbor > ol{max-width:var(--measure)}
+article.razbor h2{margin:3.4rem 0 1rem;scroll-margin-top:2rem}
+article.razbor h3{margin:2.4rem 0 .7rem;scroll-margin-top:2rem}
+
+/* номер раздела перед заголовком */
+.numbered h2::before{
+  content:attr(data-n) ".";
+  font-family:var(--mono);font-size:.6em;font-weight:400;
+  color:var(--fg-3);margin-right:.9em;letter-spacing:.05em;
+}
+
+/* подпись под лидом: дата, объём, время чтения */
+.meta{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.05em;
+  color:var(--fg-3);margin:0 0 1.4rem;
+}
+
+/* выноска без структуры */
+.note{
+  margin:1.8rem 0;max-width:var(--measure-wide);
+  padding-left:1.1rem;border-left:1px solid var(--line);
+  font-size:.94rem;line-height:1.68;
+}
+.note b{
+  display:block;font-family:var(--mono);font-size:.62rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--fg-3);margin-bottom:.6rem;
+}
+.note p{margin:0 0 .7rem}
+.note p:last-child{margin:0}
+
+/* таблицы */
+.tbl{margin:1.8rem 0 2.2rem;max-width:var(--measure-wide);overflow-x:auto}
+.tbl table{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.55}
+.tbl th{
+  font-family:var(--mono);font-size:.62rem;font-weight:500;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--fg-3);text-align:left;
+  padding:.6rem .9rem .6rem 0;border-bottom:1px solid var(--fg-3);white-space:nowrap;
+}
+.tbl td{padding:.7rem .9rem .7rem 0;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td:first-child{font-weight:500}
+
+/* оглавление на телефоне: сворачиваемое, вместо боковой колонки */
+details.toc-m{margin:0 0 2.6rem;border-top:1px solid var(--line);padding-top:.9rem}
+details.toc-m summary{
+  cursor:pointer;font-family:var(--mono);font-size:.62rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--fg-3);
+}
+details.toc-m a{
+  display:block;font-family:var(--mono);font-size:.72rem;line-height:1.5;
+  color:var(--fg-2);text-decoration:none;padding:.35rem 0;
+}
+@media(min-width:1180px){details.toc-m{display:none}}
 
 /* --------------------------------------------------------------------------
    8. Музыка
@@ -316,6 +403,73 @@ button.ref:focus-visible{outline:1px solid var(--fg);outline-offset:2px}
   font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;color:var(--fg-3);
 }
 .embed:hover{border-color:var(--fg-3)}
+
+/* --------------------------------------------------------------------------
+   8a. Поиск
+   Pagefind приносит своё оформление: коробку с рамкой, скруглениями и
+   жёлтой подсветкой. Здесь оно приводится к правилам сайта — поле ввода
+   становится строкой, подсветка теряет цвет.
+   -------------------------------------------------------------------------- */
+.poisk{
+  --pagefind-ui-scale:.9;
+  --pagefind-ui-primary:var(--fg);
+  --pagefind-ui-text:var(--fg);
+  --pagefind-ui-background:var(--bg);
+  --pagefind-ui-border:var(--line);
+  --pagefind-ui-tag:var(--bg);
+  --pagefind-ui-border-width:1px;
+  --pagefind-ui-border-radius:0;
+  --pagefind-ui-font:var(--serif);
+  max-width:var(--measure-wide);
+}
+
+/* Классы удвоены намеренно: стили Pagefind подключаются после наших,
+   и при равной силе побеждали бы они. Удвоение поднимает вес наших правил. */
+.poisk .pagefind-ui__search-input.pagefind-ui__search-input{
+  border:0;border-bottom:1px solid var(--fg);border-radius:0;
+  background:transparent;box-shadow:none;
+  font:400 1.2rem/1.4 var(--serif);
+  height:auto;padding:.5rem 5rem .5rem 0;
+}
+.poisk .pagefind-ui__search-input.pagefind-ui__search-input::placeholder{color:var(--fg-3);opacity:1}
+/* фокус показываем утолщением линии, а не рамкой браузера */
+.poisk .pagefind-ui__search-input.pagefind-ui__search-input:focus{
+  outline:none;border-bottom-width:2px;
+}
+/* лупу убираем: подсказка в поле и так говорит, что это поиск */
+.poisk .pagefind-ui__form:before{display:none}
+.poisk .pagefind-ui__search-clear.pagefind-ui__search-clear{
+  background:transparent;color:var(--fg-3);height:auto;top:.7rem;right:0;padding:0;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+}
+.poisk .pagefind-ui__search-clear.pagefind-ui__search-clear:hover{color:var(--fg);background:transparent}
+.poisk .pagefind-ui__message.pagefind-ui__message{
+  font-family:var(--mono);font-size:.66rem;font-weight:400;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--fg-3);height:auto;padding:1.8rem 0 .2rem;
+}
+.poisk .pagefind-ui__result{border-top:1px solid var(--line);padding:1.5rem 0}
+.poisk .pagefind-ui__result-title.pagefind-ui__result-title{
+  font:600 1.08rem/1.35 var(--serif);letter-spacing:-.015em;
+}
+.poisk .pagefind-ui__result-link.pagefind-ui__result-link{color:var(--fg);text-decoration:none}
+.poisk .pagefind-ui__result-link.pagefind-ui__result-link:hover{
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;
+}
+.poisk .pagefind-ui__result-excerpt.pagefind-ui__result-excerpt{
+  font:400 .94rem/1.65 var(--serif);color:var(--fg-2);
+}
+/* подсветка совпадения — тон бумаги, а не жёлтый маркер */
+.poisk .pagefind-ui__result mark,
+.poisk .pagefind-ui__result-excerpt mark{
+  background:var(--line);color:var(--fg);padding:0 .12em;border-radius:0;
+}
+.poisk .pagefind-ui__button.pagefind-ui__button{
+  border:0;border-bottom:1px solid var(--line);border-radius:0;
+  background:transparent;margin-top:1.6rem;padding:0 0 2px;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--fg);
+}
+.poisk .pagefind-ui__button.pagefind-ui__button:hover{border-bottom-color:var(--fg);background:transparent}
 
 /* --------------------------------------------------------------------------
    9. Подвал

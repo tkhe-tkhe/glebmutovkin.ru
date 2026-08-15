@@ -21,7 +21,7 @@ const { Content } = isVerse ? { Content: null } : await render(entry);
 
 <Base title={`${entry.data.title} — Глеб Мутовкин`} description={excerpt(entry.body ?? '', 24)}>
   <main class="page">
-    <article>
+    <article data-pagefind-body>
       <div class="count" style="margin-bottom:1.1rem">
         {KIND_LABEL[entry.data.kind]} — {formatDate(entry.data.date)}
       </div>

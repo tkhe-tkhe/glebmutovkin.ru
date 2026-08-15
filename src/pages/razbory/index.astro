@@ -1,15 +1,68 @@
 ---
+// Каталог разборов. Пока готов один, остальные показываю без ссылки —
+// чтобы объём собрания был виден честно.
+
 import Base from '../../layouts/Base.astro';
+
+const gotovye = [
+  {
+    n: '01',
+    title: 'Человек перед Богом',
+    href: '/razbory/chelovek-pered-bogom/',
+    meta: 'богословие · 38 источников · ~79 мин',
+    god: '2026',
+  },
+];
+
+const v_rabote = [
+  { n: '02', title: 'Ангельский мир в христианстве', meta: 'богословие · в работе', god: '' },
+];
+
+const vsego = gotovye.length + v_rabote.length;
+const dva = (n: number) => String(n).padStart(2, '0');
 ---
 
-<Base title="Разборы — Глеб Мутовкин" description="Своды по темам: собрано и сверено из проверенных источников. Долгое чтение, всё в одном месте.">
-  <main class="page">
+<Base
+  title="Разборы — Глеб Мутовкин"
+  description="Своды по темам: собрано и сверено из проверенных источников."
+>
+  <main class="page" data-pagefind-ignore>
     <section class="hero">
       <h1>Разборы</h1>
-      <p class="lede">Своды по темам: собрано и сверено из проверенных источников. Долгое чтение, всё в одном месте.</p>
+      <p class="lede">
+        Своды по темам: вопрос, проверенные источники, сверка и структура. Долгое чтение,
+        всё в одном месте. Положения принадлежат источникам, отбор и порядок — мои.
+      </p>
     </section>
+
     <section>
-      <div class="count">Раздел готовится</div>
+      <div class="count" style="margin-bottom:1.2rem">
+        Готово — {dva(gotovye.length)} / {dva(vsego)}
+      </div>
+
+      <ul class="cat">
+        {gotovye.map((r) => (
+          <li>
+            <span class="num">{r.n}</span>
+            <a href={r.href}>
+              <span class="ct">{r.title}</span>
+              <div class="cm">{r.meta}</div>
+            </a>
+            <span class="cn">{r.god}</span>
+          </li>
+        ))}
+
+        {v_rabote.map((r) => (
+          <li style="opacity:.5">
+            <span class="num">{r.n}</span>
+            <div>
+              <span class="ct">{r.title}</span>
+              <div class="cm">{r.meta}</div>
+            </div>
+            <span class="cn">{r.god}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   </main>
 </Base>

@@ -39,11 +39,10 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <link rel="alternate" type="application/rss+xml" title="tkhe-tkhe.ru" href="/rss.xml" />
   </head>
 
   <body>
-    <header class="chrome">
+    <header class="chrome" data-pagefind-ignore>
       <a class="brand" href="/">Глеб Мутовкин</a>
       <nav>
         {nav.map((item) => (
@@ -56,11 +55,11 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
 
     <slot />
 
-    <footer class="site">
+    <footer class="site" data-pagefind-ignore>
       <div style="max-width:42rem">
         tkhe-tkhe.ru — личные исследования, музыка и заметки.<br />
         Материалы можно свободно цитировать со ссылкой на источник.<br /><br />
-        <a href="/">Лента</a> · <a href="/o-mne/">Обо мне</a> · <a href="/rss.xml">RSS</a>
+        <a href="/">Лента</a> · <a href="/o-mne/">Обо мне</a> · <a href="/poisk/">Поиск</a>
       </div>
     </footer>
   </body>
