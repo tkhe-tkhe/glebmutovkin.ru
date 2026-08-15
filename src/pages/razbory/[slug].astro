@@ -1,0 +1,42 @@
+---
+// Все разборы кроме «Человека перед Богом» (у того своя страница: там
+// карточки терминов и возвраты к определениям, которых больше нигде нет).
+//
+// Тело каждого разбора — src/content/razbory/<slug>.html
+// Мета, оглавление и источники — src/data/razbory/<slug>.json
+// Чтобы добавить тему, кладём эти два файла. Больше ничего править не нужно.
+
+import Razbor from '../../layouts/Razbor.astro';
+
+import plan from '../../data/razbory-plan.json';
+
+export function getStaticPaths() {
+  const meta = import.meta.glob('../../data/razbory/*.json', { eager: true });
+  const tela = import.meta.glob('../../content/razbory/*.html', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  });
+
+  const razbory = Object.entries(meta).map(([put, mod]: [string, any]) => {
+    const m = mod.default ?? mod;
+    const slug = put.split('/').pop()!.replace('.json', '');
+    const kluch = Object.keys(tela).find((p) => p.endsWith(`/${slug}.html`));
+    if (!kluch) throw new Error(`Нет тела разбора: src/content/razbory/${slug}.html`);
+    return { slug, meta: m, body: tela[kluch] as string };
+  });
+
+  // Общее число тем берём из плана — того же файла, что и каталог,
+  // иначе счётчик «02 / 11» разъедется с ним при добавлении темы.
+  const vsego = plan.temy.length;
+
+  return razbory.map((r) => ({
+    params: { slug: r.slug },
+    props: { meta: r.meta, body: r.body, vsego },
+  }));
+}
+
+const { meta: m, body, vsego } = Astro.props;
+---
+
+<Razbor meta={m} body={body} vsego={vsego} />

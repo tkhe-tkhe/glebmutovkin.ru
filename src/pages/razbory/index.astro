@@ -1,24 +1,49 @@
 ---
-// Каталог разборов. Пока готов один, остальные показываю без ссылки —
-// чтобы объём собрания был виден честно.
+// Каталог разборов.
+//
+// Список тем и их порядок живут в src/data/razbory-plan.json — там же, откуда
+// счётчик «Разбор — NN / NN» на самой странице разбора берёт общее число.
+// Тема считается собранной, если для неё есть src/data/razbory/<slug>.json.
+// «Человек перед Богом» помечен в плане своей страницей: у него отдельный
+// шаблон с карточками терминов.
+//
+// Несобранные темы показываю без ссылки, чтобы объём собрания был виден честно.
 
 import Base from '../../layouts/Base.astro';
+import plan from '../../data/razbory-plan.json';
 
-const gotovye = [
-  {
-    n: '01',
-    title: 'Человек перед Богом',
-    href: '/razbory/chelovek-pered-bogom/',
-    meta: 'богословие · 38 источников · ~79 мин',
-    god: '2026',
-  },
-];
+const meta = import.meta.glob('../../data/razbory/*.json', { eager: true });
 
-const v_rabote = [
-  { n: '02', title: 'Ангельский мир в христианстве', meta: 'богословие · в работе', god: '' },
-];
+const sobrannye = new Map(
+  Object.entries(meta).map(([put, mod]: [string, any]) => [
+    put.split('/').pop()!.replace('.json', ''),
+    mod.default ?? mod,
+  ])
+);
 
-const vsego = gotovye.length + v_rabote.length;
+const temy = plan.temy.map((t) => {
+  const m = sobrannye.get(t.slug);
+  if (t.svoya_stranica) {
+    // «Человек перед Богом»: собран вручную, метрики берём из его страницы
+    return {
+      ...t,
+      gotov: true,
+      href: `/razbory/${t.slug}/`,
+      podpis: `${t.oblast} · 38 источников · ~79 мин`,
+      god: '2026',
+    };
+  }
+  if (!m) return { ...t, gotov: false, podpis: `${t.oblast} · в работе`, god: '' };
+  return {
+    ...t,
+    gotov: true,
+    href: `/razbory/${t.slug}/`,
+    podpis: `${t.oblast} · ${Object.keys(m.istochniki).length} источников · ~${m.min} мин`,
+    god: m.god,
+  };
+});
+
+const gotovyh = temy.filter((t) => t.gotov).length;
 const dva = (n: number) => String(n).padStart(2, '0');
 ---
 
@@ -37,31 +62,31 @@ const dva = (n: number) => String(n).padStart(2, '0');
 
     <section>
       <div class="count" style="margin-bottom:1.2rem">
-        Готово — {dva(gotovye.length)} / {dva(vsego)}
+        Готово — {dva(gotovyh)} / {dva(temy.length)}
       </div>
 
       <ul class="cat">
-        {gotovye.map((r) => (
-          <li>
-            <span class="num">{r.n}</span>
-            <a href={r.href}>
-              <span class="ct">{r.title}</span>
-              <div class="cm">{r.meta}</div>
-            </a>
-            <span class="cn">{r.god}</span>
-          </li>
-        ))}
-
-        {v_rabote.map((r) => (
-          <li style="opacity:.5">
-            <span class="num">{r.n}</span>
-            <div>
-              <span class="ct">{r.title}</span>
-              <div class="cm">{r.meta}</div>
-            </div>
-            <span class="cn">{r.god}</span>
-          </li>
-        ))}
+        {temy.map((t) =>
+          t.gotov ? (
+            <li>
+              <span class="num">{t.n}</span>
+              <a href={t.href}>
+                <span class="ct">{t.title}</span>
+                <div class="cm">{t.podpis}</div>
+              </a>
+              <span class="cn">{t.god}</span>
+            </li>
+          ) : (
+            <li style="opacity:.5">
+              <span class="num">{t.n}</span>
+              <div>
+                <span class="ct">{t.title}</span>
+                <div class="cm">{t.podpis}</div>
+              </div>
+              <span class="cn"></span>
+            </li>
+          )
+        )}
       </ul>
     </section>
   </main>

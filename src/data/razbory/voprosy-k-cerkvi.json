@@ -1,0 +1,108 @@
+{
+ "slug": "voprosy-k-cerkvi",
+ "n": "05",
+ "title": "Вопросы к Христианской Церкви",
+ "lede": "Пятьдесят вопросов с короткими ответами и обзор Основ социальной концепции",
+ "oblast": "богословие",
+ "data": "Июнь 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#chast-1-50-voprosov-i-korotkih-otvetov",
+   "label": "Часть 1. 50 вопросов и коротких ответов"
+  },
+  {
+   "href": "#i-bogoslovskie-i-osnovopolagayuschie-voprosy",
+   "label": "I. Богословские и основополагающие вопросы"
+  },
+  {
+   "href": "#ii-zlo-stradanie-smert-i-trudnye-voprosy-very",
+   "label": "II. Зло, страдание, смерть и трудные вопросы веры"
+  },
+  {
+   "href": "#iii-bogosluzhenie-tainstva-molitva-i-cerkovnyy-kalendar",
+   "label": "III. Богослужение, таинства, молитва и церковный календарь"
+  },
+  {
+   "href": "#iv-hram-prihod-svyaschenniki-i-cerkovnaya-disciplina",
+   "label": "IV. Храм, приход, священники и церковная дисциплина"
+  },
+  {
+   "href": "#v-semya-nravstvennost-i-bioetika",
+   "label": "V. Семья, нравственность и биоэтика"
+  },
+  {
+   "href": "#vi-bytovye-pominalnye-i-administrativnye-voprosy",
+   "label": "VI. Бытовые, поминальные и административные вопросы"
+  },
+  {
+   "href": "#chast-2-obzor-osnov-socialnoy-koncepcii-russkoy-pravoslavnoy-cerkvi",
+   "label": "Часть 2. Обзор «Основ социальной концепции Русской Православной Церкви»"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "Основы социальной концепции Русской Православной Церкви",
+   "used": "",
+   "url": "https://old.mospat.ru/ru/documents/social-concepts/"
+  },
+  "2": {
+   "title": "Патриархия.ru: раздел «Основные документы»",
+   "used": "",
+   "url": "https://www.patriarchia.ru/documents/"
+  },
+  "3": {
+   "title": "Азбука веры: «1115 вопросов священнику»",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/novonachalnym/1115-voprosov-svjashhenniku/"
+  },
+  "4": {
+   "title": "Правмир: «Вопрос-ответ»",
+   "used": "",
+   "url": "https://www.pravmir.ru/vopros-otvet/"
+  },
+  "5": {
+   "title": "Фома: материалы о страдании, смерти и трудных вопросах веры",
+   "used": "",
+   "url": "https://foma.ru/"
+  },
+  "6": {
+   "title": "Orthodox Church in America: Questions & Answers and The Orthodox Faith",
+   "used": "",
+   "url": "https://www.oca.org/"
+  },
+  "7": {
+   "title": "Greek Orthodox Archdiocese of America: sacraments and pastoral resources",
+   "used": "",
+   "url": "https://www.goarch.org/"
+  },
+  "8": {
+   "title": "Catechism of the Catholic Church / Vatican",
+   "used": "",
+   "url": "https://www.vatican.va/archive/ENG0015/_INDEX.HTM"
+  },
+  "9": {
+   "title": "Church of England: life events and worship resources",
+   "used": "",
+   "url": "https://www.churchofengland.org/"
+  },
+  "10": {
+   "title": "LCMS: Frequently Asked Questions",
+   "used": "",
+   "url": "https://www.lcms.org/about/beliefs/faqs"
+  },
+  "11": {
+   "title": "Российский Союз ЕХБ: вероучительные и социальные материалы",
+   "used": "",
+   "url": "https://baptist.org.ru/"
+  }
+ },
+ "slov": 2420,
+ "min": 13,
+ "nsrc": 11,
+ "nref": 0
+}

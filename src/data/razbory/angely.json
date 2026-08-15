@@ -1,0 +1,220 @@
+{
+ "slug": "angely",
+ "n": "04",
+ "title": "Ангельский мир в христианстве",
+ "lede": "Девять чинов, служение, падшие ангелы и конфессиональные различия",
+ "oblast": "богословие",
+ "data": "Июнь 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#kratkiy-vyvod",
+   "label": "Краткий вывод"
+  },
+  {
+   "href": "#urovni-dostovernosti",
+   "label": "Уровни достоверности"
+  },
+  {
+   "href": "#kto-takie-angely",
+   "label": "Кто такие ангелы"
+  },
+  {
+   "href": "#bibleyskie-osnovaniya",
+   "label": "Библейские основания"
+  },
+  {
+   "href": "#tri-triady-i-devyat-chinov",
+   "label": "Три триады и девять чинов"
+  },
+  {
+   "href": "#sluzhenie-kazhdogo-china",
+   "label": "Служение каждого чина"
+  },
+  {
+   "href": "#obschee-sluzhenie-angelov",
+   "label": "Общее служение ангелов"
+  },
+  {
+   "href": "#imenovannye-angely",
+   "label": "Именованные ангелы"
+  },
+  {
+   "href": "#angel-hranitel",
+   "label": "Ангел-хранитель"
+  },
+  {
+   "href": "#padshie-angely",
+   "label": "Падшие ангелы"
+  },
+  {
+   "href": "#konfessionalnye-razlichiya",
+   "label": "Конфессиональные различия"
+  },
+  {
+   "href": "#ikonografiya-angelov",
+   "label": "Иконография ангелов"
+  },
+  {
+   "href": "#spornye-bogoslovskie-voprosy",
+   "label": "Спорные богословские вопросы"
+  },
+  {
+   "href": "#rasprostranennye-oshibki",
+   "label": "Распространённые ошибки"
+  },
+  {
+   "href": "#kratkiy-slovar",
+   "label": "Краткий словарь"
+  },
+  {
+   "href": "#itogovye-tezisy",
+   "label": "Итоговые тезисы"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "Исаия 6 — серафимы и трисвятое славословие",
+   "used": "",
+   "url": "https://www.bibleserver.com/RST.NLB/%D0%98%D1%81%D0%B0%D0%B8%D0%B86"
+  },
+  "2": {
+   "title": "Иезекииль 10 — херувимы и престольное видение",
+   "used": "",
+   "url": "https://bible.by/elzm/26/10/"
+  },
+  "3": {
+   "title": "Колосянам 1:16 — престолы, господства, начальства и власти",
+   "used": "",
+   "url": "https://bible.by/verse/58/1/16/"
+  },
+  "4": {
+   "title": "Ефесянам 1:21 — начальства, власти, силы и господства",
+   "used": "",
+   "url": "https://bible.by/verse/56/1/21/"
+  },
+  "5": {
+   "title": "Евреям 1:14 — ангелы как служебные духи",
+   "used": "",
+   "url": "https://www.biblegateway.com/passage/?search=%D0%9A+%D0%95%D0%B2%D1%80%D0%B5%D1%8F%D0%BC+1%3A14&version=RUSV"
+  },
+  "6": {
+   "title": "Лука 1:19 — служение Гавриила",
+   "used": "",
+   "url": "https://www.bible.com/ru/bible/compare/LUK.1.19"
+  },
+  "7": {
+   "title": "Иуда 1:9 — Михаил Архангел",
+   "used": "",
+   "url": "https://www.bible.com/ru/bible/compare/JUD.1.9"
+  },
+  "8": {
+   "title": "Товит 12:15 — Рафаил и семь предстоящих ангелов",
+   "used": "",
+   "url": "https://www.bible-center.ru/ru/bibletext/synnew_ru/tob/12%3A15"
+  },
+  "9": {
+   "title": "Псевдо-Дионисий Ареопагит, «О небесной иерархии»",
+   "used": "",
+   "url": "https://www.ccel.org/ccel/dionysius/celestial.vii.html"
+  },
+  "10": {
+   "title": "Фома Аквинский, Summa Theologiae I, q.108",
+   "used": "",
+   "url": "https://www.newadvent.org/summa/1108.htm"
+  },
+  "11": {
+   "title": "Ириней Лионский, «Против ересей», II.2",
+   "used": "",
+   "url": "https://www.newadvent.org/fathers/0103202.htm"
+  },
+  "12": {
+   "title": "Ориген, «О началах», книга II",
+   "used": "",
+   "url": "https://www.newadvent.org/fathers/04122.htm"
+  },
+  "13": {
+   "title": "Августин, «О граде Божием», книга XI",
+   "used": "",
+   "url": "https://www.newadvent.org/fathers/120111.htm"
+  },
+  "14": {
+   "title": "РПЦ: Собор Архистратига Михаила и прочих Небесных Сил",
+   "used": "",
+   "url": "https://www.patriarchia.ru/db/text/58514.html"
+  },
+  "15": {
+   "title": "Orthodox Church in America: Angels and Evil Spirits",
+   "used": "",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/doctrine-scripture/the-symbol-of-faith/angels-and-evil-spirits"
+  },
+  "16": {
+   "title": "Катехизис Католической Церкви, §§ 328–336",
+   "used": "",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_one/article_1/paragraph_5_heaven_and_earth.html"
+  },
+  "17": {
+   "title": "Ватикан: Directory on Popular Piety and the Liturgy",
+   "used": "",
+   "url": "https://www.vatican.va/roman_curia/congregations/ccdds/documents/rc_con_ccdds_doc_20020513_vers-direttorio_en.html"
+  },
+  "18": {
+   "title": "Augsburg Confession, Article XXI",
+   "used": "",
+   "url": "https://thebookofconcord.org/augsburg-confession/article-xxi/"
+  },
+  "19": {
+   "title": "Apology of the Augsburg Confession, Article XXI",
+   "used": "",
+   "url": "https://thebookofconcord.org/apology-of-the-augsburg-confession/article-xxi/"
+  },
+  "20": {
+   "title": "Belgic Confession, Article 12",
+   "used": "",
+   "url": "https://www.crcna.org/welcome/beliefs/confessions/belgic-confession"
+  },
+  "21": {
+   "title": "Westminster Larger Catechism, Q.16",
+   "used": "",
+   "url": "https://opc.org/lc.html"
+  },
+  "22": {
+   "title": "Church of England, Articles of Religion",
+   "used": "",
+   "url": "https://www.churchofengland.org/prayer-and-worship/worship-texts-and-resources/book-common-prayer/articles-religion"
+  },
+  "23": {
+   "title": "Bible Odyssey: Angels in the Hebrew Bible",
+   "used": "",
+   "url": "https://www.bibleodyssey.org/articles/angels-in-the-hebrew-bible/"
+  },
+  "24": {
+   "title": "Cambridge Elements: Angels and Monotheism",
+   "used": "",
+   "url": "https://www.cambridge.org/core/elements/angels-and-monotheism/8ED69C30848A882F13E75DCD3978A5F2"
+  },
+  "25": {
+   "title": "Randall C. Gleason, Angels and the Eschatology of Hebrews 1–2",
+   "used": "",
+   "url": "https://www.marquette.edu/maqom/GleasonAngels.pdf"
+  },
+  "26": {
+   "title": "Stephen L. White, Angel of the LORD: Messenger or Euphemism?",
+   "used": "",
+   "url": "https://www.tyndalebulletin.org/article/30318-angel-of-the-lord-messenger-or-euphemism.pdf"
+  },
+  "27": {
+   "title": "Loren T. Stuckenbruck, Angel Veneration and Christology",
+   "used": "",
+   "url": "https://cdn.mohrsiebeck.com/7a%2C3e03ccb708479b8fee6ca87a70a06f.pdf"
+  }
+ },
+ "slov": 2555,
+ "min": 14,
+ "nsrc": 27,
+ "nref": 0
+}

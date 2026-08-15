@@ -1,0 +1,153 @@
+{
+ "slug": "o-bytii",
+ "n": "06",
+ "title": "О Бытии",
+ "lede": "Творение, грехопадение и мессианская линия первой книги Писания",
+ "oblast": "богословие",
+ "data": "Июнь 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#glavnyy-tezis",
+   "label": "Главный тезис"
+  },
+  {
+   "href": "#zadacha-doklada-i-sposob-chteniya-bytiya",
+   "label": "1. Задача доклада и способ чтения Бытия"
+  },
+  {
+   "href": "#sotvorenie-mira-bog-logos-i-duh",
+   "label": "2. Сотворение мира: Бог, Логос и Дух"
+  },
+  {
+   "href": "#haos-tma-nad-bezdnoy",
+   "label": "3. Хаос: тьма над бездной"
+  },
+  {
+   "href": "#angely-dennica-i-besy",
+   "label": "4. Ангелы, Денница и бесы"
+  },
+  {
+   "href": "#chelovek-obraz-bozhiy-ray-i-zapoved",
+   "label": "5. Человек: образ Божий, рай и заповедь"
+  },
+  {
+   "href": "#grehopadenie-zmey-lozh-smert",
+   "label": "6. Грехопадение: змей, ложь, смерть"
+  },
+  {
+   "href": "#pervoe-evangelie-i-messianskaya-liniya-bytiya",
+   "label": "7. Первое Евангелие и мессианская линия Бытия"
+  },
+  {
+   "href": "#hristos-v-kontekste-bytiya",
+   "label": "8. Христос в контексте Бытия"
+  },
+  {
+   "href": "#ray-ad-lono-avraamovo-i-carstvie-nebesnoe",
+   "label": "9. Рай, ад, Лоно Авраамово и Царствие Небесное"
+  },
+  {
+   "href": "#konec-mira-ne-unichtozhenie-a-preobrazhenie",
+   "label": "10. Конец мира: не уничтожение, а преображение"
+  },
+  {
+   "href": "#gotovyy-plan-ustnogo-doklada",
+   "label": "12. Готовый план устного доклада"
+  },
+  {
+   "href": "#itogovyy-vyvod",
+   "label": "13. Итоговый вывод"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "[F1] Загруженный материал: Хаос и Бог в христианской концепции",
+   "used": "",
+   "url": ""
+  },
+  "2": {
+   "title": "[F2] Загруженный материал: Ад, Рай и Царствие Небесное",
+   "used": "",
+   "url": ""
+  },
+  "3": {
+   "title": "Святитель Василий Великий. Беседы на Шестоднев",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Vasilij_Velikij/besedy_na_shestodnev/"
+  },
+  "4": {
+   "title": "Святитель Григорий Нисский. Защитительное слово о Шестодневе",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Grigorij_Nisskij/o_shestodneve/"
+  },
+  "5": {
+   "title": "Преподобный Иоанн Дамаскин. Точное изложение православной веры",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Ioann_Damaskin/tochnoe-izlozhenie-pravoslavnoj-very/"
+  },
+  "6": {
+   "title": "Святитель Афанасий Великий. О воплощении Бога Слова",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Afanasij_Velikij/o_voploshchenii/"
+  },
+  "7": {
+   "title": "Святитель Ириней Лионский. Против ересей",
+   "used": "",
+   "url": "https://www.newadvent.org/fathers/0103.htm"
+  },
+  "8": {
+   "title": "Митрополит Иларион (Алфеев). Таинство веры: введение в православное догматическое богословие",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Ilarion_Alfeev/tainstvo-very-vvedenie-v-pravoslavnoe-dogmaticheskoe-bogoslovie/"
+  },
+  "9": {
+   "title": "Святитель Филарет Московский. Пространный христианский катехизис Православной Кафолической Восточной Церкви",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Filaret_Moskovskij/prostrannyj-hristianskij-katehizis-pravoslavnoj-kafolicheskoj-vostochnoj-tserkvi/"
+  },
+  "10": {
+   "title": "Orthodox Church in America. The Orthodox Faith: Heaven and Hell",
+   "used": "",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/spirituality/the-kingdom-of-heaven/heaven-and-hell"
+  },
+  "11": {
+   "title": "Orthodox Church in America. The Orthodox Faith: The Kingdom of Heaven",
+   "used": "",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/spirituality/the-kingdom-of-heaven/the-kingdom-of-heaven"
+  },
+  "12": {
+   "title": "Orthodox Church in America. The Orthodox Faith: The Final Judgment",
+   "used": "",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/spirituality/the-kingdom-of-heaven/the-final-judgment"
+  },
+  "13": {
+   "title": "Greek Orthodox Archdiocese of America. Great and Holy Saturday",
+   "used": "",
+   "url": "https://www.goarch.org/holysaturday-learn"
+  },
+  "14": {
+   "title": "Святитель Григорий Нисский. О душе и воскресении",
+   "used": "",
+   "url": "https://www.newadvent.org/fathers/2915.htm"
+  },
+  "15": {
+   "title": "Блаженный Августин. О граде Божием, книга XXII",
+   "used": "",
+   "url": "https://www.newadvent.org/fathers/120122.htm"
+  },
+  "16": {
+   "title": "Протопресвитер Михаил Помазанский. Православное догматическое богословие",
+   "used": "",
+   "url": "https://www.intratext.com/IXT/ENG0824/_INDEX.HTM"
+  }
+ },
+ "slov": 3075,
+ "min": 17,
+ "nsrc": 16,
+ "nref": 60
+}

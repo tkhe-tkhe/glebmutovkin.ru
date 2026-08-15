@@ -1,0 +1,140 @@
+{
+ "slug": "sem-vselenskih-soborov",
+ "n": "10",
+ "title": "Семь Вселенских Соборов",
+ "lede": "Даты, состав, полемика и принятые определения — по соборным актам и академическим изданиям",
+ "oblast": "история Церкви",
+ "data": "Август 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#svodnaya-karta-soborov",
+   "label": "Сводная карта Соборов"
+  },
+  {
+   "href": "#pervyy-nikeyskiy-sobor-325",
+   "label": "1. Первый Никейский Собор — 325"
+  },
+  {
+   "href": "#pervyy-konstantinopolskiy-sobor-381",
+   "label": "2. Первый Константинопольский Собор — 381"
+  },
+  {
+   "href": "#efesskiy-sobor-431",
+   "label": "3. Эфесский Собор — 431"
+  },
+  {
+   "href": "#halkidonskiy-sobor-451",
+   "label": "4. Халкидонский Собор — 451"
+  },
+  {
+   "href": "#vtoroy-konstantinopolskiy-sobor-553",
+   "label": "5. Второй Константинопольский Собор — 553"
+  },
+  {
+   "href": "#tretiy-konstantinopolskiy-sobor-680-681",
+   "label": "6. Третий Константинопольский Собор — 680–681"
+  },
+  {
+   "href": "#vtoroy-nikeyskiy-sobor-787",
+   "label": "7. Второй Никейский Собор — 787"
+  },
+  {
+   "href": "#glavnye-napravleniya-i-ih-otlichie-ot-sobornoy-normy",
+   "label": "Главные направления и их отличие от соборной нормы"
+  },
+  {
+   "href": "#smyslovaya-formula-kazhdogo-sobora",
+   "label": "Смысловая формула каждого Собора"
+  },
+  {
+   "href": "#itogovye-tezisy",
+   "label": "Итоговые тезисы"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "Philip Schaff / Henry R. Percival, Nicene and Post-Nicene Fathers , Series II, Vol. 14: The Seven Ecumenical Councils . CCEL",
+   "used": "",
+   "url": ""
+  },
+  "2": {
+   "title": "Norman P. Tanner, Decrees of the Ecumenical Councils . Georgetown University Press / Sheed & Ward",
+   "used": "",
+   "url": ""
+  },
+  "3": {
+   "title": "Papal Encyclicals Online, texts of the ecumenical councils",
+   "used": "",
+   "url": ""
+  },
+  "4": {
+   "title": "New Advent, Church Fathers: First Council of Nicaea",
+   "used": "",
+   "url": ""
+  },
+  "5": {
+   "title": "New Advent, Council of Ephesus",
+   "used": "",
+   "url": ""
+  },
+  "6": {
+   "title": "New Advent, Council of Chalcedon",
+   "used": "",
+   "url": ""
+  },
+  "7": {
+   "title": "New Advent, Second Council of Constantinople",
+   "used": "",
+   "url": ""
+  },
+  "8": {
+   "title": "New Advent, Third Council of Constantinople",
+   "used": "",
+   "url": ""
+  },
+  "9": {
+   "title": "New Advent, Second Council of Nicaea",
+   "used": "",
+   "url": ""
+  },
+  "10": {
+   "title": "Richard Price and Thomas Graumann, The Council of Ephesus of 431: Documents and Proceedings . Liverpool University Press",
+   "used": "",
+   "url": ""
+  },
+  "11": {
+   "title": "Richard Price and Michael Gaddis, The Acts of the Council of Chalcedon . Liverpool University Press",
+   "used": "",
+   "url": ""
+  },
+  "12": {
+   "title": "Richard Price, The Acts of the Council of Constantinople of 553 . Liverpool University Press",
+   "used": "",
+   "url": ""
+  },
+  "13": {
+   "title": "Richard Price, The Acts of the Second Council of Nicaea (787) . Liverpool University Press",
+   "used": "",
+   "url": ""
+  },
+  "14": {
+   "title": "Encyclopaedia Britannica articles on Nicaea, Constantinople, Ephesus, Chalcedon, Arianism, Nestorianism, Monophysitism, Miaphysitism, Monothelitism, Iconoclasm",
+   "used": "",
+   "url": ""
+  },
+  "15": {
+   "title": "Leo Donald Davis, The First Seven Ecumenical Councils (325–787): Their History and Theology",
+   "used": "",
+   "url": ""
+  }
+ },
+ "slov": 3775,
+ "min": 21,
+ "nsrc": 15,
+ "nref": 0
+}

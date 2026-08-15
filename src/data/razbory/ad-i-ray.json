@@ -1,0 +1,181 @@
+{
+ "slug": "ad-i-ray",
+ "n": "03",
+ "title": "Ад, Рай и Царствие Небесное",
+ "lede": "Православное и католическое понимание: где находятся, чем различаются и что будет после конца света",
+ "oblast": "богословие",
+ "data": "Июнь 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#ispolnitelnoe-rezyume",
+   "label": "Исполнительное резюме"
+  },
+  {
+   "href": "#bazovye-terminy",
+   "label": "Базовые термины"
+  },
+  {
+   "href": "#istochniki-i-metodologiya",
+   "label": "1. Источники и методология"
+  },
+  {
+   "href": "#bibleyskiy-fundament-pochemu-voznikaet-putanica",
+   "label": "2. Библейский фундамент: почему возникает путаница"
+  },
+  {
+   "href": "#gde-nahoditsya-ad-po-duhovnoy-i-bogoslovskoy-literature",
+   "label": "3. Где находится Ад по духовной и богословской литературе"
+  },
+  {
+   "href": "#gde-nahoditsya-ray",
+   "label": "4. Где находится Рай"
+  },
+  {
+   "href": "#ray-nebo-i-carstvie-nebesnoe-razlichie-ponyatiy",
+   "label": "5. Рай, Небо и Царствие Небесное: различие понятий"
+  },
+  {
+   "href": "#chto-proishodit-s-dushoy-posle-smerti-do-strashnogo-suda",
+   "label": "6. Что происходит с душой после смерти до Страшного суда"
+  },
+  {
+   "href": "#posle-konca-sveta-voskresenie-sud-novaya-tvar",
+   "label": "7. После конца света: воскресение, суд, новая тварь"
+  },
+  {
+   "href": "#chto-budet-s-adom-posle-konca-sveta",
+   "label": "8. Что будет с Адом после конца света"
+  },
+  {
+   "href": "#istoricheskoe-razvitie-ucheniya",
+   "label": "9. Историческое развитие учения"
+  },
+  {
+   "href": "#pravoslavie-i-katolicizm-shodstva-i-razlichiya",
+   "label": "10. Православие и католицизм: сходства и различия"
+  },
+  {
+   "href": "#spornye-voprosy-i-predely-dopustimyh-tolkovaniy",
+   "label": "11. Спорные вопросы и пределы допустимых толкований"
+  },
+  {
+   "href": "#itogovye-vyvody",
+   "label": "12. Итоговые выводы"
+  },
+  {
+   "href": "#klyuchevye-citaty-i-smysl",
+   "label": "Ключевые цитаты и смысл"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "Катехизис Католической Церкви: II. Heaven vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_three/article_12/ii_heaven.html"
+  },
+  "2": {
+   "title": "Катехизис Католической Церкви: III. The Final Purification, or Purgatory vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_three/article_12/iii_the_final_purification%2C_or_purgatory.html"
+  },
+  "3": {
+   "title": "Катехизис Католической Церкви: IV. Hell vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_three/article_12/iv_hell.html"
+  },
+  "4": {
+   "title": "Катехизис Католической Церкви: V. The Last Judgment vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_three/article_12/v_the_last_judgment.html"
+  },
+  "5": {
+   "title": "Benedictus Deus, Benedict XII, 1336 vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/content/benedictus-xii/la/documents/constitutio-benedictus-deus-29-ian-1336.html"
+  },
+  "6": {
+   "title": "Lumen gentium, Vatican II vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/archive/hist_councils/ii_vatican_council/documents/vat-ii_const_19641121_lumen-gentium_en.html"
+  },
+  "7": {
+   "title": "Benedict XVI, Spe salvi, 2007 vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/content/benedict-xvi/en/encyclicals/documents/hf_ben-xvi_enc_20071130_spe-salvi.html"
+  },
+  "8": {
+   "title": "Orthodox Church in America: Heaven and Hell oca.org",
+   "used": "",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/spirituality/the-kingdom-of-heaven/heaven-and-hell"
+  },
+  "9": {
+   "title": "Orthodox Church in America: The Kingdom of Heaven oca.org",
+   "used": "",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/spirituality/the-kingdom-of-heaven/the-kingdom-of-heaven"
+  },
+  "10": {
+   "title": "Orthodox Church in America: The Final Judgment oca.org",
+   "used": "",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/spirituality/the-kingdom-of-heaven/the-final-judgment"
+  },
+  "11": {
+   "title": "Greek Orthodox Archdiocese: Great and Holy Saturday goarch.org",
+   "used": "",
+   "url": "https://www.goarch.org/holysaturday-learn"
+  },
+  "12": {
+   "title": "Irenaeus, Against Heresies, V.31 newadvent.org",
+   "used": "",
+   "url": "https://www.newadvent.org/fathers/0103531.htm"
+  },
+  "13": {
+   "title": "Gregory of Nyssa, On the Soul and the Resurrection newadvent.org",
+   "used": "",
+   "url": "https://www.newadvent.org/fathers/2915.htm"
+  },
+  "14": {
+   "title": "Augustine, City of God, Book XXI newadvent.org",
+   "used": "",
+   "url": "https://www.newadvent.org/fathers/120121.htm"
+  },
+  "15": {
+   "title": "Synod of Jerusalem and Confession of Dositheus, 1672 ccel.org",
+   "used": "",
+   "url": "https://www.ccel.org/ccel/schaff/creeds1.v.vii.html"
+  },
+  "16": {
+   "title": "Philaret of Moscow, Longer Catechism livingorthodoxfaith.blogspot.com",
+   "used": "",
+   "url": "https://livingorthodoxfaith.blogspot.com/2009/11/longer-catechism-part-i-351-385.html"
+  },
+  "17": {
+   "title": "International Theological Commission: Hope of Salvation for Infants Who Die Without Being Baptised vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/roman_curia/congregations/cfaith/cti_documents/rc_con_cfaith_doc_20070419_un-baptised-infants_en.html"
+  },
+  "18": {
+   "title": "У. Фэйт: «Читая карту небес и ада в русском народном православии» cyberleninka.ru",
+   "used": "",
+   "url": "https://cyberleninka.ru/article/n/chitaya-kartu-nebes-i-ada-v-russkom-narodnom-pravoslavii-o-prigodnosti-kontseptov-dvoeveriya-i-binarizma"
+  },
+  "19": {
+   "title": "Oxford Handbook of Eschatology: Universalism academic.oup.com",
+   "used": "",
+   "url": "https://academic.oup.com/edited-volume/34387/chapter-abstract/291614301"
+  },
+  "20": {
+   "title": "Bogoslov.ru: «Новый Завет в странном переводе Д. Б. Харта» bogoslov.ru",
+   "used": "",
+   "url": "https://bogoslov.ru/materials/article/novii-zavet-v-strannom-perevode-db-kharta"
+  }
+ },
+ "slov": 3188,
+ "min": 18,
+ "nsrc": 20,
+ "nref": 72
+}

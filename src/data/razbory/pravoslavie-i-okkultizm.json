@@ -1,0 +1,149 @@
+{
+ "slug": "pravoslavie-i-okkultizm",
+ "n": "09",
+ "title": "Православие, астрология и оккультизм",
+ "lede": "Писание, святоотеческая критика, каноны и документы Русской Православной Церкви",
+ "oblast": "богословие",
+ "data": "Июнь 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#kratkiy-vyvod",
+   "label": "Краткий вывод"
+  },
+  {
+   "href": "#terminy-i-granicy-temy",
+   "label": "1. Термины и границы темы"
+  },
+  {
+   "href": "#svyaschennoe-pisanie-zapret-gadaniya-magii-i-zvezdochetstva",
+   "label": "2. Священное Писание: запрет гадания, магии и звездочетства"
+  },
+  {
+   "href": "#rozhdestvo-hristovo-i-vifleemskaya-zvezda",
+   "label": "3. Рождество Христово и Вифлеемская звезда"
+  },
+  {
+   "href": "#svyatootecheskaya-kritika-astrologii-i-sudby",
+   "label": "4. Святоотеческая критика астрологии и судьбы"
+  },
+  {
+   "href": "#kanonicheskaya-tradiciya-cerkvi",
+   "label": "5. Каноническая традиция Церкви"
+  },
+  {
+   "href": "#oficialnye-dokumenty-russkoy-pravoslavnoy-cerkvi",
+   "label": "6. Официальные документы Русской Православной Церкви"
+  },
+  {
+   "href": "#pravoslavie-i-hristianskaya-cerkov-v-celom",
+   "label": "7. Православие и христианская Церковь в целом"
+  },
+  {
+   "href": "#pochemu-astrologiya-bogoslovski-nesovmestima-s-pravoslaviem",
+   "label": "8. Почему астрология богословски несовместима с Православием"
+  },
+  {
+   "href": "#tipovye-vozrazheniya-i-otvety",
+   "label": "9. Типовые возражения и ответы"
+  },
+  {
+   "href": "#prakticheskie-rekomendacii-dlya-veruyuschego",
+   "label": "10. Практические рекомендации для верующего"
+  },
+  {
+   "href": "#itogovoe-bogoslovskoe-zaklyuchenie",
+   "label": "11. Итоговое богословское заключение"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "Священное Писание. Второзаконие 18:10–12 . Запрет прорицания, гаданий, ворожбы, чародейства, волшебства и вопрошания мертвых",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Deut.18%3A10-12="
+  },
+  "2": {
+   "title": "Священное Писание. Исаия 47:13–14 . Обличение вавилонских звездочетов и наблюдателей небес",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Is.47%3A13-14="
+  },
+  "3": {
+   "title": "Священное Писание. Числа 24:17 . Пророчество Валаама: «восходит звезда от Иакова»",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Num.24%3A17="
+  },
+  "4": {
+   "title": "Священное Писание. Матфей 2 . Евангельский рассказ о волхвах и Вифлеемской звезде",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Mt.2=&g~cs="
+  },
+  "5": {
+   "title": "Священное Писание. Деяния 13; Галатам 5; Откровение 21–22 . Новозаветные места о волхвовании, чародействе и противлении апостольской проповеди",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/"
+  },
+  "6": {
+   "title": "Свт. Иоанн Златоуст. Беседы на Евангелие от Матфея . Толкование Вифлеемской звезды как чудесного знамения, а не обычной звезды",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Ioann_Zlatoust/besedy-na-evangelie-ot-matfeja/6"
+  },
+  "7": {
+   "title": "Прп. Ефрем Сирин. Слово на Рождество Господне . Рождественское толкование звезды и пророчеств о Христе",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Efrem_Sirin/tvorenia/131"
+  },
+  "8": {
+   "title": "Свт. Григорий Нисский. Против учения о судьбе . Антифаталистическая критика астрологического детерминизма",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Grigorij_Nisskij/protiv_ucheniya_o_sudbe/"
+  },
+  "9": {
+   "title": "Православная энциклопедия. Астрология . Историческая и богословская статья об астрологии и ее церковной оценке",
+   "used": "",
+   "url": "https://www.pravenc.ru/text/76752.html"
+  },
+  "10": {
+   "title": "Православная энциклопедия. Гадание . Справочная статья о гадательных практиках и их церковной оценке",
+   "used": "",
+   "url": "https://www.pravenc.ru/text/161397.html"
+  },
+  "11": {
+   "title": "Блж. Феофилакт Болгарский. Толкование на Евангелие от Матфея . Толкование прихода волхвов и знака, понятного им",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Feofilakt_Bolgarskij/tolkovanie-na-evangelie-ot-matfeja/2"
+  },
+  "12": {
+   "title": "РПЦ. Определение Архиерейского Собора 1994 года . «О псевдохристианских сектах, неоязычестве и оккультизме»",
+   "used": "",
+   "url": "https://mospat.ru/ru/archive/86585-opredelenie-o-psevdokhristianskikh-sektakh-neoyazychestve-i-okkultizme/"
+  },
+  "13": {
+   "title": "РПЦ. Основы социальной концепции . Раздел XI.5: оккультные методики воздействия на психику названы категорически неприемлемыми для Православия",
+   "used": "",
+   "url": "https://mospat.ru/ru/news/85391/"
+  },
+  "14": {
+   "title": "Catechism of the Catholic Church, §§2115–2117 . Католическая позиция о divination, astrology, horoscopes, magic and spiritism",
+   "used": "",
+   "url": "https://www.vatican.va/content/catechism/en/part_three/section_two/chapter_one/article_1/iii_you_shall_have_no_other_gods_before_me.html"
+  },
+  "15": {
+   "title": "Westminster Larger Catechism . Классическая реформатская оценка суеверия, обращения к скрытым силам и приписывания судьбе власти",
+   "used": "",
+   "url": "https://opc.org/lc.html"
+  },
+  "16": {
+   "title": "The Lutheran Church-Missouri Synod. LCMS Views . Официальная лютеранская справка о horoscopes, astrology and occult",
+   "used": "",
+   "url": "https://www.lcms.org/about/beliefs/faqs/lcms-views"
+  }
+ },
+ "slov": 3404,
+ "min": 19,
+ "nsrc": 16,
+ "nref": 87
+}

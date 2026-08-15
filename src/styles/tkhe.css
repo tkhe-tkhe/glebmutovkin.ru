@@ -40,6 +40,24 @@
   --gap:4rem;            /* воздух между блоками */
 }
 
+/* --------------------------------------------------------------------------
+   1a. Наскальные фигуры на полях
+   Полотно держит 62rem по центру, а в широком окне по краям остаётся воздух.
+   Туда — бык, олень, ладонь, охотник, солнце, птица, рыба, спираль: контур
+   одной линией, без заливки. Восемь фигур на 3600 пикселей, то есть редко.
+   Под текст не заходят намеренно: любой рисунок под строкой спорит с буквой,
+   а разбор читают час с лишним. Ниже 1280px полей нет — фигуры выключаются.
+   -------------------------------------------------------------------------- */
+body{position:relative}
+body::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:url(/naskalnye.svg);
+  background-size:100% auto;background-position:center top;background-repeat:repeat-y;
+  opacity:.16;
+}
+@media(max-width:1279px){body::before{display:none}}
+@media print{body::before{display:none}}
+
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 img,video,iframe{max-width:100%;height:auto}
@@ -311,7 +329,9 @@ article.razbor h2{margin:3.4rem 0 1rem;scroll-margin-top:2rem}
 article.razbor h3{margin:2.4rem 0 .7rem;scroll-margin-top:2rem}
 
 /* номер раздела перед заголовком */
-.numbered h2::before{
+/* только там, где номер задан: у «Исполнительного резюме» и «Источников»
+   его нет, и без [data-n] перед ними встала бы голая точка */
+.numbered h2[data-n]::before{
   content:attr(data-n) ".";
   font-family:var(--mono);font-size:.6em;font-weight:400;
   color:var(--fg-3);margin-right:.9em;letter-spacing:.05em;
@@ -335,6 +355,15 @@ article.razbor h3{margin:2.4rem 0 .7rem;scroll-margin-top:2rem}
 }
 .note p{margin:0 0 .7rem}
 .note p:last-child{margin:0}
+
+/* цитата: та же левая линия, что у выноски, но текст крупнее — это голос
+   источника, а не примечание к нему */
+article.razbor blockquote{
+  margin:2rem 0;max-width:var(--measure);
+  padding-left:1.1rem;border-left:1px solid var(--fg-3);
+  font-size:1rem;line-height:1.7;color:var(--fg-2);
+}
+article.razbor blockquote p:last-child{margin:0}
 
 /* таблицы */
 .tbl{margin:1.8rem 0 2.2rem;max-width:var(--measure-wide);overflow-x:auto}

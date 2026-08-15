@@ -1,59 +1,75 @@
 ---
-// Разбор «Человек перед Богом».
+// Общий каркас разбора.
 //
-// Тело разбора лежит отдельным HTML-файлом и подставляется как есть.
-// Причина: в нём 176 сносок-кнопок, 46 карточек терминов и 116 перекрёстных
-// ссылок на определения. В Markdown это не выражается без своего слоя
-// компонентов, а текст уже вычитан — лишний прогон через конвертер только
-// добавит риска. Оформление при этом полностью новое: классы переписаны
-// под дизайн-систему.
+// Один шаблон на все темы кроме «Человека перед Богом»: тот собран вручную,
+// у него 46 карточек терминов и 116 возвратов к определениям — механика,
+// которая нужна на 14 000 словах и мешает на 2500. Остальные разборы
+// короткие, оснастка у них облегчённая: оглавление, полоса прочитанного,
+// сноски со всплывающими источниками, список источников внизу.
+//
+// Тело лежит отдельным HTML-файлом и подставляется через ?raw — в Markdown
+// сноски-кнопки и таблицы не выражаются без своего слоя компонентов.
 
-import Base from '../../layouts/Base.astro';
-import article from '../../content/razbory/chelovek-pered-bogom.html?raw';
-import toc from '../../data/razbor-toc.json';
-import istochniki from '../../data/istochniki.json';
-import plan from '../../data/razbory-plan.json';
+import Base from './Base.astro';
 
-const title = 'Человек перед Богом: тело, душа, дух и путь исцеления';
-const lede =
-  'Православная антропология: нравственный закон, совесть, грех, страсти, заповеди и обожение';
+interface Props {
+  meta: {
+    title: string;
+    lede: string;
+    oblast: string;
+    data: string;
+    slov: number;
+    min: number;
+    n: string;
+    toc: { href: string; label: string }[];
+    istochniki: Record<string, { title: string; used?: string; url?: string }>;
+  };
+  body: string;
+  vsego: number;
+}
+
+const { meta, body, vsego } = Astro.props;
+const nsrc = Object.keys(meta.istochniki).length;
+const dva = (n: number) => String(n).padStart(2, '0');
 ---
 
-<Base title={`${title} — Глеб Мутовкин`} description={lede}>
-  <!-- Сколько текста пройдено. Единственный указатель «где я» на 79 минутах чтения. -->
+<Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede}>
+  <!-- Сколько текста пройдено -->
   <div class="progress" id="pb"></div>
 
   <main class="page numbered">
     <div style="max-width:44rem;margin-bottom:3rem">
-      <div class="count" style="margin-bottom:1.1rem">Разбор — 01 / {String(plan.temy.length).padStart(2, '0')}</div>
-      <h1>{title}</h1>
-      <p class="lede" style="margin:1.2rem 0 1rem">{lede}</p>
-      <p class="meta">Апрель 2026 · 14 209 слов · ~79 мин чтения</p>
+      <div class="count" style="margin-bottom:1.1rem">Разбор — {meta.n} / {dva(vsego)}</div>
+      <h1>{meta.title}</h1>
+      <p class="lede" style="margin:1.2rem 0 1rem">{meta.lede}</p>
+      <p class="meta">
+        {meta.data} · {meta.slov.toLocaleString('ru')} слов · ~{meta.min} мин чтения
+      </p>
 
       <div class="origin">
         <b>Как читать этот разбор</b>
         <p>
-          Это свод по теме, собранный из 38 проверенных источников. Богословские положения
-          приводятся по источникам и не являются авторской позицией. Отбор источников,
-          сверка и структура — мои.
+          Это свод по теме, собранный из {nsrc} проверенных источников. Богословские
+          положения приводятся по источникам и не являются авторской позицией.
+          Отбор источников, сверка и структура — мои.
         </p>
-        <p>Область: богословие</p>
+        <p>Область: {meta.oblast}</p>
       </div>
     </div>
 
     <div class="reading">
       <aside class="toc">
         <b>Содержание</b>
-        {toc.map((t) => <a href={t.href}>{t.label}</a>)}
+        {meta.toc.map((t) => <a href={t.href}>{t.label}</a>)}
       </aside>
 
       <article class="razbor" data-pagefind-body>
         <details class="toc-m">
           <summary>Содержание</summary>
-          {toc.map((t) => <a href={t.href}>{t.label}</a>)}
+          {meta.toc.map((t) => <a href={t.href}>{t.label}</a>)}
         </details>
 
-        <Fragment set:html={article} />
+        <Fragment set:html={body} />
       </article>
     </div>
   </main>
@@ -67,7 +83,7 @@ const lede =
     <a class="pa" id="popa" target="_blank" rel="noopener">Открыть источник</a>
   </div>
 
-  <script is:inline define:vars={{ istochniki }}>
+  <script is:inline define:vars={{ istochniki: meta.istochniki }}>
     const pop = document.getElementById('pop');
 
     function show(btn) {
@@ -101,7 +117,8 @@ const lede =
         pop.style.bottom = '';
         pop.style.left = Math.max(12, Math.min(r.left - w / 2, innerWidth - w - 12)) + 'px';
         const h = pop.offsetHeight || 190;
-        pop.style.top = (r.bottom + 10 + h > innerHeight ? Math.max(12, r.top - h - 10) : r.bottom + 10) + 'px';
+        pop.style.top =
+          (r.bottom + 10 + h > innerHeight ? Math.max(12, r.top - h - 10) : r.bottom + 10) + 'px';
       }
     }
 

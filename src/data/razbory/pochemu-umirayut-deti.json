@@ -1,0 +1,127 @@
+{
+ "slug": "pochemu-umirayut-deti",
+ "n": "08",
+ "title": "Почему умирают дети и младенцы",
+ "lede": "Писание, святые отцы и границы того, что можно говорить скорбящим",
+ "oblast": "богословие",
+ "data": "Июнь 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#kratkiy-vyvod",
+   "label": "1. Краткий вывод"
+  },
+  {
+   "href": "#chto-imenno-sravnivaetsya-v-statistike",
+   "label": "2. Что именно сравнивается в статистике"
+  },
+  {
+   "href": "#sravnenie-cifr-deti-do-18-let-i-aborty",
+   "label": "3. Сравнение цифр: дети до 18 лет и аборты"
+  },
+  {
+   "href": "#bibleyskaya-ramka-smert-ne-kak-bozhiy-zamysel-a-kak-vrag",
+   "label": "4. Библейская рамка: смерть не как Божий замысел, а как враг"
+  },
+  {
+   "href": "#hristos-i-deti",
+   "label": "5. Христос и дети"
+  },
+  {
+   "href": "#svyatitel-grigoriy-nisskiy-glavnyy-pryamoy-svyatootecheskiy-otvet",
+   "label": "6. Святитель Григорий Нисский: главный прямой святоотеческий ответ"
+  },
+  {
+   "href": "#svyatitel-grigoriy-bogoslov-i-ostorozhnost-v-voprose-nekreschenyh-mlad",
+   "label": "7. Святитель Григорий Богослов и осторожность в вопросе некрещеных младенцев"
+  },
+  {
+   "href": "#otlichie-pravoslavnogo-podhoda-ot-grubogo-otveta-eto-nakazanie",
+   "label": "8. Отличие православного подхода от грубого ответа «это наказание»"
+  },
+  {
+   "href": "#pochemu-bog-dopuskaet-smert-detey-urovni-otveta",
+   "label": "9. Почему Бог допускает смерть детей: уровни ответа"
+  },
+  {
+   "href": "#posmertnaya-uchast-umershih-mladencev",
+   "label": "10. Посмертная участь умерших младенцев"
+  },
+  {
+   "href": "#abort-v-pravoslavnoy-ocenke-i-pochemu-on-vklyuchen-v-sravnenie",
+   "label": "11. Аборт в православной оценке и почему он включен в сравнение"
+  },
+  {
+   "href": "#chto-mozhno-i-chego-nelzya-govorit-skorbyaschim-roditelyam",
+   "label": "12. Что можно и чего нельзя говорить скорбящим родителям"
+  },
+  {
+   "href": "#gde-est-soglasie-i-gde-raznye-akcenty",
+   "label": "13. Где есть согласие и где разные акценты"
+  },
+  {
+   "href": "#itogovye-tezisy",
+   "label": "14. Итоговые тезисы"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "UNICEF DATA / UN IGME. Levels and trends in child mortality 2025. Report 2025, published March 17, 2026. Key figure: 4.9 million under-five deaths and 2.1 million deaths among older children, adolescents and youth in 2024",
+   "used": "",
+   "url": "https://data.unicef.org/resources/levels-and-trends-in-child-mortality-2025/"
+  },
+  "2": {
+   "title": "UNICEF DATA. Child and youth mortality data ages 5–24. Last update: March 2026. Key figures: 2.1 million deaths ages 5–24 in 2024; 43% in ages 10–19; causes by five-year age bands",
+   "used": "",
+   "url": "https://data.unicef.org/topic/child-survival/child-and-youth-mortality-age-5-24/"
+  },
+  "3": {
+   "title": "WHO. Abortion fact sheet, 8 December 2025. Key figure: around 73 million induced abortions worldwide each year",
+   "used": "",
+   "url": "https://www.who.int/news-room/fact-sheets/detail/abortion"
+  },
+  "4": {
+   "title": "Фома. Раздел «Вопросы священнику»; материал «Смерть для человека благо?» с тезисом: Бог не творил смерть и не радуется погибели живущих",
+   "used": "",
+   "url": "https://foma.ru/prostyie-voprosyi"
+  },
+  "5": {
+   "title": "Азбука веры. Православная библиотека Святых отцов и церковных писателей; содержит труды свт. Григория Нисского и других отцов",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/"
+  },
+  "6": {
+   "title": "Свт. Григорий Нисский — Азбука веры. «О младенцах, преждевременно похищаемых смертью. К Иерию». Главный прямой патристический текст по вопросу преждевременной смерти детей",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Grigorij_Nisskij/o_mladencah/"
+  },
+  "7": {
+   "title": "Основы социальной концепции РПЦ. Раздел XII.2 о православной оценке аборта: намеренное прерывание беременности рассматривается как тяжкий грех и приравнивается каноническими правилами к убийству",
+   "used": "",
+   "url": "https://www.patriarchia.ru/db/text/419128"
+  },
+  "8": {
+   "title": "Правмир. Православный портал, где материалы о вере, болезни, смерти, семье и помощи человеку используются как современный пастырско-социальный контекст",
+   "used": "",
+   "url": "https://www.pravmir.ru/"
+  },
+  "9": {
+   "title": "Православие.Ru. Портал с разделами «Богословие», «Толкования Священного Писания», «Чудеса и Промысл Божий», «Вопросы священнику». Использован как дополнительный контекст современного православного дискурса",
+   "used": "",
+   "url": "https://pravoslavie.ru/"
+  },
+  "10": {
+   "title": "Священное Писание. Быт 3; Прем 1:13; Ин 9:1–3; Лк 13:1–5; Ин 11; Мк 10:14; 1 Кор 15:26; Откр 21:4",
+   "used": "",
+   "url": ""
+  }
+ },
+ "slov": 2521,
+ "min": 14,
+ "nsrc": 10,
+ "nref": 0
+}

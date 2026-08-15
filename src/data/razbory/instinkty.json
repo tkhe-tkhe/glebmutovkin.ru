@@ -1,0 +1,128 @@
+{
+ "slug": "instinkty",
+ "n": "07",
+ "title": "Инстинкты у человека",
+ "lede": "Есть ли они на самом деле: этология, психология, нейробиология и эволюционный подход",
+ "oblast": "антропология",
+ "data": "Июнь 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#kratkiy-otvet",
+   "label": "Краткий ответ"
+  },
+  {
+   "href": "#pochemu-voobsche-voznik-spor",
+   "label": "Почему вообще возник спор"
+  },
+  {
+   "href": "#chto-takoe-instinkt-neskolko-urovney-opredeleniya",
+   "label": "Что такое инстинкт: несколько уровней определения"
+  },
+  {
+   "href": "#kak-instinkty-vyglyadyat-u-zhivotnyh",
+   "label": "Как инстинкты выглядят у животных"
+  },
+  {
+   "href": "#chto-u-cheloveka-tochno-vrozhdennoe",
+   "label": "Что у человека точно врожденное"
+  },
+  {
+   "href": "#pochemu-nekotorye-govoryat-u-cheloveka-instinktov-net",
+   "label": "Почему некоторые говорят: «у человека инстинктов нет»"
+  },
+  {
+   "href": "#pochemu-drugie-govoryat-u-cheloveka-instinkty-est",
+   "label": "Почему другие говорят: «у человека инстинкты есть»"
+  },
+  {
+   "href": "#chelovek-i-zhivotnye-glavnoe-otlichie",
+   "label": "Человек и животные: главное отличие"
+  },
+  {
+   "href": "#primery-gde-slovo-instinkt-osobenno-opasno",
+   "label": "Примеры, где слово «инстинкт» особенно опасно"
+  },
+  {
+   "href": "#sovremennyy-nauchnyy-konsensus",
+   "label": "Современный научный консенсус"
+  },
+  {
+   "href": "#kak-pravilno-proveryat-utverzhdenie-eto-instinkt",
+   "label": "Как правильно проверять утверждение «это инстинкт»"
+  },
+  {
+   "href": "#korotkie-tezisy",
+   "label": "Короткие тезисы"
+  },
+  {
+   "href": "#moy-itogovyy-vyvod",
+   "label": "Мой итоговый вывод"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "Encyclopaedia Britannica. Instinct. Обзор разных значений термина, связь с врожденным поведением, мотивацией и научной неоднозначностью понятия",
+   "used": "",
+   "url": "https://www.britannica.com/topic/instinct"
+  },
+  "2": {
+   "title": "Nobel Prize Outreach. The Nobel Prize in Physiology or Medicine 1973: Karl von Frisch, Konrad Lorenz, Nikolaas Tinbergen — открытия в организации и запуске индивидуальных и социальных поведенческих паттернов",
+   "used": "",
+   "url": "https://www.nobelprize.org/prizes/medicine/1973/summary/"
+  },
+  "3": {
+   "title": "Nikolaas Tinbergen. On aims and methods of Ethology. Zeitschrift für Tierpsychologie, 1963. Классическая схема четырех вопросов: механизм, онтогенез, функция, филогенез",
+   "used": "",
+   "url": "https://doi.org/10.1111/j.1439-0310.1963.tb01161.x"
+  },
+  "4": {
+   "title": "NCBI Bookshelf / StatPearls. Primitive Reflexes. О врожденных рефлексах новорожденных и их угасании по мере созревания ЦНС",
+   "used": "",
+   "url": "https://www.ncbi.nlm.nih.gov/books/NBK554606/"
+  },
+  "5": {
+   "title": "NCBI Bookshelf / StatPearls. Moro Reflex. О рефлексе Моро: защитная непроизвольная реакция младенца, сроки появления и угасания",
+   "used": "",
+   "url": "https://www.ncbi.nlm.nih.gov/books/NBK542173/"
+  },
+  "6": {
+   "title": "Sokolowski K., Corbin J.G.. Wired for behaviors: from development to function of innate limbic system circuitry. Frontiers in Molecular Neuroscience, 2012",
+   "used": "",
+   "url": "https://www.frontiersin.org/journals/molecular-neuroscience/articles/10.3389/fnmol.2012.00055/full"
+  },
+  "7": {
+   "title": "Breland K., Breland M.. The Misbehavior of Organisms. American Psychologist, 1961. Классическая работа об instinctive drift — вмешательстве видовых врожденных паттернов в обученное поведение",
+   "used": "",
+   "url": "https://doi.org/10.1037/h0040090"
+  },
+  "8": {
+   "title": "Öhman A., Mineka S.. Fears, phobias, and preparedness: toward an evolved module of fear and fear learning. Psychological Review, 2001",
+   "used": "",
+   "url": "https://doi.org/10.1037/0033-295X.108.3.483"
+  },
+  "9": {
+   "title": "Seligman M.E.P.. Phobias and preparedness. Behavior Therapy, 1971. О биологической подготовленности к более легкому научению определенным страхам",
+   "used": "",
+   "url": "https://doi.org/10.1016/S0005-7894(71)80064-3"
+  },
+  "10": {
+   "title": "Bornstein M.H. et al.. Neurobiology of culturally common maternal responses to infant cry. PNAS, 2017. О кросс-культурных и нейробиологических аспектах реакции матерей на плач младенца",
+   "used": "",
+   "url": "https://doi.org/10.1073/pnas.1712022114"
+  },
+  "11": {
+   "title": "Bowlby J.. Attachment and Loss. Vol. 1: Attachment. Теория привязанности как этологически ориентированная модель детско-родительской связи",
+   "used": "",
+   "url": "https://archive.org/details/attachmentlossvo0000bowl"
+  }
+ },
+ "slov": 2674,
+ "min": 15,
+ "nsrc": 11,
+ "nref": 11
+}

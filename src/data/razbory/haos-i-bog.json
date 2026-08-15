@@ -1,0 +1,192 @@
+{
+ "slug": "haos-i-bog",
+ "n": "11",
+ "title": "Хаос и Бог в христианской концепции",
+ "lede": "Что такое хаос в православном понимании и как это соотносится с другими традициями",
+ "oblast": "богословие",
+ "data": "Июнь 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#metod-ramki-i-glavnyy-vopros",
+   "label": "1. Метод, рамки и главный вопрос"
+  },
+  {
+   "href": "#bibleyskie-osnovaniya",
+   "label": "2. Библейские основания"
+  },
+  {
+   "href": "#pravoslavnoe-svyatootecheskoe-ponimanie",
+   "label": "3. Православное святоотеческое понимание"
+  },
+  {
+   "href": "#esli-bog-vezdesusch-gde-togda-haos",
+   "label": "4. Если Бог вездесущ, где тогда хаос?"
+  },
+  {
+   "href": "#liturgicheskaya-i-asketicheskaya-perspektiva",
+   "label": "5. Литургическая и аскетическая перспектива"
+  },
+  {
+   "href": "#sravnenie-s-drugimi-hristianskimi-tradiciyami",
+   "label": "6. Сравнение с другими христианскими традициями"
+  },
+  {
+   "href": "#sovremennaya-akademicheskaya-diskussiya",
+   "label": "7. Современная академическая дискуссия"
+  },
+  {
+   "href": "#itogovye-vyvody",
+   "label": "8. Итоговые выводы"
+  },
+  {
+   "href": "#prioritetnyy-korpus-istochnikov",
+   "label": "9. Приоритетный корпус источников"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "Быт. 1:2, Синодальный текст и контекст. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Gen.1%3A2="
+  },
+  "2": {
+   "title": "Иер. 4:23. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Jer.4%3A23="
+  },
+  "3": {
+   "title": "Ис. 34:11. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Is.34%3A11="
+  },
+  "4": {
+   "title": "Ис. 45:18. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Is.45="
+  },
+  "5": {
+   "title": "Пс. 103:30. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Ps.103="
+  },
+  "6": {
+   "title": "1 Кор. 14:33. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?1Cor.14="
+  },
+  "7": {
+   "title": "Мк. 4:39. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/biblia/?Mk.4="
+  },
+  "8": {
+   "title": "Зло. Православная энциклопедия",
+   "used": "",
+   "url": "https://www.pravenc.ru/text/199913.html"
+  },
+  "9": {
+   "title": "Промысл Божий. Православная энциклопедия",
+   "used": "",
+   "url": "https://www.pravenc.ru/text/2660998.html"
+  },
+  "17": {
+   "title": "Иларион (Алфеев). Таинство веры: Введение в православное догматическое богословие. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Ilarion_Alfeev/tainstvo-very-vvedenie-v-pravoslavnoe-dogmaticheskoe-bogoslovie/4"
+  },
+  "18": {
+   "title": "Лопухин. Толковая Библия: Бытие 1. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Lopuhin/tolkovaja_biblija_01/1"
+  },
+  "19": {
+   "title": "Комментарии к Быт. 1:1–2. Оптина пустынь",
+   "used": "",
+   "url": "https://bible.optina.ru/old%3Agen%3A01%3A01"
+  },
+  "10": {
+   "title": "Василий Великий. Беседы на Шестоднев. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Vasilij_Velikij/besedy_na_shestodnev/"
+  },
+  "11": {
+   "title": "Григорий Нисский. О Шестодневе. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Grigorij_Nisskij/o_shestodneve/"
+  },
+  "12": {
+   "title": "Иоанн Дамаскин. Точное изложение православной веры. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Ioann_Damaskin/tochnoe-izlozhenie-pravoslavnoj-very/2"
+  },
+  "13": {
+   "title": "Феофан Затворник. Что есть духовная жизнь и как на нее настроиться. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Feofan_Zatvornik/chto-est-dukhovnaja-zhizn-i-kak-na-nee-nastroitsja/43"
+  },
+  "14": {
+   "title": "Феофан Затворник. Толкование на Послание к Колоссянам. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/otechnik/Feofan_Zatvornik/tolkovanie-na-poslanie-k-kolossjanam/4"
+  },
+  "15": {
+   "title": "Чин великого освящения воды. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/chin-velikogo-osvyashheniya-vody"
+  },
+  "16": {
+   "title": "Богослужение Святого Богоявления. Азбука веры",
+   "used": "",
+   "url": "https://azbyka.ru/bogosluzhenie/svyatoe-bogoyavlenie/"
+  },
+  "20": {
+   "title": "Catechism of the Catholic Church: The Creator. Vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_one/article_1/paragraph_4_the_creator.html"
+  },
+  "21": {
+   "title": "Catechism of the Catholic Church: Erroneous judgment / privation, disorder. Vatican.va",
+   "used": "",
+   "url": "https://www.vatican.va/content/catechism/en/part_three/section_one/chapter_one/article_6/iv_erroneous_judgment.html"
+  },
+  "22": {
+   "title": "Westminster Confession of Faith. Westminster Confession",
+   "used": "",
+   "url": "https://www.westminsterconfession.org/resources/confessional-standards/the-confession-of-faith-of-the-westminster-assembly-of-divines/"
+  },
+  "23": {
+   "title": "Book of Concord: Solid Declaration / Original Sin. Book of Concord",
+   "used": "",
+   "url": "https://bookofconcord.org/solid-declaration/"
+  },
+  "24": {
+   "title": "Robin Routledge. Did God Create Chaos? Unresolved Tension in Genesis 1:1–2. Tyndale Bulletin",
+   "used": "",
+   "url": "https://www.tyndalebulletin.org/article/29296-did-god-create-chaos-unresolved-tension-in-genesis-1-1-2.pdf"
+  },
+  "25": {
+   "title": "David T. Williams. Spirit in Creation. Scottish Journal of Theology / Cambridge Core",
+   "used": "",
+   "url": "https://www.cambridge.org/core/journals/scottish-journal-of-theology/article/spirit-in-creation/494EBE7B3CEC0EF9A588582EA0221191"
+  },
+  "26": {
+   "title": "От creatio ex nihilo к creatio ex profundis. CyberLeninka",
+   "used": "",
+   "url": "https://cyberleninka.ru/article/n/ot-creatio-ex-nihilo-k-creatio-ex-profundis-pereosmyslenie-doktriny-tvoreniya-v-postmetafizicheskoy-teologii"
+  },
+  "27": {
+   "title": "Богословие книги Бытия: сравнительный обзор конфессиональных подходов. CyberLeninka",
+   "used": "",
+   "url": "https://cyberleninka.ru/article/n/bogoslovie-knigi-bytiya-sravnitelnyy-obzor-konfessionalnyh-podhodov"
+  }
+ },
+ "slov": 2994,
+ "min": 17,
+ "nsrc": 27,
+ "nref": 53
+}
