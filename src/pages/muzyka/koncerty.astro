@@ -35,7 +35,7 @@ const dva = (n: number) => String(n).padStart(2, '0');
         </div>
         <div class="grid">
           {k.treki.map((t, i) => (
-            <Facade id={t.id} title={t.title} dur={t.dur} n={dva(i + 1)} />
+            <Facade id={t.id} title={t.title} dur={t.dur} n={dva(i + 1)} tekst={t.tekst} />
           ))}
         </div>
       </section>

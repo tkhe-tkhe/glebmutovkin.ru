@@ -17,7 +17,7 @@ import m from '../../data/muzyka.json';
     <section>
       <div class="count" style="margin-bottom:1.6rem">{m.klipy.length} ролика</div>
       <div class="grid">
-        {m.klipy.map((v) => <Facade id={v.id} title={v.title} dur={v.dur} />)}
+        {m.klipy.map((v) => <Facade id={v.id} title={v.title} dur={v.dur} tekst={v.tekst} />)}
       </div>
     </section>
   </main>

@@ -1,0 +1,106 @@
+---
+// Тексты песен, у которых пока нет записи. Глеб: «все эти тексты — это
+// песни, просто некоторые ещё не записаны», поэтому раздел называется
+// текстами, а не стихами.
+//
+// Тексты, которые спеты, здесь не показываются — они живут рядом со своими
+// записями в клипах и концертах. Правило простое: у каждого текста одно
+// каноническое место, иначе правка в одном оставит старую версию в другом.
+//
+// Одно полотно, а не страница на текст: они короткие, в среднем двадцать
+// строк, и собрание читается подряд. Навигация — липкое оглавление сбоку,
+// то же, что у разбора.
+
+import Base from '../../layouts/Base.astro';
+import Verse from '../../components/Verse.astro';
+import dannye from '../../data/stihi.json';
+
+const stihi = dannye.teksty.filter((t) => t.pesnya.length === 0);
+
+// У части текстов названия нет — в файле жирным выделена первая строка.
+// В оглавлении такие обозначены многоточием, над самим текстом заголовок
+// не ставим: он дословно повторил бы первую строку.
+const vMenyu = (t: (typeof stihi)[number]) => (t.bez_nazvaniya ? '…' : t.title);
+const strok = stihi.reduce((s, t) => s + t.strok, 0);
+const dva = (n: number) => String(n).padStart(2, '0');
+
+// Verse.astro читает готовый текст: строка — строка песни,
+// пустая строка — граница строфы.
+const vTekst = (t: (typeof stihi)[number]) =>
+  t.strofy.map((st: string[]) => st.join('\n')).join('\n\n');
+---
+
+<Base
+  title="Тексты песен — Глеб Мутовкин"
+  description="Тексты песен."
+>
+  <div class="progress" id="pb"></div>
+
+  <main class="page">
+    <section class="hero" style="max-width:44rem">
+      <h1>Тексты песен</h1>
+      <p class="lede">
+        Остальные — рядом со своими записями в
+        <a class="link" href="/muzyka/">музыке</a>.
+      </p>
+      <p class="meta" style="margin-top:1.2rem">
+        {dva(stihi.length)} текстов · {strok} строк
+      </p>
+    </section>
+
+    <div class="reading">
+      <aside class="toc">
+        <b>Содержание</b>
+        {stihi.map((t) => <a href={`#${t.slug}`}>{vMenyu(t)}</a>)}
+      </aside>
+
+      <div style="min-width:0" data-pagefind-ignore>
+        <details class="toc-m">
+          <summary>Содержание</summary>
+          {stihi.map((t) => <a href={`#${t.slug}`}>{vMenyu(t)}</a>)}
+        </details>
+
+        {stihi.map((t, i) => (
+          <article class="stih">
+            {i > 0 && <span class="verse-sep">* * *</span>}
+            {t.bez_nazvaniya ? (
+              <h2 id={t.slug} class="sr">{t.title}</h2>
+            ) : (
+              <h2 id={t.slug}>{t.title}</h2>
+            )}
+            <Verse body={vTekst(t)} />
+          </article>
+        ))}
+      </div>
+    </div>
+  </main>
+
+  <script is:inline>
+    // Полоса прочитанного — та же, что в разборе.
+    const pb = document.getElementById('pb');
+    addEventListener(
+      'scroll',
+      () => {
+        const h = document.body.scrollHeight - innerHeight;
+        pb.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
+      },
+      { passive: true }
+    );
+
+    const links = [...document.querySelectorAll('.toc a')];
+    const heads = [...document.querySelectorAll('article.stih h2[id]')];
+    if (links.length && heads.length) {
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (!e.isIntersecting) return;
+            links.forEach((l) => l.classList.remove('on'));
+            const a = links.find((l) => l.getAttribute('href') === '#' + e.target.id);
+            if (a) a.classList.add('on');
+          }),
+        { rootMargin: '-8% 0px -75% 0px' }
+      );
+      heads.forEach((h) => io.observe(h));
+    }
+  </script>
+</Base>

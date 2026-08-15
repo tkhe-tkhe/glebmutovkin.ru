@@ -6,8 +6,15 @@
 import Base from '../../layouts/Base.astro';
 import Player from '../../components/Player.astro';
 import m from '../../data/muzyka.json';
+import dannye from '../../data/stihi.json';
 
 const dni = m.studiya[0];
+const tekstDney = dannye.teksty.find((t) => t.slug === dni.tekst);
+
+// Тексты песен, которые ещё не записаны. Собрание стоит здесь, а не отдельным
+// пунктом меню: тексты песен и так живут в музыке, разводить их по разным
+// углам сайта незачем.
+const stihov = dannye.teksty.filter((t) => t.pesnya.length === 0).length;
 
 const koncertnyh = m.koncerty.reduce((n, k) => n + k.treki.length, 0);
 const vsego = m.studiya.length + m.klipy.length + koncertnyh + m.instrumentaly.length;
@@ -33,6 +40,13 @@ const polki = [
     href: '/muzyka/instrumentaly/',
     meta: 'гитарные пьесы · SoundCloud',
     kolvo: m.instrumentaly.length,
+  },
+  {
+    n: '04',
+    title: 'Тексты песен',
+    href: '/muzyka/stihi/',
+    meta: 'слова к песням',
+    kolvo: stihov,
   },
 ];
 
@@ -62,10 +76,29 @@ const dva = (n: number) => String(n).padStart(2, '0');
         m4a={dni.m4a}
         ssylki={dni.ssylki}
       />
+
+      {tekstDney && (
+        <>
+          <button type="button" class="tekst" data-tekst={tekstDney.slug}>Текст</button>
+          <template data-tekst-dlya={tekstDney.slug}>
+            <h3>{tekstDney.title}</h3>
+            {tekstDney.strofy.map((strofa) => (
+              <p class="verse">
+                {strofa.map((stroka, i) => (
+                  <>
+                    {i > 0 && <br />}
+                    {stroka}
+                  </>
+                ))}
+              </p>
+            ))}
+          </template>
+        </>
+      )}
     </section>
 
     <section>
-      <div class="count" style="margin-bottom:1.2rem">Собрание — {vsego} записей</div>
+      <div class="count" style="margin-bottom:1.2rem">Собрание — {vsego} записей и {stihov} текстов</div>
 
       <ul class="cat">
         {polki.map((p) => (
