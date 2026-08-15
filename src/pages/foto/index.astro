@@ -1,0 +1,79 @@
+---
+// Раздел «Фото»: колонки снимков, клик открывает кадр во весь экран.
+import Base from '../../layouts/Base.astro';
+import { Image, getImage } from 'astro:assets';
+import { foto } from '../../data/foto';
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../../images/foto/*.jpg', { eager: true });
+const kadry = foto.map((f) => ({
+  ...f,
+  img: files[`../../images/foto/${f.file}.jpg`].default,
+}));
+
+// Для полного экрана — своя версия в 1800px. Без неё в панель уходил
+// оригинал с зеркалки: несколько мегабайт на один клик.
+const bolshie = await Promise.all(
+  kadry.map((k) => getImage({ src: k.img, width: 1800, format: 'webp' }))
+);
+---
+
+<Base title="Фото — Глеб Мутовкин" description="Снимки: сцена и не только.">
+  <main class="page" data-pagefind-ignore>
+    <section class="hero">
+      <h1>Фото</h1>
+    </section>
+
+    <section class="foto-set">
+      {kadry.map((k, i) => (
+        <figure>
+          <button type="button" data-foto={i} aria-label="Открыть снимок">
+            <Image src={k.img} alt={k.alt} widths={[400, 800, 1200]} sizes="(min-width:1000px) 19rem, (min-width:600px) 45vw, 92vw" />
+          </button>
+        </figure>
+      ))}
+    </section>
+  </main>
+
+  <div class="foto-shtora" hidden id="shtora"></div>
+  <div class="foto-pop" hidden id="pop" role="dialog" aria-modal="true" aria-label="Снимок">
+    <button class="px" type="button" id="zakryt">ЗАКРЫТЬ ✕</button>
+    <img id="bolshoy" src="" alt="" />
+    <div class="foto-nav">
+      <button type="button" id="nazad">← НАЗАД</button>
+      <span id="schet"></span>
+      <button type="button" id="vpered">ВПЕРЁД →</button>
+    </div>
+  </div>
+
+  <script define:vars={{ spisok: kadry.map((k, i) => ({ src: bolshie[i].src, alt: k.alt })) }}>
+    const pop = document.getElementById('pop');
+    const shtora = document.getElementById('shtora');
+    const bolshoy = document.getElementById('bolshoy');
+    const schet = document.getElementById('schet');
+    let n = 0;
+
+    const pokazat = (i) => {
+      n = (i + spisok.length) % spisok.length;
+      bolshoy.src = spisok[n].src;
+      bolshoy.alt = spisok[n].alt;
+      schet.textContent = `${n + 1} / ${spisok.length}`;
+      pop.hidden = false;
+      shtora.hidden = false;
+    };
+    const zakryt = () => { pop.hidden = true; shtora.hidden = true; };
+
+    document.querySelectorAll('[data-foto]').forEach((b) =>
+      b.addEventListener('click', () => pokazat(Number(b.dataset.foto)))
+    );
+    document.getElementById('zakryt').addEventListener('click', zakryt);
+    shtora.addEventListener('click', zakryt);
+    document.getElementById('nazad').addEventListener('click', () => pokazat(n - 1));
+    document.getElementById('vpered').addEventListener('click', () => pokazat(n + 1));
+    document.addEventListener('keydown', (e) => {
+      if (pop.hidden) return;
+      if (e.key === 'Escape') zakryt();
+      if (e.key === 'ArrowLeft') pokazat(n - 1);
+      if (e.key === 'ArrowRight') pokazat(n + 1);
+    });
+  </script>
+</Base>

@@ -1,15 +1,34 @@
 ---
+// Обо мне: портрет слева, текст справа. Текст живёт в src/data/o-mne.ts,
+// чтобы правка слов не задевала разметку.
 import Base from '../../layouts/Base.astro';
+import { Image } from 'astro:assets';
+import portret from '../../images/portret.jpg';
+import { abzacy } from '../../data/o-mne';
 ---
 
 <Base title="Обо мне — Глеб Мутовкин" description="Кто это пишет и зачем.">
-  <main class="page" data-pagefind-ignore>
+  <main class="page omne" data-pagefind-ignore>
     <section class="hero">
       <h1>Обо мне</h1>
       <p class="lede">Кто это пишет и зачем.</p>
     </section>
-    <section>
-      <div class="count">Раздел готовится</div>
+
+    <section class="omne-row">
+      <figure>
+        <Image
+          src={portret}
+          alt="Глеб Мутовкин"
+          widths={[272, 544, 816]}
+          sizes="(min-width:900px) 17rem, (max-width:720px) 20rem, 100vw"
+        />
+        <figcaption>Арбат, 2026</figcaption>
+      </figure>
+
+      <div class="txt">
+        {abzacy.map((p) => <p>{p}</p>)}
+        <p><a class="link" href="https://vk.ru/id49789194">ВКонтакте</a></p>
+      </div>
     </section>
   </main>
 </Base>

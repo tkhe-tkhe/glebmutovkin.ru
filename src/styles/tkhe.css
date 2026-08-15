@@ -661,3 +661,72 @@ footer.site a:hover{color:var(--fg)}
 @media(prefers-reduced-motion:reduce){
   *{transition:none !important;animation:none !important;scroll-behavior:auto !important}
 }
+
+/* --------------------------------------------------------------------------
+   12. Обо мне
+   Единственная фотография на сайте. Она не карточка и не «блок с картинкой»:
+   снимок лежит на бумаге как вклейка в книге, подпись под ним моноширинная,
+   как всё служебное. Портрет стоит слева и читается первым, текст держит
+   свою колонку справа. Ниже 900px колонки складываются в одну.
+   -------------------------------------------------------------------------- */
+.omne figure{margin:0}
+.omne figure img{display:block;width:100%;height:auto}
+.omne figcaption{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  color:var(--fg-3);margin-top:.7rem;line-height:1.5;
+}
+.omne .txt{max-width:var(--measure)}
+.omne .txt p{margin:0 0 1.15rem}
+.omne .txt p:last-child{margin:0}
+
+.omne-row{display:grid;grid-template-columns:minmax(0,1fr);gap:2.5rem}
+@media(min-width:900px){
+  .omne-row{grid-template-columns:17rem minmax(0,var(--measure));gap:3.5rem;align-items:start}
+}
+/* На телефоне снимок во всю ширину смотрится плакатом — держим его уже. */
+@media(max-width:720px){
+  .omne figure{max-width:20rem}
+}
+
+/* --------------------------------------------------------------------------
+   13. Фото
+   Колонки вместо сетки: кадр сохраняет свои пропорции и не обрезается —
+   горизонтальные и вертикальные снимки стоят вперемешку, как в раскладке
+   на столе. Ни рамок, ни теней, ни подписей.
+   -------------------------------------------------------------------------- */
+.foto-set{columns:2;column-gap:1.6rem}
+@media(min-width:1000px){.foto-set{columns:3;column-gap:1.8rem}}
+@media(max-width:600px){.foto-set{columns:1}}
+.foto-set figure{margin:0 0 1.6rem;break-inside:avoid}
+.foto-set button{
+  display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;
+}
+.foto-set img{display:block;width:100%;height:auto}
+
+/* Снимки цветные. Серый вариант с проявлением цвета под курсором собрали
+   и отвергли: на полках музыки превью служебные — это кадры чужих роликов,
+   а здесь снимок и есть содержание раздела, гасить его нечем оправдать. */
+
+/* Снимок во весь экран: бумага гасит страницу, а не чёрное затемнение —
+   как у панели с текстом песни. */
+.foto-shtora{position:fixed;inset:0;z-index:79;background:var(--bg);opacity:.92}
+.foto-pop{
+  position:fixed;inset:0;z-index:80;display:flex;align-items:center;
+  justify-content:center;padding:3rem var(--pad);
+}
+/* display:flex перебивает атрибут hidden — без этой строки закрытая панель
+   лежит поверх страницы и съедает все клики по снимкам. */
+.foto-pop[hidden]{display:none}
+.foto-pop img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.foto-pop .px{
+  position:absolute;top:1.2rem;right:1.4rem;font-family:var(--mono);font-size:.7rem;
+  letter-spacing:.1em;color:var(--fg-2);background:none;border:0;cursor:pointer;
+}
+.foto-pop .px:hover{color:var(--fg)}
+.foto-nav{
+  position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--fg-3);
+  display:flex;gap:1.4rem;align-items:center;
+}
+.foto-nav button{background:none;border:0;font:inherit;color:var(--fg-2);cursor:pointer}
+.foto-nav button:hover{color:var(--fg)}
