@@ -1,0 +1,58 @@
+---
+// Раздел «Эссе и проза»: собственные длинные тексты вне хронологии.
+// Записи те же, что в ленте, — каноническое место у каждой одно, /zapis/<id>.
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { KIND_LABEL, formatDate } from '../../lib/lenta';
+
+const DLINNYE = ['esse', 'proza'];
+
+const vse = (await getCollection('lenta'))
+  .filter((z) => DLINNYE.includes(z.data.kind))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .map((z) => {
+    const slov = z.body.split(/\s+/).filter(Boolean).length;
+    return {
+      id: z.id,
+      title: z.data.title,
+      kind: z.data.kind,
+      date: z.data.date,
+      // 160 слов в минуту — неспешное чтение вслух про себя.
+      min: Math.max(1, Math.round(slov / 160)),
+    };
+  });
+
+const dva = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base
+  title="Эссе и проза — Глеб Мутовкин"
+  description="Собственные тексты: эссе и рассказы."
+>
+  <main class="page" data-pagefind-ignore>
+    <section class="hero">
+      <h1>Эссе и проза</h1>
+      <p class="lede">
+        Собственные тексты — в отличие от разборов, где положения принадлежат
+        источникам. Здесь сказано от себя.
+      </p>
+    </section>
+
+    <section>
+      <div class="count" style="margin-bottom:1.2rem">Всего — {dva(vse.length)}</div>
+
+      <ul class="cat">
+        {vse.map((z, i) => (
+          <li>
+            <span class="num">{dva(i + 1)}</span>
+            <a href={`/zapis/${z.id}/`}>
+              <span class="ct">{z.title}</span>
+              <div class="cm">{KIND_LABEL[z.kind]} · ~{z.min} мин</div>
+            </a>
+            <span class="cn">{formatDate(z.date)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Base>
