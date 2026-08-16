@@ -1,0 +1,100 @@
+---
+// Каркас гайда.
+//
+// Оснастка проще, чем у разбора: липкое оглавление, плашка происхождения,
+// список источников внизу. Полосы прочитанного и всплывающих карточек
+// источника нет — гайд читают выборочно, по разделу, а не подряд час.
+// Сноска [UA-4] — обычная ссылка на строку списка внизу.
+//
+// Тело лежит отдельным HTML-файлом и подставляется через ?raw: таблицы,
+// врезки и пути в интерфейсе в Markdown не выражаются.
+
+import Base from './Base.astro';
+import { pokazyvat } from '../data/gaidy';
+
+interface Props {
+  meta: {
+    title: string;
+    lede: string;
+    oblast: string;
+    data: string;
+    slov: number;
+    min: number;
+    toc: { href: string; label: string; uroven?: number }[];
+    istochniki: Record<string, { title: string; url?: string }>;
+  };
+  body: string;
+}
+
+const { meta, body } = Astro.props;
+const nsrc = Object.keys(meta.istochniki).length;
+---
+
+<Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede} noindex={!pokazyvat}>
+  <main class="page">
+    <div style="max-width:44rem;margin-bottom:3rem">
+      <div class="count" style="margin-bottom:1.1rem">Гайд</div>
+      <h1>{meta.title}</h1>
+      <p class="lede" style="margin:1.2rem 0 1rem">{meta.lede}</p>
+      <p class="meta">
+        {meta.data} · {meta.slov.toLocaleString('ru')} слов · ~{meta.min} мин чтения
+      </p>
+
+      <div class="origin">
+        <b>Как читать этот гайд</b>
+        <p>
+          Инструкция, собранная под мою конфигурацию и проверенную по
+          {' '}{nsrc} источникам: документация производителей и руководства к приборам.
+          Настройки привязаны к конкретному железу и версиям — переносить их
+          на другую сборку без проверки не стоит.
+        </p>
+        <p>Область: {meta.oblast}</p>
+      </div>
+    </div>
+
+    <div class="reading">
+      <aside class="toc">
+        <b>Содержание</b>
+        {meta.toc.map((t) => (
+          <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>
+        ))}
+      </aside>
+
+      <article
+        class="razbor gaid"
+        data-pagefind-body={pokazyvat ? '' : undefined}
+        data-pagefind-ignore={pokazyvat ? undefined : ''}
+      >
+        <details class="toc-m">
+          <summary>Содержание</summary>
+          {meta.toc.map((t) => (
+            <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>
+          ))}
+        </details>
+
+        <Fragment set:html={body} />
+      </article>
+    </div>
+  </main>
+
+  <script is:inline>
+    // Подсветка текущего раздела в оглавлении — как у разбора.
+    const links = [...document.querySelectorAll('.toc a')];
+    // следим и за разделами, и за карточками: в справочнике по плагинам
+    // весь второй уровень оглавления — это section[id]
+    const heads = [...document.querySelectorAll('article.gaid h2[id], article.gaid section[id]')];
+    if (links.length && heads.length) {
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (!e.isIntersecting) return;
+            links.forEach((l) => l.classList.remove('on'));
+            const a = links.find((l) => l.getAttribute('href') === '#' + e.target.id);
+            if (a) a.classList.add('on');
+          }),
+        { rootMargin: '-8% 0px -75% 0px' }
+      );
+      heads.forEach((h) => io.observe(h));
+    }
+  </script>
+</Base>

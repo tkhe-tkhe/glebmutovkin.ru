@@ -6,13 +6,19 @@ import '@fontsource-variable/literata';
 import '@fontsource-variable/literata/wght-italic.css';
 import '@fontsource-variable/jetbrains-mono';
 import '../styles/tkhe.css';
+import { pokazyvat as gaidyVidny } from '../data/gaidy';
 
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
 
-const { title, description = 'Богословские исследования, музыка и заметки на полях.' } = Astro.props;
+const {
+  title,
+  description = 'Богословские исследования, музыка и заметки на полях.',
+  noindex = false,
+} = Astro.props;
 
 const nav = [
   { href: '/', label: 'Лента' },
@@ -20,6 +26,8 @@ const nav = [
   { href: '/muzyka/', label: 'Музыка' },
   { href: '/esse/', label: 'Эссе и проза' },
   { href: '/foto/', label: 'Фото' },
+  // Пункт появляется, только когда раздел открыт: src/data/gaidy.ts
+  ...(gaidyVidny ? [{ href: '/gaidy/', label: 'Гайды' }] : []),
   { href: '/o-mne/', label: 'Обо мне' },
 ];
 
@@ -36,6 +44,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />

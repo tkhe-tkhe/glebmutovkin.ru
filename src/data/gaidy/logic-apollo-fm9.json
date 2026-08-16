@@ -1,0 +1,191 @@
+{
+ "slug": "logic-apollo-fm9",
+ "title": "Logic Pro + UA Apollo Twin X Gen 2",
+ "lede": "Запись, мониторинг, плагины, FM9 и сведение",
+ "oblast": "звук",
+ "data": "Август 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#quick-answer",
+   "label": "Краткий ответ и зафиксированный результат",
+   "uroven": 1
+  },
+  {
+   "href": "#architecture",
+   "label": "Архитектура студии",
+   "uroven": 1
+  },
+  {
+   "href": "#latency-model",
+   "label": "Что именно называется задержкой",
+   "uroven": 1
+  },
+  {
+   "href": "#baseline",
+   "label": "Базовые настройки: рабочий эталон",
+   "uroven": 1
+  },
+  {
+   "href": "#monitoring",
+   "label": "Режимы мониторинга",
+   "uroven": 1
+  },
+  {
+   "href": "#plugin-routing",
+   "label": "Где размещать плагины и что записывается",
+   "uroven": 1
+  },
+  {
+   "href": "#recording-configs",
+   "label": "Конфигурации записи",
+   "uroven": 1
+  },
+  {
+   "href": "#fm9",
+   "label": "Fractal FM9: три рабочих сценария",
+   "uroven": 1
+  },
+  {
+   "href": "#mixing",
+   "label": "Сведение: оптимальные настройки",
+   "uroven": 1
+  },
+  {
+   "href": "#arc",
+   "label": "Мониторы, сабвуфер и ARC X",
+   "uroven": 1
+  },
+  {
+   "href": "#handoff",
+   "label": "Передача проекта или партий в студию",
+   "uroven": 1
+  },
+  {
+   "href": "#troubleshooting",
+   "label": "Диагностика: симптом → причина → действие",
+   "uroven": 1
+  },
+  {
+   "href": "#loopback",
+   "label": "Контрольный loopback-тест",
+   "uroven": 1
+  },
+  {
+   "href": "#checklists",
+   "label": "Чек-листы",
+   "uroven": 1
+  },
+  {
+   "href": "#maintenance",
+   "label": "Версионирование и обслуживание",
+   "uroven": 1
+  },
+  {
+   "href": "#verified",
+   "label": "Приложение: ваши подтверждённые параметры",
+   "uroven": 1
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники",
+   "uroven": 1
+  }
+ ],
+ "istochniki": {
+  "Apple-1": {
+   "title": "Audio Devices settings in Logic Pro 12.3",
+   "url": "https://support.apple.com/guide/logicpro/audio-devices-settings-lgcpbb81aca5/mac"
+  },
+  "Apple-2": {
+   "title": "General Audio settings and plug-in latency compensation",
+   "url": "https://support.apple.com/guide/logicpro/general-settings-lgcp0ed343a9/mac"
+  },
+  "Apple-3": {
+   "title": "Manage monitoring latency in Logic Pro",
+   "url": "https://support.apple.com/en-gb/105040"
+  },
+  "Apple-4": {
+   "title": "Aggregate Audio Devices on macOS",
+   "url": "https://support.apple.com/en-ie/HT202000"
+  },
+  "UA-1": {
+   "title": "UAD Console overview and direct monitoring",
+   "url": "https://help.uaudio.com/hc/en-us/articles/25347160337556-UAD-Console-Overview"
+  },
+  "UA-2": {
+   "title": "UAD REC and UAD MON insert behavior",
+   "url": "https://help.uaudio.com/hc/en-us/articles/25350369296660-UAD-Plug-In-Inserts"
+  },
+  "UA-3": {
+   "title": "Unison behavior and always-recorded processing",
+   "url": "https://help.uaudio.com/hc/en-us/articles/26485044036756-Unison"
+  },
+  "UA-4": {
+   "title": "Managing latency in UAD Console and the DAW",
+   "url": "https://help.uaudio.com/hc/en-us/articles/43460658366612-Managing-Latency-in-UAD-Console-for-Apollo-the-DAW"
+  },
+  "UA-5": {
+   "title": "Why UAD plug-ins in a DAW add monitoring latency",
+   "url": "https://help.uaudio.com/hc/en-us/articles/206351056-Why-is-there-latency-when-I-try-to-record-through-UAD-plug-ins-in-my-DAW"
+  },
+  "UA-6": {
+   "title": "Apollo Hardware Settings panel",
+   "url": "https://help.uaudio.com/hc/en-us/articles/25403573794836-Hardware-Settings-Panel"
+  },
+  "UA-7": {
+   "title": "Apollo X Gen 2 Auto-Gain",
+   "url": "https://help.uaudio.com/hc/en-us/articles/30921736610836-Preamp-Auto-Gain"
+  },
+  "UA-8": {
+   "title": "UA 610 Tube Preamp &amp; EQ manual",
+   "url": "https://help.uaudio.com/hc/en-us/articles/17475989779860-UA-610-Tube-Preamp-EQ-Collection-Manual"
+  },
+  "UA-9": {
+   "title": "Century Tube Channel Strip manual",
+   "url": "https://help.uaudio.com/hc/en-us/articles/11912560531860-Century-Tube-Channel-Strip-Manual"
+  },
+  "UA-10": {
+   "title": "1176 Classic Limiter Collection manual",
+   "url": "https://help.uaudio.com/hc/en-us/articles/4419447352980-UA-1176-Classic-Limiter-Collection-Manual"
+  },
+  "UA-11": {
+   "title": "Teletronix LA-2A Leveler Collection manual",
+   "url": "https://help.uaudio.com/hc/en-us/articles/4419496124180-Teletronix-LA-2A-Leveler-Collection-Manual"
+  },
+  "UA-12": {
+   "title": "Pure Plate Reverb manual",
+   "url": "https://help.uaudio.com/hc/en-us/articles/4419497304340-Pure-Plate-Reverb-Manual"
+  },
+  "UA-13": {
+   "title": "UAD DSP usage chart",
+   "url": "https://help.uaudio.com/hc/en-us/articles/215262223-UAD-DSP-Chart"
+  },
+  "Fractal-1": {
+   "title": "FM9 downloads and firmware 12.0",
+   "url": "https://www.fractalaudio.com/fm9-downloads/"
+  },
+  "Fractal-2": {
+   "title": "FM9 Owner&#x27;s Manual: USB audio and re-amping",
+   "url": "https://www.fractalaudio.com/downloads/manuals/FM9/FM9-Owners-Manual.pdf"
+  },
+  "IK-1": {
+   "title": "ARC X: hardware calibration and supported iLoud devices",
+   "url": "https://www.ikmultimedia.com/products/arcx/"
+  },
+  "IK-2": {
+   "title": "iLoud Sub product and manuals",
+   "url": "https://www.ikmultimedia.com/products/iloudsub/"
+  },
+  "Shure-1": {
+   "title": "Shure SM58 specifications",
+   "url": "https://www.shure.com/en-US/products/microphones/sm58"
+  },
+  "Oktava-1": {
+   "title": "Oktava MK-105 official specifications",
+   "url": "https://oktavatula.com/catalog/vse_mikrofony/mk_105_stereopara/"
+  }
+ },
+ "slov": 4932,
+ "min": 31
+}

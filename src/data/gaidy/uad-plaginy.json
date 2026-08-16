@@ -1,0 +1,339 @@
+{
+ "slug": "uad-plaginy",
+ "title": "UAD Plug-ins",
+ "lede": "Что делает каждый плагин, где его использовать и с чего начать",
+ "oblast": "звук",
+ "data": "Август 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#how",
+   "label": "Как пользоваться",
+   "uroven": 1
+  },
+  {
+   "href": "#placement",
+   "label": "Карта размещения",
+   "uroven": 1
+  },
+  {
+   "href": "#chains",
+   "label": "Стартовые цепочки",
+   "uroven": 1
+  },
+  {
+   "href": "#лицензии-и-коллекции",
+   "label": "Лицензии и коллекции",
+   "uroven": 1
+  },
+  {
+   "href": "#uad-explore-free",
+   "label": "1. UAD Explore FREE",
+   "uroven": 2
+  },
+  {
+   "href": "#precision-mix-rack-collection",
+   "label": "2. Precision Mix Rack Collection",
+   "uroven": 2
+  },
+  {
+   "href": "#динамика",
+   "label": "Динамика",
+   "uroven": 1
+  },
+  {
+   "href": "#1176ln-legacy-и-1176se-legacy",
+   "label": "3. 1176LN Legacy и 1176SE Legacy",
+   "uroven": 2
+  },
+  {
+   "href": "#1176-classic-fet-compressor",
+   "label": "4. 1176 Classic FET Compressor",
+   "uroven": 2
+  },
+  {
+   "href": "#teletronix-la-2a-legacy",
+   "label": "5. Teletronix LA-2A Legacy",
+   "uroven": 2
+  },
+  {
+   "href": "#la-2a-tube-compressor",
+   "label": "6. LA-2A Tube Compressor",
+   "uroven": 2
+  },
+  {
+   "href": "#teletronix-la-2a-leveler-collection",
+   "label": "7. Teletronix LA-2A Leveler Collection",
+   "uroven": 2
+  },
+  {
+   "href": "#fairchild-670-legacy",
+   "label": "8. Fairchild 670 Legacy",
+   "uroven": 2
+  },
+  {
+   "href": "#предусилители-eq-и-channel-strips",
+   "label": "Предусилители, EQ и channel strips",
+   "uroven": 1
+  },
+  {
+   "href": "#helios-type-69-legacy-eq",
+   "label": "9. Helios Type 69 Legacy EQ",
+   "uroven": 2
+  },
+  {
+   "href": "#helios-type-69-preamp-eq-collection",
+   "label": "10. Helios Type 69 Preamp & EQ Collection",
+   "uroven": 2
+  },
+  {
+   "href": "#pultec-eqp-1a-legacy-pultec-legacy-eqs",
+   "label": "11. Pultec EQP-1A Legacy / Pultec Legacy EQs",
+   "uroven": 2
+  },
+  {
+   "href": "#pultec-passive-eq-collection",
+   "label": "12. Pultec Passive EQ Collection",
+   "uroven": 2
+  },
+  {
+   "href": "#century-tube-channel-strip",
+   "label": "13. Century Tube Channel Strip",
+   "uroven": 2
+  },
+  {
+   "href": "#ua-610-tube-preamp-eq-collection",
+   "label": "14. UA 610 Tube Preamp & EQ Collection",
+   "uroven": 2
+  },
+  {
+   "href": "#precision-channel-strip",
+   "label": "15. Precision Channel Strip",
+   "uroven": 2
+  },
+  {
+   "href": "#гитара-и-бас",
+   "label": "Гитара и бас",
+   "uroven": 1
+  },
+  {
+   "href": "#ampeg-svt-vr-classic-bass-amp",
+   "label": "16. Ampeg SVT-VR Classic Bass Amp",
+   "uroven": 2
+  },
+  {
+   "href": "#marshall-plexi-classic-amplifier",
+   "label": "17. Marshall Plexi Classic Amplifier",
+   "uroven": 2
+  },
+  {
+   "href": "#showtime-64-tube-amp",
+   "label": "18. Showtime ’64 Tube Amp",
+   "uroven": 2
+  },
+  {
+   "href": "#raw-distortion",
+   "label": "19. Raw Distortion",
+   "uroven": 2
+  },
+  {
+   "href": "#пространство-delay-и-modulation",
+   "label": "Пространство, delay и modulation",
+   "uroven": 1
+  },
+  {
+   "href": "#pure-plate-reverb",
+   "label": "20. Pure Plate Reverb",
+   "uroven": 2
+  },
+  {
+   "href": "#galaxy-tape-echo",
+   "label": "21. Galaxy Tape Echo",
+   "uroven": 2
+  },
+  {
+   "href": "#realverb-pro",
+   "label": "22. RealVerb Pro",
+   "uroven": 2
+  },
+  {
+   "href": "#precision-delay-mod-delay-mod-l",
+   "label": "23. Precision Delay Mod / Delay Mod L",
+   "uroven": 2
+  },
+  {
+   "href": "#precision-reflection-engine",
+   "label": "24. Precision Reflection Engine",
+   "uroven": 2
+  },
+  {
+   "href": "#лента-saturation-и-низ",
+   "label": "Лента, saturation и низ",
+   "uroven": 1
+  },
+  {
+   "href": "#oxide-tape-recorder",
+   "label": "25. Oxide Tape Recorder",
+   "uroven": 2
+  },
+  {
+   "href": "#vibe-analog-machines-essentials",
+   "label": "26. Vibe Analog Machines Essentials",
+   "uroven": 2
+  },
+  {
+   "href": "#precision-enhancer-hz",
+   "label": "27. Precision Enhancer Hz",
+   "uroven": 2
+  },
+  {
+   "href": "#вокал-и-pitch",
+   "label": "Вокал и pitch",
+   "uroven": 1
+  },
+  {
+   "href": "#antares-auto-tune-realtime-access",
+   "label": "28. Antares Auto-Tune Realtime Access",
+   "uroven": 2
+  },
+  {
+   "href": "#инструменты",
+   "label": "Инструменты",
+   "uroven": 1
+  },
+  {
+   "href": "#polymax-synth",
+   "label": "29. PolyMAX Synth",
+   "uroven": 2
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники",
+   "uroven": 1
+  }
+ ],
+ "istochniki": {
+  "UA-01": {
+   "title": "UAD Explore FREE: состав и native-статус",
+   "url": "https://help.uaudio.com/hc/en-us/articles/47962583100436-FAQ-UAD-Explore-FREE"
+  },
+  "UA-02": {
+   "title": "Какие плагины доступны UAD Native и в UAD Spark",
+   "url": "https://help.uaudio.com/hc/en-us/articles/5230697410836-Which-UAD-plug-ins-are-available-natively-and-in-UAD-Spark"
+  },
+  "UA-03": {
+   "title": "1176 Classic Limiter Collection — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/4419447352980-UA-1176-Classic-Limiter-Collection-Manual"
+  },
+  "UA-04": {
+   "title": "1176 Classic FET Compressor — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/34530260482324-1176-Classic-FET-Compressor-Manual"
+  },
+  "UA-05": {
+   "title": "Teletronix LA-2A Leveler Collection — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/4419496124180-Teletronix-LA-2A-Leveler-Collection-Manual"
+  },
+  "UA-06": {
+   "title": "LA-2A Tube Compressor — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/19378009641748-LA-2A-Tube-Compressor-Manual"
+  },
+  "UA-07": {
+   "title": "Fairchild Tube Limiter Collection — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/13293388042900-Fairchild-Tube-Limiter-Collection-Manual"
+  },
+  "UA-08": {
+   "title": "Helios Type 69 Preamp &amp; EQ — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/18737805108500-Helios-Type-69-Preamp-EQ-Manual"
+  },
+  "UA-09": {
+   "title": "Pultec Passive EQ Collection — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/7183176266260-Pultec-Passive-EQ-Collection-Manual"
+  },
+  "UA-10": {
+   "title": "Century Tube Channel Strip — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/11912560531860-Century-Tube-Channel-Strip-Manual"
+  },
+  "UA-11": {
+   "title": "UA 610 Tube Preamp &amp; EQ Collection — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/17475989779860-UA-610-Tube-Preamp-EQ-Collection-Manual"
+  },
+  "UA-12": {
+   "title": "Pure Plate Reverb — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/4419497304340-Pure-Plate-Reverb-Manual"
+  },
+  "UA-13": {
+   "title": "Galaxy Tape Echo — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/4419513003668-Galaxy-Tape-Echo-Manual"
+  },
+  "UA-14": {
+   "title": "RealVerb Pro — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/33537278497428-RealVerb-Pro-Manual"
+  },
+  "UA-15": {
+   "title": "Oxide Tape Recorder — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/11914703390740-Oxide-Tape-Recorder-Manual"
+  },
+  "UA-16": {
+   "title": "Vibe Analog Machines — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/25190283956500-Vibe-Analog-Machines-Manual"
+  },
+  "UA-17": {
+   "title": "Precision Enhancer Hz — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/33536774357780-Precision-Enhancer-Hz-Manual"
+  },
+  "UA-18": {
+   "title": "Precision Mix Rack Collection — состав",
+   "url": "https://help.uaudio.com/hc/en-us/articles/209060646-Precision-Mix-Rack-Collection-Explained"
+  },
+  "UA-19": {
+   "title": "Precision Channel Strip — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/33536331318804-Precision-Channel-Strip-Manual"
+  },
+  "UA-20": {
+   "title": "Precision Delay Modulation — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/33536359160212-Precision-Delay-Modulation-Manual"
+  },
+  "UA-21": {
+   "title": "Precision Reflection Engine — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/33537160710548-Precision-Reflection-Engine-Manual"
+  },
+  "UA-22": {
+   "title": "Raw Distortion — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/33537175596564-Raw-Distortion-Manual"
+  },
+  "UA-23": {
+   "title": "PolyMAX Synth — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/10207494851220-PolyMAX-Synth-Manual"
+  },
+  "UA-24": {
+   "title": "Showtime &#x27;64 Tube Amp — руководство",
+   "url": "https://help.uaudio.com/hc/en-us/articles/40062124308756-Showtime-64-Tube-Amp-Manual"
+  },
+  "UA-25": {
+   "title": "Ampeg SVT-VR Classic — руководство разработчика",
+   "url": "https://media.uaudio.com/support/manuals/dd/Ampeg%20SVTVR%20Classic%20Manual.pdf"
+  },
+  "UA-26": {
+   "title": "Marshall Plexi Classic — руководство разработчика",
+   "url": "https://media.uaudio.com/support/manuals/dd/Marshall%20Plexi%20Classic%20Manual.pdf"
+  },
+  "UA-27": {
+   "title": "Auto-Tune Realtime Access — руководство разработчика",
+   "url": "https://media.uaudio.com/support/manuals/dd/Auto-Tune%20Realtime%20Access%20Manual.pdf"
+  },
+  "UA-28": {
+   "title": "UAD DSP Chart",
+   "url": "https://help.uaudio.com/hc/en-us/articles/215262223-UAD-DSP-Chart"
+  },
+  "UA-29": {
+   "title": "UAD REC и UAD MON в Console",
+   "url": "https://help.uaudio.com/hc/en-us/articles/25350369296660-UAD-Plug-In-Inserts"
+  },
+  "UA-30": {
+   "title": "Unison: поведение и запись обработки",
+   "url": "https://help.uaudio.com/hc/en-us/articles/26485044036756-Unison"
+  }
+ },
+ "slov": 5225,
+ "min": 33
+}

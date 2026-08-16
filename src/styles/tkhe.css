@@ -730,3 +730,64 @@ footer.site a:hover{color:var(--fg)}
 }
 .foto-nav button{background:none;border:0;font:inherit;color:var(--fg-2);cursor:pointer}
 .foto-nav button:hover{color:var(--fg)}
+
+/* --------------------------------------------------------------------------
+   12. Гайд
+   Тот же каркас, что у разбора: широкая статья, узкая колонка чтения.
+   Отличий три, и все от жанра: в гайде много путей по меню программ,
+   есть предупреждения «не трогать» и есть скриншоты.
+   -------------------------------------------------------------------------- */
+
+/* путь в интерфейсе: [Logic Pro → Settings → Audio]. Моноширинный, как всё
+   служебное; ни рамки, ни заливки — это часть предложения, а не вставка. */
+/* переносится как обычный текст: с white-space:nowrap длинный путь
+   [macOS → System Settings → Privacy & Security → Microphone] вылезал
+   за экран телефона и тянул за собой горизонтальную прокрутку страницы */
+code.ui{
+  font-family:var(--mono);font-size:.78em;letter-spacing:-.01em;
+  color:var(--fg-2);
+}
+
+/* сноска-ссылка на источник: та же охра, что у сносок разбора, но здесь
+   код источника читаемый (UA-4), поэтому он и стоит в тексте */
+a.ref{
+  font-family:var(--mono);font-size:.58em;vertical-align:super;padding:0 .15em;
+  color:var(--ochre);text-decoration:none;border-bottom:1px dotted currentColor;
+  white-space:nowrap;
+}
+a.ref:hover{color:var(--fg)}
+
+/* врезка-предупреждение: линия темнее обычной. Заливкой не выделяем —
+   состояние показывается меткой, а не цветом */
+.note.stop{border-left-color:var(--fg-3)}
+
+/* скриншот или схема: во всю ширину полотна чтения, подпись под кадром */
+figure.risunok{margin:2.4rem 0;max-width:var(--measure-wide)}
+figure.risunok img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+figure.risunok figcaption{
+  font-family:var(--mono);font-size:.66rem;line-height:1.6;color:var(--fg-3);
+  margin-top:.6rem;max-width:var(--measure);
+}
+
+/* коды источников длиннее номеров разбора (Oktava-1), колонка шире */
+.gaid .srclist li{grid-template-columns:5.4rem minmax(0,1fr)}
+.gaid .srclist .sn{white-space:nowrap}
+@media(max-width:520px){
+  .gaid .srclist li{grid-template-columns:minmax(0,1fr)}
+}
+
+/* второй уровень оглавления: карточки внутри раздела (29 плагинов) */
+.toc a.l2,details.toc-m a.l2{padding-left:.9rem;font-size:.66rem;color:var(--fg-3)}
+.toc a.l2:hover{color:var(--fg)}
+
+/* карточка справочника: заголовок, строка статуса, дальше обычный текст.
+   Волосяная линия сверху отделяет одну карточку от другой — коробки не нужно. */
+.gaid section[id]{
+  border-top:1px solid var(--line-soft);padding-top:1.8rem;margin-top:3rem;
+  scroll-margin-top:2rem;
+}
+.gaid section[id] h3{margin-top:0}
+.gaid .status{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.05em;
+  color:var(--fg-3);margin:.5rem 0 1.2rem;
+}

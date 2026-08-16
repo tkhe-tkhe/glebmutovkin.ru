@@ -1,0 +1,73 @@
+---
+// Каталог гайдов.
+//
+// Список строится из src/data/gaidy/*.json, порядок — из src/data/gaidy.ts.
+// Когда раздел скрыт (pokazyvat = false), страница всё равно собирается
+// и открывается по прямой ссылке: нет только пункта в меню, поиска и индексации.
+
+import Base from '../../layouts/Base.astro';
+import { pokazyvat, poryadok } from '../../data/gaidy';
+
+const meta = import.meta.glob('../../data/gaidy/*.json', { eager: true });
+
+const gaidy = Object.entries(meta)
+  .map(([put, mod]: [string, any]) => {
+    const m = mod.default ?? mod;
+    return {
+      slug: put.split('/').pop()!.replace('.json', ''),
+      title: m.title,
+      podpis: `${m.oblast} · ${Object.keys(m.istochniki).length} источников · ~${m.min} мин`,
+      god: m.god,
+    };
+  })
+  .sort((a, b) => {
+    const i = poryadok.indexOf(a.slug);
+    const j = poryadok.indexOf(b.slug);
+    return (i < 0 ? 99 : i) - (j < 0 ? 99 : j);
+  });
+
+const dva = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base
+  title="Гайды — Глеб Мутовкин"
+  description="Инструкции, собранные по источникам и проверенные на своей практике."
+  noindex={!pokazyvat}
+>
+  <main class="page" data-pagefind-ignore>
+    <section class="hero">
+      <h1>Гайды</h1>
+      <p class="lede">
+        Инструкции, которые я собираю по источникам и проверяю на своей практике:
+        что делать, в каком порядке и почему именно так. Разбор отвечает
+        «что об этом известно», гайд — «что делать».
+      </p>
+    </section>
+
+    <section>
+      <div class="count" style="margin-bottom:1.2rem">
+        Гайдов — {dva(gaidy.length)}
+      </div>
+
+      <ul class="cat">
+        {gaidy.map((g, i) => (
+          <li>
+            <span class="num">{dva(i + 1)}</span>
+            <a href={`/gaidy/${g.slug}/`}>
+              <span class="ct">{g.title}</span>
+              <div class="cm">{g.podpis}</div>
+            </a>
+            <span class="cn">{g.god}</span>
+          </li>
+        ))}
+      </ul>
+
+      {!pokazyvat && (
+        <p class="meta" style="margin-top:2.4rem">
+          Раздел скрыт: в меню его нет, в поиске по сайту тоже. Страницы открыты
+          по прямой ссылке.
+        </p>
+      )}
+    </section>
+  </main>
+</Base>

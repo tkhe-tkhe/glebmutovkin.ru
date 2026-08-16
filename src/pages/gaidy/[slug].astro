@@ -1,0 +1,62 @@
+---
+// Страница гайда.
+//
+// Тело — src/content/gaidy/<slug>.html, мета — src/data/gaidy/<slug>.json.
+// Чтобы добавить гайд, кладём эти два файла (их делает tools/gaid.py)
+// и, если нужен свой порядок в каталоге, дописываем slug в src/data/gaidy.ts.
+//
+// Картинки в теле стоят метками IMG:NN — тело подставляется через ?raw,
+// и компонент <Image> внутри него не работает. Поэтому версию под экран
+// делаем через getImage() и вписываем адрес в разметку. Без этого в браузер
+// уходил бы исходный PNG целиком.
+
+import Gaid from '../../layouts/Gaid.astro';
+import { getImage } from 'astro:assets';
+
+const kartinki = import.meta.glob<{ default: ImageMetadata }>(
+  '../../images/gaidy/**/*.{png,jpg}',
+  { eager: true }
+);
+
+export function getStaticPaths() {
+  const meta = import.meta.glob('../../data/gaidy/*.json', { eager: true });
+  const tela = import.meta.glob('../../content/gaidy/*.html', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  });
+
+  return Object.entries(meta).map(([put, mod]: [string, any]) => {
+    const m = mod.default ?? mod;
+    const slug = put.split('/').pop()!.replace('.json', '');
+    const kluch = Object.keys(tela).find((p) => p.endsWith(`/${slug}.html`));
+    if (!kluch) throw new Error(`Нет тела гайда: src/content/gaidy/${slug}.html`);
+    return { params: { slug }, props: { meta: m, body: tela[kluch] as string } };
+  });
+}
+
+const { meta: m, body: syroe } = Astro.props;
+const { slug } = Astro.params;
+
+// IMG:NN → готовая картинка нужного размера
+const metki = [...syroe.matchAll(/IMG:(\d+)/g)].map((x) => x[1]);
+let body = syroe;
+
+for (const n of new Set(metki)) {
+  const put = Object.keys(kartinki).find((p) => p.includes(`/gaidy/${slug}/${n}.`));
+  if (!put) throw new Error(`Нет картинки ${n} для гайда ${slug}`);
+  const src = kartinki[put].default;
+  const gotovaya = await getImage({
+    src,
+    width: Math.min(src.width, 1200),
+    format: 'webp',
+  });
+  body = body.replaceAll(
+    `src="IMG:${n}"`,
+    `src="${gotovaya.src}" width="${gotovaya.attributes.width ?? gotovaya.options.width}" ` +
+      `height="${gotovaya.attributes.height ?? ''}" loading="lazy" decoding="async"`
+  );
+}
+---
+
+<Gaid meta={m} body={body} />
