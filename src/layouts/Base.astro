@@ -17,7 +17,7 @@ interface Props {
 
 const {
   title,
-  description = 'Богословские исследования, музыка и заметки на полях.',
+  description = 'Разборы, музыка и заметки на полях.',
   noindex = false,
 } = Astro.props;
 
@@ -67,7 +67,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
 
     <footer class="site" data-pagefind-ignore>
       <div style="max-width:42rem">
-        glebmutovkin.ru — личные исследования, музыка и заметки.<br />
+        glebmutovkin.ru — разборы, музыка и заметки.<br />
         Материалы можно свободно цитировать со ссылкой на источник.<br /><br />
         <a href="/">Лента</a> · <a href="/o-mne/">Обо мне</a> · <a href="/poisk/">Поиск</a>
       </div>
