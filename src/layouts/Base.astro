@@ -7,6 +7,7 @@ import '@fontsource-variable/literata/wght-italic.css';
 import '@fontsource-variable/jetbrains-mono';
 import '../styles/tkhe.css';
 import { pokazyvat as gaidyVidny } from '../data/gaidy';
+import Znak from '../components/Znak.astro';
 import { zakryt } from '../data/sait';
 
 interface Props {
@@ -42,7 +43,13 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    {/* Иконка вкладки — личный знак Глеба. Три файла, потому что браузеры
+        разные: svg берут все современные (он же переворачивается в тёмной теме),
+        ico остаётся для старых и для закладок Windows, apple-touch-icon
+        подхватывает iOS, когда сайт добавляют на домашний экран. */}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{title}</title>
     <meta name="description" content={description} />
     {(noindex || zakryt) && <meta name="robots" content="noindex,nofollow" />}
@@ -53,7 +60,10 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
 
   <body>
     <header class="chrome" data-pagefind-ignore>
-      <a class="brand" href="/">Глеб Мутовкин</a>
+      <a class="brand" href="/">
+        <Znak />
+        <span>Глеб Мутовкин</span>
+      </a>
       <nav>
         {nav.map((item) => (
           <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>

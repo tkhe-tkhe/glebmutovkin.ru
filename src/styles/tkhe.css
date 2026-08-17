@@ -127,6 +127,13 @@ section{margin-bottom:var(--gap)}
 .chrome .brand{
   text-decoration:none;color:var(--fg);
   font:600 1rem/1.2 var(--serif);letter-spacing:-.015em;white-space:nowrap;
+  /* Знак и имя стоят рядом: inline-flex, чтобы шапка по-прежнему
+     выравнивалась по базовой линии имени, а не по краю картинки. */
+  display:inline-flex;align-items:center;gap:.5rem;
+}
+.chrome .brand .znak{
+  width:var(--znak,1.25em);height:var(--znak,1.25em);
+  flex:none;display:block;
 }
 .chrome nav{margin-left:auto;display:flex;gap:1.6rem;flex-wrap:wrap}
 .chrome nav a{
