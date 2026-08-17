@@ -58,19 +58,23 @@ jobs:
           echo "страниц в сборке: $stranic"
           test "$stranic" -ge 40 || { echo "страниц подозрительно мало"; exit 1; }
 
+      # Хостинг nic.ru предъявляет ключ хоста только старого типа ssh-rsa
+      # (подпись SHA-1). OpenSSH 9 на раннере такие не принимает по умолчанию,
+      # поэтому разрешаем этот тип явно — точечно, только для этого соединения.
       - name: Положить ключ
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -t rsa -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          test -s ~/.ssh/known_hosts || { echo "не удалось снять ключ хоста"; exit 1; }
 
       # --delete убирает с сервера то, чего больше нет в сборке: переименовал
       # страницу — старая не остаётся висеть по своему адресу.
       - name: Залить dist на хостинг
         run: |
           rsync -az --delete --omit-dir-times --no-perms \
-            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa" \
             dist/ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}/"
 
       - name: Готово
