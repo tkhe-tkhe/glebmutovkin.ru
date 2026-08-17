@@ -1,0 +1,77 @@
+# Выкладка сайта на хостинг.
+#
+# Пуш в main → GitHub собирает сайт у себя и заливает содержимое dist/
+# на nic.ru по SSH. Ничего запускать руками не нужно.
+#
+# Что должно лежать в секретах репозитория
+# (Settings → Secrets and variables → Actions → New repository secret):
+#
+#   SSH_HOST   ssh.tkh7868553.nichost.ru
+#   SSH_USER   tkh7868553
+#   SSH_KEY    приватный ключ целиком, вместе со строками BEGIN и END
+#   SSH_PATH   путь к папке сайта на сервере: /home/tkh7868553/glebmutovkin.ru/docs
+#
+# Пароль здесь не используется намеренно: ключ можно отозвать, не меняя доступ
+# ко всему хостингу, и он не светится в логах.
+
+name: Выкладка на хостинг
+
+on:
+  push:
+    branches: [main]
+  # Кнопка «запустить вручную» на вкладке Actions — на случай, если нужно
+  # перевыложить сайт без нового коммита.
+  workflow_dispatch:
+
+# Две одновременные выкладки затёрли бы друг друга на полпути.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  vylozhit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Забрать репозиторий
+        uses: actions/checkout@v4
+
+      - name: Поставить Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Установить зависимости
+        run: npm ci
+
+      - name: Собрать сайт
+        run: npm run build
+
+      # Пустой или обрезанный dist на сервере — это сайт, которого нет.
+      # Проверяем до выкладки, а не после.
+      - name: Проверить сборку
+        run: |
+          test -f dist/index.html || { echo "нет dist/index.html"; exit 1; }
+          test -d dist/pagefind || { echo "не собрался индекс поиска"; exit 1; }
+          stranic=$(find dist -name '*.html' | wc -l)
+          echo "страниц в сборке: $stranic"
+          test "$stranic" -ge 40 || { echo "страниц подозрительно мало"; exit 1; }
+
+      - name: Положить ключ
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # --delete убирает с сервера то, чего больше нет в сборке: переименовал
+      # страницу — старая не остаётся висеть по своему адресу.
+      - name: Залить dist на хостинг
+        run: |
+          rsync -az --delete --omit-dir-times --no-perms \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
+            dist/ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}/"
+
+      - name: Готово
+        run: echo "Выложено на https://glebmutovkin.ru"
