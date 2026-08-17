@@ -4,6 +4,7 @@
 
 import Base from '../../layouts/Base.astro';
 import Facade from '../../components/Facade.astro';
+import TekstPop from '../../components/TekstPop.astro';
 import m from '../../data/muzyka.json';
 
 const vsego = m.koncerty.reduce((n, k) => n + k.treki.length, 0);
@@ -41,4 +42,6 @@ const dva = (n: number) => String(n).padStart(2, '0');
       </section>
     ))}
   </main>
+
+  <TekstPop />
 </Base>

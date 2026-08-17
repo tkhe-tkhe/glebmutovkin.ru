@@ -5,7 +5,9 @@
 
 import Base from '../../layouts/Base.astro';
 import Player from '../../components/Player.astro';
+import TekstPop from '../../components/TekstPop.astro';
 import m from '../../data/muzyka.json';
+import { sklon, TEKST, ZAPIS } from '../../lib/sklon';
 import dannye from '../../data/stihi.json';
 
 const dni = m.studiya[0];
@@ -51,6 +53,7 @@ const polki = [
 ];
 
 const dva = (n: number) => String(n).padStart(2, '0');
+
 ---
 
 <Base
@@ -98,7 +101,7 @@ const dva = (n: number) => String(n).padStart(2, '0');
     </section>
 
     <section>
-      <div class="count" style="margin-bottom:1.2rem">Собрание — {vsego} записей и {stihov} текстов</div>
+      <div class="count" style="margin-bottom:1.2rem">Собрание — {vsego} {sklon(vsego, ZAPIS)} и {stihov} {sklon(stihov, TEKST)}</div>
 
       <ul class="cat">
         {polki.map((p) => (
@@ -114,4 +117,6 @@ const dva = (n: number) => String(n).padStart(2, '0');
       </ul>
     </section>
   </main>
+
+  <TekstPop />
 </Base>

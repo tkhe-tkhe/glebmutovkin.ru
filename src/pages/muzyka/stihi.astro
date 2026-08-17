@@ -14,6 +14,7 @@
 import Base from '../../layouts/Base.astro';
 import Verse from '../../components/Verse.astro';
 import dannye from '../../data/stihi.json';
+import { sklon, TEKST, STROKA } from '../../lib/sklon';
 
 const stihi = dannye.teksty.filter((t) => t.pesnya.length === 0);
 
@@ -44,7 +45,7 @@ const vTekst = (t: (typeof stihi)[number]) =>
         <a class="link" href="/muzyka/">музыке</a>.
       </p>
       <p class="meta" style="margin-top:1.2rem">
-        {dva(stihi.length)} текстов · {strok} строк
+        {dva(stihi.length)} {sklon(stihi.length, TEKST)} · {strok} {sklon(strok, STROKA)}
       </p>
     </section>
 

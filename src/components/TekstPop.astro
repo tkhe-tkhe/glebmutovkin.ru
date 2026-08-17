@@ -1,0 +1,62 @@
+---
+// Панель с текстом песни: один обработчик на страницу.
+// Раньше этот скрипт жил внутри Facade.astro — и работал только там, где есть
+// ролики YouTube. На витрине /muzyka/ фасадов нет, поэтому кнопка «Текст»
+// под студийной записью не открывалась. Теперь скрипт отдельный: подключается
+// на любую страницу, где есть кнопка button.tekst и <template data-tekst-dlya>.
+//
+// Astro собирает такой <script> один раз на страницу, сколько бы раз
+// компонент ни отрисовался.
+---
+
+<script>
+  // Содержимое берём из <template> рядом с нажатой кнопкой. Раскрывать текст
+  // внутри полки нельзя — сетка растягивается, и соседние места в ряду
+  // остаются пустыми.
+  let pop: HTMLElement | null = null;
+  let shtora: HTMLElement | null = null;
+
+  function zakryt() {
+    pop?.remove();
+    shtora?.remove();
+    pop = shtora = null;
+  }
+
+  document.addEventListener('click', (e) => {
+    const cel = e.target as HTMLElement;
+    const knopka = cel.closest<HTMLElement>('button.tekst');
+
+    if (knopka) {
+      zakryt();
+      const tpl = document.querySelector<HTMLTemplateElement>(
+        `template[data-tekst-dlya="${knopka.dataset.tekst}"]`
+      );
+      if (!tpl) return;
+
+      shtora = document.createElement('div');
+      shtora.className = 'tekst-shtora';
+      document.body.appendChild(shtora);
+
+      pop = document.createElement('div');
+      pop.className = 'tekst-pop';
+      pop.appendChild(tpl.content.cloneNode(true));
+
+      const x = document.createElement('button');
+      x.className = 'px';
+      x.type = 'button';
+      x.setAttribute('aria-label', 'Закрыть');
+      x.textContent = '×';
+      x.onclick = zakryt;
+      pop.appendChild(x);
+
+      document.body.appendChild(pop);
+      return;
+    }
+
+    if (pop && !cel.closest('.tekst-pop')) zakryt();
+  });
+
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') zakryt();
+  });
+</script>
