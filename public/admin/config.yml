@@ -22,23 +22,30 @@ backend:
   branch: main
   base_url: https://sveltia-cms-auth.tkhe-tkhe.workers.dev
 
-# Куда падают картинки, загруженные в запись ленты. public_folder
-# относительный: из src/content/lenta/запись.md путь ../../images/lenta/x.webp
-# ведёт в src/images/lenta — а всё, что лежит в src/, Astro оптимизирует
-# на сборке. Положили бы в public/ — картинка поехала бы на сервер как есть.
-media_folder: src/images/lenta
-public_folder: ../../images/lenta
+# Куда падают картинки, загруженные в запись ленты.
+#
+# Хотелось положить их в src/images/lenta, чтобы Astro ужимал картинку
+# на сборке. Не вышло: CMS требует, чтобы public_folder был абсолютным
+# путём от корня сайта, а из src/ такого пути не существует — эта папка
+# на сервер не едет, Astro её перерабатывает.
+#
+# Поэтому public/media: файл лежит там, где сайт его и отдаёт. Обработки
+# Astro у него не будет, зато ссылка рабочая. Вес закрыт другим концом —
+# картинка ужимается на загрузке, до попадания в коммит.
+media_folder: public/media
+public_folder: /media
 
 media_libraries:
   all:
     # Кадр с телефона — это 4–8 МБ, и в репозитории он останется навсегда.
-    # Ужимаем на загрузке, до того как файл попадёт в коммит.
+    # 1600px хватает: колонка чтения — 34rem, даже на экране с двойной
+    # плотностью это вдвое меньше.
     transformations:
       raster_image:
         format: webp
         quality: 82
-        width: 2560
-        height: 2560
+        width: 1600
+        height: 1600
 
 collections:
   - name: lenta
@@ -115,7 +122,6 @@ collections:
       - name: o-mne
         label: Обо мне
         file: src/data/o-mne.json
-        description: Текст страницы /o-mne/. Портрет и вёрстка живут отдельно.
         fields:
           - name: abzacy
             label: Абзацы
@@ -129,7 +135,6 @@ collections:
       - name: foto
         label: Фото
         file: src/data/foto.json
-        description: Раздел /foto/. Порядок в списке — порядок на странице.
         fields:
           - name: foto
             label: Снимки
