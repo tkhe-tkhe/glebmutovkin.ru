@@ -70,6 +70,20 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
             {item.label}
           </a>
         ))}
+        {/* Поиск — значком, а не восьмым словом: семь пунктов держатся
+            в строку впритык, слово «Поиск» сломало бы её на планшете.
+            До этой лупы поиск был виден только тому, кто дочитал до подвала. */}
+        <a
+          class="poisk"
+          href="/poisk/"
+          aria-label="Поиск по сайту"
+          aria-current={path.startsWith('/poisk') ? 'page' : undefined}
+        >
+          <svg class="lupa" viewBox="0 0 20 20" aria-hidden="true">
+            <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4" />
+            <line x1="12.6" y1="12.6" x2="17" y2="17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+        </a>
       </nav>
     </header>
 
