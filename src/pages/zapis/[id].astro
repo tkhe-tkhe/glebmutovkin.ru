@@ -19,7 +19,7 @@ const isVerse = entry.data.kind === 'stihi';
 const { Content } = isVerse ? { Content: null } : await render(entry);
 ---
 
-<Base title={`${entry.data.title} — Глеб Мутовкин`} description={excerpt(entry.body ?? '', 24)}>
+<Base title={`${entry.data.title} — Глеб Мутовкин`} description={entry.data.description || excerpt(entry.body ?? '', 24)}>
   <main class="page">
     <article data-pagefind-body>
       <div class="count" style="margin-bottom:1.1rem">
