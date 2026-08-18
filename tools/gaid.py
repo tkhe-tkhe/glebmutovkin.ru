@@ -190,3 +190,58 @@ open(os.path.join(KOREN, f'src/data/gaidy/{SLUG}.json'), 'w', encoding='utf-8').
 print(f'{SLUG}: разделов {sum(1 for t in toc if t["uroven"] == 1)}',
       f'· карточек {sum(1 for t in toc if t["uroven"] == 2)}',
       f'· источников {len(istochniki)} · слов {slov} · картинок {len(kartinki)}')
+
+# --- файлы для скачивания -----------------------------------------------------
+# Рядом с исходником .html лежат .docx и .pdf того же гайда — кладём их
+# в public/files/gaidy/<slug>.<расширение>, оттуда их берут кнопки «Скачать».
+# EPUB собирает pandoc из того же .html.
+#
+# Копируем здесь, а не руками, по одной причине: гайд правится в исходнике
+# и прогоняется этим скриптом. Если файлы для скачивания не обновить тем же
+# движением, на сайте будет новый текст, а в скачанном PDF — старый,
+# и никто об этом не узнает.
+#
+# Чего не хватило — говорим вслух, в терминал. Молчаливый пропуск и есть та
+# дырка, из-за которой на сайте потом висит кнопка на позавчерашний файл.
+
+import shutil
+import subprocess
+
+FILES_DIR = os.path.join(KOREN, 'public/files/gaidy')
+os.makedirs(FILES_DIR, exist_ok=True)
+
+osnova = os.path.splitext(ISHODNIK)[0]
+polozheno = []
+
+for rasshirenie in ('pdf', 'docx'):
+    ryadom = f'{osnova}.{rasshirenie}'
+    if os.path.exists(ryadom):
+        shutil.copyfile(ryadom, os.path.join(FILES_DIR, f'{SLUG}.{rasshirenie}'))
+        polozheno.append(rasshirenie.upper())
+    else:
+        print(f'  ВНИМАНИЕ: рядом с исходником нет {os.path.basename(ryadom)} —'
+              f' кнопки {rasshirenie.upper()} на странице не будет')
+
+shutil.copyfile(ISHODNIK, os.path.join(FILES_DIR, f'{SLUG}.html'))
+polozheno.append('HTML')
+
+# EPUB: pandoc стоит не на всякой машине, поэтому падать из-за него нельзя —
+# без epub гайд выложится, просто кнопкой меньше.
+if shutil.which('pandoc'):
+    itog = subprocess.run(
+        ['pandoc', ISHODNIK, '-f', 'html', '-t', 'epub3',
+         '--metadata', f'title={nazvanie}',
+         '--metadata', 'author=Глеб Мутовкин',
+         '--metadata', 'lang=ru',
+         '--toc', '--toc-depth=3',
+         '-o', os.path.join(FILES_DIR, f'{SLUG}.epub')],
+        capture_output=True, text=True,
+    )
+    if itog.returncode == 0:
+        polozheno.append('EPUB')
+    else:
+        print(f'  ВНИМАНИЕ: pandoc не собрал epub: {itog.stderr.strip()[:200]}')
+else:
+    print('  ВНИМАНИЕ: pandoc не найден — epub не собран, кнопки EPUB не будет')
+
+print(f'  для скачивания: {", ".join(polozheno)}')

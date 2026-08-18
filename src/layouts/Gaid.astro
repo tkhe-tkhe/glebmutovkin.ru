@@ -11,9 +11,11 @@
 
 import Base from './Base.astro';
 import { pokazyvat } from '../data/gaidy';
+import { faily } from '../lib/skachat';
 
 interface Props {
   meta: {
+    slug: string;
     title: string;
     lede: string;
     oblast: string;
@@ -28,6 +30,7 @@ interface Props {
 
 const { meta, body } = Astro.props;
 const nsrc = Object.keys(meta.istochniki).length;
+const skachat = faily(meta.slug);
 ---
 
 <Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede} noindex={!pokazyvat}>
@@ -50,6 +53,22 @@ const nsrc = Object.keys(meta.istochniki).length;
         </p>
         <p>Область: {meta.oblast}</p>
       </div>
+
+      {skachat.length > 0 && (
+        <div class="skachat">
+          <b>Скачать</b>
+          <ul>
+            {skachat.map((f) => (
+              <li>
+                {/* download заставляет браузер сохранить файл, а не открыть
+                    его во вкладке — иначе HTML и PDF просто заменят страницу */}
+                <a href={f.url} download>{f.label}</a>
+                <span>{f.chto} · {f.ves}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
 
     <div class="reading">

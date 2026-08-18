@@ -136,6 +136,9 @@ section{margin-bottom:var(--gap)}
   flex:none;display:block;
 }
 .chrome nav{margin-left:auto;display:flex;gap:1.6rem;flex-wrap:wrap}
+/* Семь пунктов при ширине планшета (768px) не помещались в строку и уезжали
+   на вторую. Просвет между ними ужимается раньше — так же, как на телефоне. */
+@media(max-width:860px){.chrome nav{gap:1.2rem}}
 .chrome nav a{
   font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--fg-2);text-decoration:none;transition:color .2s;
@@ -295,6 +298,31 @@ button.tekst:focus-visible{outline:1px solid var(--fg);outline-offset:3px}
 .origin p:last-child{
   margin:0;font-family:var(--mono);font-size:.66rem;color:var(--fg-3);letter-spacing:.05em;
 }
+
+/* Скачать гайд: четыре формата строкой, у каждого подпись зачем он.
+   Держится тем же приёмом, что и .origin — линия слева, без рамок и кнопок. */
+.skachat{
+  margin:0 0 2.4rem;max-width:var(--measure);
+  padding-left:1.1rem;border-left:1px solid var(--line);
+}
+.skachat b{
+  display:block;font-family:var(--mono);font-size:.62rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--fg-3);margin-bottom:.7rem;
+}
+/* Список, а не сетка: четыре формата в строку не помещаются в колонку текста
+   и ломаются на «три и один» — рваный ряд. Строкой на формат читается ровно
+   так же на экране и на телефоне. */
+.skachat ul{list-style:none;margin:0;padding:0}
+.skachat li{display:flex;gap:.7rem;align-items:baseline;margin-bottom:.4rem}
+.skachat li:last-child{margin-bottom:0}
+.skachat a{
+  min-width:3.4rem;
+  font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;
+  color:var(--fg);text-decoration:underline;text-underline-offset:4px;
+  text-decoration-thickness:1px;text-decoration-color:var(--line);transition:text-decoration-color .2s;
+}
+.skachat a:hover{text-decoration-color:var(--fg-2)}
+.skachat span{font-size:.78rem;color:var(--fg-3);line-height:1.4}
 
 /* колонка чтения */
 .body-text{max-width:var(--measure)}

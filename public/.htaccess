@@ -71,7 +71,32 @@ ErrorDocument 404 /404.html
 </IfModule>
 
 # ---------------------------------------------------------------------------
-# 5. Кодировка и мелочи
+# 5. Файлы для скачивания: /files/
+#    Гайд лежит там же в pdf, docx, epub и html. HTML-копия — то же самое
+#    содержимое по второму адресу, и поисковик засчитал бы её дублем страницы
+#    гайда. Закрываем заголовком, а не строкой в robots.txt: Disallow виден
+#    всем, кто откроет файл, а X-Robots-Tag — только роботу.
+#
+#    Заголовок ставится по адресу, а не по имени файла: FilesMatch в .htaccess
+#    смотрит только на имя и о папке ничего не знает.
+# ---------------------------------------------------------------------------
+<IfModule mod_setenvif.c>
+  SetEnvIf Request_URI "^/files/" SKACHAT
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex" env=SKACHAT
+</IfModule>
+
+# Типы, которые Apache может не знать: без них браузер получает octet-stream
+# и, например, не предлагает открыть epub в читалке.
+<IfModule mod_mime.c>
+  AddType application/epub+zip .epub
+  AddType application/vnd.openxmlformats-officedocument.wordprocessingml.document .docx
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# 6. Кодировка и мелочи
 # ---------------------------------------------------------------------------
 AddDefaultCharset utf-8
 Options -Indexes

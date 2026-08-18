@@ -11,7 +11,7 @@
 // В robots.txt раздел намеренно не прописан: строка Disallow сама объявила бы
 // адрес всем, кто откроет файл.
 
-export const pokazyvat = false;
+export const pokazyvat = true;
 
 // Порядок в каталоге. Гайд, которого здесь нет, встанет в конец списка.
 export const poryadok: string[] = ['logic-apollo-fm9', 'uad-plaginy'];
