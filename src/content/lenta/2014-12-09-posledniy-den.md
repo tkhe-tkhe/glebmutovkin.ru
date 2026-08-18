@@ -2,6 +2,7 @@
 title: "последний день"
 date: 2014-12-09
 kind: proza
+adres: posledniy-den
 source: livejournal
 ---
 

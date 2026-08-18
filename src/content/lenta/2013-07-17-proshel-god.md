@@ -2,6 +2,7 @@
 title: "Прошел год"
 date: 2013-07-17
 kind: zametka
+adres: proshel-god
 source: livejournal
 ---
 

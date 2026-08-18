@@ -2,6 +2,7 @@
 title: "у вас не будет закурить?"
 date: 2014-12-30
 kind: proza
+adres: u-vas-ne-budet-zakurit
 source: livejournal
 ---
 

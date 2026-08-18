@@ -1,0 +1,185 @@
+# Sveltia CMS — админка сайта. Открывается по адресу /admin/.
+#
+# Как это работает: вход через GitHub, каждая правка становится коммитом
+# в репозиторий, GitHub Actions собирает сайт и выкладывает на хостинг.
+# Своего сервера у админки нет — она целиком живёт в браузере.
+#
+# Вход идёт через прокси-воркер на Cloudflare (base_url ниже): GitHub
+# не умеет отдавать токен странице без серверной части, воркер её заменяет.
+#
+# ЧЕГО ЗДЕСЬ НЕТ И ПОЧЕМУ:
+#   разборы и гайды — 176 сносок, 46 карточек терминов и перекрёстные
+#     ссылки не правятся в поле формы, они остаются конвейером;
+#   тексты песен — источник правды teksty-pesen.txt на диске, вторая
+#     точка входа дала бы расхождение;
+#   музыка — src/data/muzyka.json правится вместе с вёрсткой полок.
+
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+
+backend:
+  name: github
+  repo: tkhe-tkhe/glebmutovkin.ru
+  branch: main
+  base_url: https://sveltia-cms-auth.tkhe-tkhe.workers.dev
+
+# Куда падают картинки, загруженные в запись ленты. public_folder
+# относительный: из src/content/lenta/запись.md путь ../../images/lenta/x.webp
+# ведёт в src/images/lenta — а всё, что лежит в src/, Astro оптимизирует
+# на сборке. Положили бы в public/ — картинка поехала бы на сервер как есть.
+media_folder: src/images/lenta
+public_folder: ../../images/lenta
+
+media_libraries:
+  all:
+    # Кадр с телефона — это 4–8 МБ, и в репозитории он останется навсегда.
+    # Ужимаем на загрузке, до того как файл попадёт в коммит.
+    transformations:
+      raster_image:
+        format: webp
+        quality: 82
+        width: 2560
+        height: 2560
+
+collections:
+  - name: lenta
+    label: Лента
+    label_singular: Запись
+    description: >-
+      Стихи, заметки, эссе и проза. Раздел «Эссе и проза» — не отдельное
+      хранилище, а выборка отсюда по жанру.
+    folder: src/content/lenta
+    create: true
+    extension: md
+    format: yaml-frontmatter
+    slug: '{{year}}-{{month}}-{{day}}-{{fields.adres}}'
+    summary: '{{title}}'
+    sortable_fields: [date, title]
+    fields:
+      - name: title
+        label: Заголовок
+        widget: string
+
+      - name: date
+        label: Дата
+        widget: datetime
+        format: 'YYYY-MM-DD'
+        date_format: 'DD.MM.YYYY'
+        time_format: false
+        picker_utc: true
+
+      - name: kind
+        label: Жанр
+        widget: select
+        default: zametka
+        hint: >-
+          Стихи и заметки показываются в ленте целиком, эссе и проза —
+          заголовком со ссылкой. Эссе и проза попадают ещё и в «Эссе и прозу».
+        options:
+          - { label: Стихи, value: stihi }
+          - { label: Заметка, value: zametka }
+          - { label: Эссе, value: esse }
+          - { label: Проза, value: proza }
+
+      - name: adres
+        label: Адрес латиницей
+        widget: string
+        pattern: ['^[a-z0-9-]+$', 'Только строчные латинские буквы, цифры и дефис']
+        hint: >-
+          Из него собирается адрес страницы: /zapis/ГОД-МЕСЯЦ-ЧИСЛО-адрес/.
+          У новой записи заполняется обязательно. У записи, которая уже есть,
+          менять бесполезно — имя файла от этого не изменится.
+
+      - name: source
+        label: Откуда взято
+        widget: select
+        required: false
+        options:
+          - { label: 'Живой Журнал', value: livejournal }
+
+      - name: description
+        label: Подводка
+        widget: string
+        required: false
+        hint: Короткое описание для поисковиков. Можно не заполнять.
+
+      - name: body
+        label: Текст
+        widget: markdown
+        hint: >-
+          В жанре «стихи» разметка не работает — текст показывается строка
+          в строку, как набран. Картинки там тоже не покажутся.
+
+  - name: stranicy
+    label: Страницы и настройки
+    files:
+      - name: o-mne
+        label: Обо мне
+        file: src/data/o-mne.json
+        description: Текст страницы /o-mne/. Портрет и вёрстка живут отдельно.
+        fields:
+          - name: abzacy
+            label: Абзацы
+            label_singular: Абзац
+            widget: list
+            field:
+              name: abzac
+              label: Абзац
+              widget: text
+
+      - name: foto
+        label: Фото
+        file: src/data/foto.json
+        description: Раздел /foto/. Порядок в списке — порядок на странице.
+        fields:
+          - name: foto
+            label: Снимки
+            label_singular: Снимок
+            widget: list
+            summary: '{{fields.alt}}'
+            fields:
+              - name: file
+                label: Файл
+                widget: image
+                media_folder: /src/images/foto
+                public_folder: /src/images/foto
+              - name: alt
+                label: Что на снимке
+                widget: string
+                hint: >-
+                  Для читалок и на случай, если картинка не загрузилась.
+                  Подписей под снимками на странице нет.
+
+      - name: gaidy
+        label: Гайды — видимость и порядок
+        file: src/data/gaidy.json
+        fields:
+          - name: pokazyvat
+            label: Показывать раздел всем
+            widget: boolean
+            hint: >-
+              Выключено — пункта «Гайды» нет в меню, раздел не индексируется
+              и не ищется по сайту, но страницы открываются по прямой ссылке.
+          - name: poryadok
+            label: Порядок в каталоге
+            widget: list
+            hint: Адреса гайдов латиницей. Гайда, которого здесь нет, встанет в конец.
+            field:
+              name: slug
+              label: Адрес гайда
+              widget: string
+
+      - name: sait
+        label: Настройки сайта
+        file: src/data/sait.json
+        fields:
+          - name: zakryt
+            label: Закрыть сайт от поисковиков
+            widget: boolean
+            hint: >-
+              Включено — на каждой странице noindex, в robots.txt запрет,
+              карты сайта нет. Сайт при этом открыт людям по адресу.
+              Трогать осознанно: включив, вы уберёте сайт из выдачи.
+          - name: adres
+            label: Канонический адрес
+            widget: string
+            hint: Без www и без косой черты в конце. Менять только при смене домена.

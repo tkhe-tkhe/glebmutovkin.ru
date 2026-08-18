@@ -82,6 +82,11 @@ ErrorDocument 404 /404.html
 # ---------------------------------------------------------------------------
 <IfModule mod_setenvif.c>
   SetEnvIf Request_URI "^/files/" SKACHAT
+  # Админка на /admin/ — тот же случай: страницу видит только тот, кто вошёл
+  # через GitHub, но её адрес незачем показывать поисковику. В самой странице
+  # стоит meta robots noindex; заголовок — второй рубеж, на случай config.yml
+  # и прочих файлов папки, у которых meta не бывает.
+  SetEnvIf Request_URI "^/admin/" SKACHAT
 </IfModule>
 
 <IfModule mod_headers.c>

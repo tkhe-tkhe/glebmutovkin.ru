@@ -2,6 +2,7 @@
 title: "противоречия"
 date: 2015-04-05
 kind: zametka
+adres: protivorechiya
 source: livejournal
 ---
 

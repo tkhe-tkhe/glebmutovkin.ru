@@ -2,6 +2,7 @@
 title: "состояние души"
 date: 2017-01-16
 kind: zametka
+adres: sostoyanie-dushi
 source: livejournal
 ---
 

@@ -2,6 +2,7 @@
 title: "безнадежность"
 date: 2015-04-01
 kind: zametka
+adres: beznadezhnost
 source: livejournal
 ---
 

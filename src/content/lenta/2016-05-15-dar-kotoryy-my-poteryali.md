@@ -2,6 +2,7 @@
 title: "Дар, который мы потеряли"
 date: 2016-05-15
 kind: esse
+adres: dar-kotoryy-my-poteryali
 source: livejournal
 ---
 

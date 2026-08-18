@@ -4,11 +4,21 @@ import Base from '../../layouts/Base.astro';
 import { Image, getImage } from 'astro:assets';
 import { foto } from '../../data/foto';
 
-const files = import.meta.glob<{ default: ImageMetadata }>('../../images/foto/*.jpg', { eager: true });
-const kadry = foto.map((f) => ({
-  ...f,
-  img: files[`../../images/foto/${f.file}.jpg`].default,
-}));
+// В данных лежит путь целиком (/src/images/foto/имя.jpg) — в таком виде его
+// отдаёт админка. Берём из него только имя файла: где лежит папка, знает
+// эта страница, а не файл данных.
+const files = import.meta.glob<{ default: ImageMetadata }>(
+  '../../images/foto/*.{jpg,jpeg,png,webp,avif}',
+  { eager: true }
+);
+const kadry = foto.map((f) => {
+  const imya = f.file.split('/').pop();
+  const mod = files[`../../images/foto/${imya}`];
+  // Молчаливая дырка была бы хуже: без снимка страница собралась бы
+  // с пустым местом, и никто бы не заметил.
+  if (!mod) throw new Error(`Фото: нет файла src/images/foto/${imya} (строка в src/data/foto.json)`);
+  return { ...f, img: mod.default };
+});
 
 // Для полного экрана — своя версия в 1800px. Без неё в панель уходил
 // оригинал с зеркалки: несколько мегабайт на один клик.

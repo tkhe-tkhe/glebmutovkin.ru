@@ -2,6 +2,7 @@
 title: "Два года без тебя"
 date: 2014-07-17
 kind: zametka
+adres: dva-goda-bez-tebya
 source: livejournal
 ---
 

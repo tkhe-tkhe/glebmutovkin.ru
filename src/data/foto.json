@@ -1,0 +1,40 @@
+{
+  "foto": [
+    {
+      "file": "/src/images/foto/scena-2011-1.jpg",
+      "alt": "На сцене с гитарой"
+    },
+    {
+      "file": "/src/images/foto/scena-2011-2.jpg",
+      "alt": "У микрофона с гитарой"
+    },
+    {
+      "file": "/src/images/foto/scena-2011-3.jpg",
+      "alt": "С флейтой на сцене"
+    },
+    {
+      "file": "/src/images/foto/scena-2011-4.jpg",
+      "alt": "С гитарой и флейтой"
+    },
+    {
+      "file": "/src/images/foto/scena-2023-1.jpg",
+      "alt": "У микрофона"
+    },
+    {
+      "file": "/src/images/foto/scena-2023-2.jpg",
+      "alt": "У микрофона в свете софитов"
+    },
+    {
+      "file": "/src/images/foto/scena-2024-1.jpg",
+      "alt": "На сцене"
+    },
+    {
+      "file": "/src/images/foto/scena-2024-2.jpg",
+      "alt": "С микрофоном в руке"
+    },
+    {
+      "file": "/src/images/foto/scena-bw.jpg",
+      "alt": "На сцене, чёрно-белый кадр"
+    }
+  ]
+}

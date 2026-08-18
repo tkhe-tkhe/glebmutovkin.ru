@@ -2,6 +2,7 @@
 title: "Искушение"
 date: 2015-05-16
 kind: stihi
+adres: iskushenie
 source: livejournal
 ---
 

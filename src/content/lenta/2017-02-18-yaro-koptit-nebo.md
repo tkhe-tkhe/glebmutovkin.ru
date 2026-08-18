@@ -2,6 +2,7 @@
 title: "Яро коптить небо"
 date: 2017-02-18
 kind: stihi
+adres: yaro-koptit-nebo
 source: livejournal
 ---
 

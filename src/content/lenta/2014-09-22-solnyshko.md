@@ -2,6 +2,7 @@
 title: "солнышко"
 date: 2014-09-22
 kind: stihi
+adres: solnyshko
 source: livejournal
 ---
 

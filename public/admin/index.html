@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Админка не для поисковиков. Второй рубеж — заголовок X-Robots-Tag
+         на всю папку /admin/ в public/.htaccess. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Админка — glebmutovkin.ru</title>
+  </head>
+  <!-- data-pagefind-ignore: страница не должна попадать в поиск по сайту.
+       Индекс строится по готовой сборке, а public/ едет на сервер как есть. -->
+  <body data-pagefind-ignore>
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+  </body>
+</html>

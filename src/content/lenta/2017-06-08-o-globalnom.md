@@ -2,6 +2,7 @@
 title: "о глобальном"
 date: 2017-06-08
 kind: stihi
+adres: o-globalnom
 source: livejournal
 ---
 

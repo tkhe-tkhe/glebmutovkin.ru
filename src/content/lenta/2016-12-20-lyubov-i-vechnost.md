@@ -2,6 +2,7 @@
 title: "любовь и вечность"
 date: 2016-12-20
 kind: stihi
+adres: lyubov-i-vechnost
 source: livejournal
 ---
 

@@ -1,6 +1,6 @@
 // Раздел «Гайды»: один переключатель на весь раздел.
 //
-// pokazyvat = true    — пункт «Гайды» стоит в меню, страницы попадают в поиск
+// pokazyvat = true   — пункт «Гайды» стоит в меню, страницы попадают в поиск
 //                      по сайту и открыты поисковикам.
 // pokazyvat = false  — пункта в меню нет, в поиске по сайту раздела нет,
 //                      поисковикам стоит noindex. Страницы при этом собираются
@@ -10,8 +10,13 @@
 //
 // В robots.txt раздел намеренно не прописан: строка Disallow сама объявила бы
 // адрес всем, кто откроет файл.
+//
+// С 18 августа 2026 значения лежат в gaidy.json — это формат, который читает
+// админка. Здесь остались пояснения: JSON комментариев не держит.
 
-export const pokazyvat = true;
+import dannye from './gaidy.json';
+
+export const pokazyvat: boolean = dannye.pokazyvat;
 
 // Порядок в каталоге. Гайд, которого здесь нет, встанет в конец списка.
-export const poryadok: string[] = ['logic-apollo-fm9', 'uad-plaginy'];
+export const poryadok: string[] = dannye.poryadok;

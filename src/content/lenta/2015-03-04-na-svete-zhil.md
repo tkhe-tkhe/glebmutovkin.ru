@@ -2,6 +2,7 @@
 title: "На свете жил"
 date: 2015-03-04
 kind: stihi
+adres: na-svete-zhil
 source: livejournal
 ---
 
