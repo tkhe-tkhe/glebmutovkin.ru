@@ -13,10 +13,10 @@ import dannye from '../../data/stihi.json';
 const dni = m.studiya[0];
 const tekstDney = dannye.teksty.find((t) => t.slug === dni.tekst);
 
-// Тексты песен, которые ещё не записаны. Собрание стоит здесь, а не отдельным
-// пунктом меню: тексты песен и так живут в музыке, разводить их по разным
-// углам сайта незачем.
-const stihov = dannye.teksty.filter((t) => t.pesnya.length === 0).length;
+// Собрание текстов целиком — включая те, что звучат в клипах и концертах.
+// Стоит здесь, а не отдельным пунктом меню: тексты песен и так живут
+// в музыке, разводить их по разным углам сайта незачем.
+const stihov = dannye.teksty.length;
 
 const koncertnyh = m.koncerty.reduce((n, k) => n + k.treki.length, 0);
 const vsego = m.studiya.length + m.klipy.length + koncertnyh + m.instrumentaly.length;
