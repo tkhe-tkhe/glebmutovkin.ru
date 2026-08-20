@@ -22,6 +22,10 @@ interface Props {
     data: string;
     slov: number;
     min: number;
+    // Текст плашки «Как читать этот гайд». У гайдов про звук он про железо
+    // и версии приборов; справочнику по сети такой не годится. Пусто —
+    // берётся текст по умолчанию. {n} подставляется числом источников.
+    kak_chitat?: string;
     toc: { href: string; label: string; uroven?: number }[];
     istochniki: Record<string, { title: string; url?: string }>;
   };
@@ -31,6 +35,14 @@ interface Props {
 const { meta, body } = Astro.props;
 const nsrc = Object.keys(meta.istochniki).length;
 const skachat = faily(meta.slug);
+
+// Текст по умолчанию — про звук: два первых гайда именно про него.
+// Число источников подставляется, чтобы не разъехалось при правке гайда.
+const PO_UMOLCHANIYU =
+  'Инструкция, собранная под мою конфигурацию и проверенная по {n} источникам: ' +
+  'документация производителей и руководства к приборам. Настройки привязаны ' +
+  'к конкретному железу и версиям — переносить их на другую сборку без проверки не стоит.';
+const kakChitat = (meta.kak_chitat || PO_UMOLCHANIYU).replace('{n}', String(nsrc));
 ---
 
 <Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede} noindex={!pokazyvat}>
@@ -45,12 +57,7 @@ const skachat = faily(meta.slug);
 
       <div class="origin">
         <b>Как читать этот гайд</b>
-        <p>
-          Инструкция, собранная под мою конфигурацию и проверенную по
-          {' '}{nsrc} источникам: документация производителей и руководства к приборам.
-          Настройки привязаны к конкретному железу и версиям — переносить их
-          на другую сборку без проверки не стоит.
-        </p>
+        <p>{kakChitat}</p>
         <p>Область: {meta.oblast}</p>
       </div>
 

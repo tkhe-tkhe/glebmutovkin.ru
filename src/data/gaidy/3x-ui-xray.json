@@ -1,0 +1,216 @@
+{
+ "slug": "3x-ui-xray",
+ "title": "3x-ui и Xray",
+ "lede": "Соединение от IP-уровня до полей панели: протоколы, транспорт, TLS и REALITY",
+ "oblast": "сети и прокси",
+ "data": "Август 2026",
+ "god": "2026",
+ "kak_chitat": "Технический справочник по 3x-ui v3.6.0 и Xray-core v26.7.28, собранный по исходному коду и документации; источников — {n}. Названия полей оставлены такими, как в панели. Панель развивается быстро: перед переносом на другую версию сверяйтесь с её changelog.",
+ "toc": [
+  {
+   "href": "#о-документе",
+   "label": "О документе",
+   "uroven": 1
+  },
+  {
+   "href": "#1-карта-соединения-что-находится-на-каком-уровне",
+   "label": "1. Карта соединения: что находится на каком уровне",
+   "uroven": 1
+  },
+  {
+   "href": "#2-прокси-протоколы-vless-trojan-и-hysteria2",
+   "label": "2. Прокси-протоколы: VLESS, Trojan и Hysteria2",
+   "uroven": 1
+  },
+  {
+   "href": "#3-tls-reality-sni-ech-alpn-и-utls",
+   "label": "3. TLS, REALITY, SNI, ECH, ALPN и uTLS",
+   "uroven": 1
+  },
+  {
+   "href": "#4-sniffing-что-он-видит-и-зачем-нужен",
+   "label": "4. Sniffing: что он видит и зачем нужен",
+   "uroven": 1
+  },
+  {
+   "href": "#5-dpi-базовые-принципы-и-классификация-прокси-трафика",
+   "label": "5. DPI: базовые принципы и классификация прокси-трафика",
+   "uroven": 1
+  },
+  {
+   "href": "#6-создание-inbound-полныи-каталог-полеи-3x-ui-v3-6-0",
+   "label": "6. Создание inbound: полный каталог полей 3x-ui v3.6.0",
+   "uroven": 1
+  },
+  {
+   "href": "#7-xray-configs-что-это-за-раздел",
+   "label": "7. Xray Configs: что это за раздел",
+   "uroven": 1
+  },
+  {
+   "href": "#8-balancers-подробное-руководство",
+   "label": "8. Balancers — подробное руководство",
+   "uroven": 1
+  },
+  {
+   "href": "#9-dns-в-xray-configs",
+   "label": "9. DNS в Xray Configs",
+   "uroven": 1
+  },
+  {
+   "href": "#10-advanced",
+   "label": "10. Advanced",
+   "uroven": 1
+  },
+  {
+   "href": "#11-ipv6-anycast-rotating-ip-load-balancers-и-cloud-edge",
+   "label": "11. IPv6, Anycast, rotating IP, load balancers и cloud edge",
+   "uroven": 1
+  },
+  {
+   "href": "#12-xray-и-реально-используемые-альтернативные-ядра",
+   "label": "12. Xray и реально используемые альтернативные ядра",
+   "uroven": 1
+  },
+  {
+   "href": "#13-практические-профили-и-проверка",
+   "label": "13. Практические профили и проверка",
+   "uroven": 1
+  },
+  {
+   "href": "#14-быстрыи-указатель-полеи-со-скриншотов",
+   "label": "14. Быстрый указатель полей со скриншотов",
+   "uroven": 1
+  },
+  {
+   "href": "#15-термины-которые-нельзя-смешивать",
+   "label": "15. Термины, которые нельзя смешивать",
+   "uroven": 1
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники",
+   "uroven": 1
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "3x-ui v3.6.0 — Release v3.6.0",
+   "url": "https://github.com/MHSanaei/3x-ui/releases/tag/v3.6.0"
+  },
+  "2": {
+   "title": "3x-ui v3.6.0 — Release workflow v3.6.0 — версия комплектного Xray-core",
+   "url": "https://github.com/MHSanaei/3x-ui/blob/v3.6.0/.github/workflows/release.yml"
+  },
+  "3": {
+   "title": "3x-ui v3.6.0 — Inbounds",
+   "url": "https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/inbounds.mdx"
+  },
+  "4": {
+   "title": "3x-ui v3.6.0 — Clients",
+   "url": "https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/clients.mdx"
+  },
+  "5": {
+   "title": "3x-ui v3.6.0 — Transports",
+   "url": "https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/transports.mdx"
+  },
+  "6": {
+   "title": "3x-ui v3.6.0 — REALITY",
+   "url": "https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/reality.mdx"
+  },
+  "7": {
+   "title": "3x-ui v3.6.0 — Outbounds and routing",
+   "url": "https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/operations/outbounds-routing.mdx"
+  },
+  "8": {
+   "title": "Генерация runtime client flow в 3x-ui v3.6.0",
+   "url": "https://github.com/MHSanaei/3x-ui/blob/v3.6.0/internal/web/service/xray.go"
+  },
+  "9": {
+   "title": "Xray-core — Configuration overview",
+   "url": "https://xtls.github.io/en/config/"
+  },
+  "10": {
+   "title": "Xray-core — VLESS inbound и серверный flow",
+   "url": "https://xtls.github.io/en/config/inbounds/vless.html"
+  },
+  "11": {
+   "title": "Xray-core — VLESS outbound, Vision, UDP/443 и splice",
+   "url": "https://xtls.github.io/en/config/outbounds/vless.html"
+  },
+  "12": {
+   "title": "Допустимые значения flow в Xray-core v26.7.28",
+   "url": "https://github.com/XTLS/Xray-core/blob/v26.7.28/infra/conf/vless.go"
+  },
+  "13": {
+   "title": "Xray-core — Transport",
+   "url": "https://xtls.github.io/en/config/transport.html"
+  },
+  "14": {
+   "title": "Xray-core — TLS",
+   "url": "https://xtls.github.io/en/config/transports/tls.html"
+  },
+  "15": {
+   "title": "Xray-core — REALITY",
+   "url": "https://xtls.github.io/en/config/transports/reality.html"
+  },
+  "16": {
+   "title": "Xray-core — Inbound and Sniffing",
+   "url": "https://xtls.github.io/en/config/inbound.html"
+  },
+  "17": {
+   "title": "Xray-core — Routing and Balancers",
+   "url": "https://xtls.github.io/en/config/routing.html"
+  },
+  "18": {
+   "title": "Xray-core — DNS",
+   "url": "https://xtls.github.io/en/config/dns.html"
+  },
+  "19": {
+   "title": "Xray-core — Observatory",
+   "url": "https://xtls.github.io/en/config/observatory.html"
+  },
+  "20": {
+   "title": "DPI и анализ зашифрованного трафика — RFC 8446: TLS 1.3 — traffic analysis по длинам и времени",
+   "url": "https://datatracker.ietf.org/doc/html/rfc8446.html"
+  },
+  "21": {
+   "title": "DPI и анализ зашифрованного трафика — RFC 9000 и RFC 9001: QUIC и TLS для QUIC",
+   "url": "https://datatracker.ietf.org/doc/html/rfc9000.html"
+  },
+  "22": {
+   "title": "DPI и анализ зашифрованного трафика — RFC 9312: наблюдаемость и управление QUIC",
+   "url": "https://datatracker.ietf.org/doc/rfc9312/"
+  },
+  "23": {
+   "title": "DPI и анализ зашифрованного трафика — RFC 9849: Encrypted ClientHello и его границы",
+   "url": "https://datatracker.ietf.org/doc/rfc9849/"
+  },
+  "24": {
+   "title": "DPI и анализ зашифрованного трафика — USENIX Security 2023: пассивное обнаружение полностью зашифрованного proxy-трафика",
+   "url": "https://www.usenix.org/conference/usenixsecurity23/presentation/wu-mingshi"
+  },
+  "25": {
+   "title": "DPI и анализ зашифрованного трафика — FOCI 2020: active probing и probe-resistant proxies",
+   "url": "https://www.usenix.org/system/files/foci20-paper-frolov.pdf"
+  },
+  "26": {
+   "title": "Сетевая инфраструктура — RFC 4786: Operation of Anycast Services",
+   "url": "https://www.rfc-editor.org/rfc/rfc4786.html"
+  },
+  "27": {
+   "title": "Сетевая инфраструктура — RFC 4291: IPv6 Addressing Architecture",
+   "url": "https://www.rfc-editor.org/rfc/rfc4291.html"
+  },
+  "28": {
+   "title": "Сетевая инфраструктура — AWS Global Accelerator: how it works",
+   "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html"
+  },
+  "29": {
+   "title": "Сетевая инфраструктура — AWS Global Accelerator endpoints",
+   "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html"
+  }
+ },
+ "slov": 10836,
+ "min": 68
+}

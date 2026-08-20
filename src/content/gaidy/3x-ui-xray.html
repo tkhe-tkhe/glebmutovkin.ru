@@ -1,0 +1,2459 @@
+
+<div class="note"><b>Версии</b><p>Версия справочника: 0.11 (содержательная редакция для последующей верстки)<br>Срез интерфейса: <strong>3x-ui v3.6.0</strong><br>Xray-core в официальной сборке 3x-ui v3.6.0: <strong>v26.7.28</strong><br>Дата проверки: <strong>20 августа 2026 года</strong></p></div>
+<h2 id="о-документе">О документе</h2>
+<p>Этот справочник объясняет соединение от нижних сетевых уровней к настройкам 3x-ui, а затем последовательно разбирает создание inbound и раздел <strong>Xray Configs</strong>. Названия полей оставлены такими, как в панели, а рядом дано русское назначение.</p>
+<p>Справочник основан на исходном коде и документации стабильного релиза 3x-ui v3.6.0, а также на актуальной документации Xray-core. Перечень полей дополнительно сверен с пользовательскими скриншотами; сами скриншоты в документ не включены.</p>
+<h3 id="границы-актуальности">Границы актуальности</h3>
+<ul>
+<li>Здесь описаны стабильные и реально используемые возможности. Экспериментальная маска Gecko не включена в рабочие рекомендации.</li>
+<li>TUN сохранён во фронтенде 3x-ui для чтения старых записей, но текущий серверный валидатор не принимает его как новый Xray inbound. Он рассматривается только как совместимость с прежними конфигурациями.</li>
+<li>Поле <strong>External Proxy</strong>, присутствовавшее в старом редакторе inbound, в v3.6.0 заменено страницей <strong>Hosts</strong>. Старые записи продолжают читаться, но редактировать их следует уже через Hosts.</li>
+<li>3x-ui развивается быстро. Перед применением справочника к другой версии панели нужно проверить changelog и схему этой версии.</li>
+</ul>
+<p>Официальные точки сверки: <a class="link" href="https://github.com/MHSanaei/3x-ui/releases/tag/v3.6.0" target="_blank" rel="noopener">3x-ui v3.6.0</a>, <a class="link" href="https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/inbounds.mdx" target="_blank" rel="noopener">документация 3x-ui по inbound</a>, <a class="link" href="https://xtls.github.io/en/config/" target="_blank" rel="noopener">структура конфигурации Xray</a>.</p>
+<hr>
+<h2 id="1-карта-соединения-что-находится-на-каком-уровне">1. Карта соединения: что находится на каком уровне</h2>
+<p>Многие ошибки начинаются с попытки сравнить сущности разных уровней. VLESS нельзя корректно сравнить с TLS, а REALITY — с TCP: они отвечают на разные вопросы.</p>
+<pre><code>Приложение пользователя
+        │
+        ▼
+Прокси-протокол и идентификация клиента
+VLESS / Trojan / VMess / Shadowsocks / Hysteria2 / HTTP / Mixed
+        │
+        ▼
+Режим протокола
+например, VLESS flow: XTLS Vision
+        │
+        ▼
+Транспорт Xray
+RAW / WebSocket / gRPC / XHTTP / HTTPUpgrade / mKCP / Hysteria QUIC
+        │
+        ▼
+Защита транспортного соединения
+TLS / REALITY / none
+        │
+        ▼
+FinalMask и обфускация
+Salamander / Fragment / XMC / специальные UDP-маски
+        │
+        ▼
+TCP или UDP
+        │
+        ▼
+IPv4 или IPv6
+        │
+        ▼
+Маршрутизаторы, провайдер и Интернет
+</code></pre>
+<p>Это практическая модель Xray, а не буквальное переложение OSI. Несколько технологий пересекают границы уровней, но такая схема помогает выбирать совместимые поля.</p>
+<h3 id="1-1-ip-уровень">1.1. IP-уровень</h3>
+<p>IP отвечает за доставку пакета между адресами. На каждом участке маршрута маршрутизируемый адрес назначения должен быть известен сети. TLS, REALITY, ECH и прокси-протокол не могут сделать IP невидимым для маршрутизаторов.</p>
+<p>Можно скрыть <strong>origin IP от конкретного наблюдателя</strong>, поставив перед сервером CDN, relay, reverse proxy или cloud edge. Тогда провайдер клиента видит адрес посредника, а посредник знает адрес backend. Подробнее — в главе 11.</p>
+<h3 id="1-2-tcp-и-udp">1.2. TCP и UDP</h3>
+<p><strong>TCP</strong> создаёт соединение, подтверждает доставку, восстанавливает порядок и регулирует поток. Подходит для RAW, WebSocket, gRPC, XHTTP и HTTPUpgrade.</p>
+<p><strong>UDP</strong> передаёт отдельные датаграммы без TCP-подтверждений. На нём работают QUIC/Hysteria2 и часть специальных режимов. Потерю, порядок и контроль перегрузки в таком случае реализует верхний протокол, например QUIC.</p>
+<h3 id="1-3-транспорт-xray">1.3. Транспорт Xray</h3>
+<p>Транспорт определяет, как поток прокси-протокола переносится поверх TCP или UDP.</p>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Транспорт в панели</th>
+<th>База</th>
+<th>Для чего применяют</th>
+<th>Практическое замечание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RAW (в JSON исторически <code>tcp</code>)</td>
+<td>TCP</td>
+<td>Минимум накладных расходов, прямое соединение</td>
+<td>Основной вариант для VLESS Vision + REALITY</td>
+</tr>
+<tr>
+<td>WebSocket</td>
+<td>HTTP/1.1 поверх TCP</td>
+<td>Работа через reverse proxy/CDN</td>
+<td>Удобен и совместим, но имеет HTTP-накладные расходы</td>
+</tr>
+<tr>
+<td>gRPC</td>
+<td>HTTP/2 поверх TCP</td>
+<td>Проксирование через HTTP/2-инфраструктуру</td>
+<td>Требует корректных ALPN, service name и поддержки proxy</td>
+</tr>
+<tr>
+<td>XHTTP</td>
+<td>HTTP поверх TCP</td>
+<td>Гибкие режимы загрузки/выгрузки, CDN и разделение каналов</td>
+<td>Много параметров; значения клиента и сервера должны совпадать</td>
+</tr>
+<tr>
+<td>HTTPUpgrade</td>
+<td>HTTP/1.1 Upgrade поверх TCP</td>
+<td>Схема, похожая на WebSocket, с меньшей спецификой WS</td>
+<td>Нужна поддержка Upgrade у промежуточного proxy</td>
+</tr>
+<tr>
+<td>mKCP</td>
+<td>UDP</td>
+<td>Собственный надёжный поток поверх UDP</td>
+<td>Обычно заметный профиль и расход; TLS/REALITY в текущем UI не предлагаются</td>
+</tr>
+<tr>
+<td>Hysteria2</td>
+<td>QUIC/UDP</td>
+<td>Производительность на потерях и нестабильных линиях</td>
+<td>TLS обязателен; UDP может блокироваться или ограничиваться</td>
+</tr>
+</tbody></table></div></div>
+<p>Актуальная матрица транспорта панели приведена в <a class="link" href="https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/transports.mdx" target="_blank" rel="noopener">документации 3x-ui</a>.</p>
+<h3 id="1-4-tls-reality-и-finalmask-не-одно-и-то-же">1.4. TLS, REALITY и FinalMask — не одно и то же</h3>
+<ul>
+<li><strong>TLS</strong> шифрует транспорт и подтверждает сервер сертификатом.</li>
+<li><strong>REALITY</strong> модифицирует TLS-рукопожатие Xray и использует реальный сторонний target как правдоподобное прикрытие неавторизованных соединений. Это не отдельный прокси-протокол.</li>
+<li><strong>FinalMask</strong> меняет внешний вид уже выбранного транспорта. Маска не обязана быть шифрованием и должна одинаково поддерживаться на клиенте и сервере.</li>
+<li><strong>uTLS fingerprint</strong> изменяет форму ClientHello, имитируя семейство клиентов. Он не превращает Xray в полноценный браузер.</li>
+</ul>
+<p>Практическая матрица security текущего редактора:</p>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Security</th>
+<th>Протоколы</th>
+<th>Транспорты</th>
+<th>Примечание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>none</td>
+<td>Зависит от протокола</td>
+<td>Доступные transport без защиты</td>
+<td>Только доверенный/внутренний участок; публичный credential и трафик могут быть уязвимы</td>
+</tr>
+<tr>
+<td>TLS</td>
+<td>VLESS, VMess, Trojan, Shadowsocks; Hysteria2 всегда TLS</td>
+<td>RAW, WS, gRPC, XHTTP, HTTPUpgrade; у Hysteria собственный QUIC transport</td>
+<td>Сертификат и SNI должны пройти проверку</td>
+</tr>
+<tr>
+<td>REALITY</td>
+<td>VLESS, Trojan</td>
+<td>RAW, XHTTP, gRPC</td>
+<td>Требуются совместимый client core, target, serverNames и ключи</td>
+</tr>
+</tbody></table></div></div>
+<p>UI скрывает несовместимые сочетания. Принудительная сборка другой комбинации через Advanced не означает, что core или клиент её примут.</p>
+<hr>
+<h2 id="2-прокси-протоколы-vless-trojan-и-hysteria2">2. Прокси-протоколы: VLESS, Trojan и Hysteria2</h2>
+<h3 id="2-1-краткое-сравнение">2.1. Краткое сравнение</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Свойство</th>
+<th>VLESS</th>
+<th>Trojan</th>
+<th>Hysteria2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Роль</td>
+<td>Лёгкий протокол идентификации и переноса Xray</td>
+<td>Протокол с парольной аутентификацией, рассчитанный на TLS-подобную схему</td>
+<td>Прокси поверх QUIC/UDP</td>
+</tr>
+<tr>
+<td>Базовый транспорт</td>
+<td>RAW, WS, gRPC, XHTTP, HTTPUpgrade, mKCP</td>
+<td>RAW, WS, gRPC, XHTTP, HTTPUpgrade, mKCP</td>
+<td>Собственный Hysteria transport поверх QUIC</td>
+</tr>
+<tr>
+<td>Защита</td>
+<td>none, TLS или REALITY по допустимой комбинации</td>
+<td>Обычно TLS; REALITY доступен на совместимых транспортных вариантах</td>
+<td>TLS обязателен</td>
+</tr>
+<tr>
+<td>Идентификатор клиента</td>
+<td>UUID и, при необходимости, VLESS Encryption/Auth</td>
+<td>Password</td>
+<td>Auth string</td>
+</tr>
+<tr>
+<td>Сильная сторона</td>
+<td>Максимальная гибкость Xray; Vision/REALITY</td>
+<td>Простая модель доступа и широкая совместимость</td>
+<td>Потери, высокая задержка, мобильные и нестабильные сети</td>
+</tr>
+<tr>
+<td>Ограничение</td>
+<td>Много комбинаций и требований совместимости</td>
+<td>Нет преимуществ Vision как у VLESS</td>
+<td>Зависимость от UDP и более заметный QUIC-профиль</td>
+</tr>
+</tbody></table></div></div>
+<h3 id="2-2-vless">2.2. VLESS</h3>
+<p>VLESS отделяет аутентификацию от транспортного шифрования. Поле <code>decryption</code> на inbound обычно равно <code>none</code>: защиту обеспечивает TLS/REALITY либо внешний доверенный контур. Незащищённый публичный VLESS применять не следует.</p>
+<p>Ключевые поля:</p>
+<ul>
+<li><code>id</code> — UUID клиента;</li>
+<li><code>flow</code> — режим XTLS; актуальные значения панели: пусто, <code>xtls-rprx-vision</code>, <code>xtls-rprx-vision-udp443</code>;</li>
+<li><code>encryption</code> — текущий механизм VLESS Encryption/Auth, а не TLS;</li>
+<li><code>testpre</code>, <code>testseed</code> — дополнительные параметры проверки/посева для новых режимов VLESS; изменять их стоит только при совпадающей поддержке клиента;</li>
+<li><code>reverseTag</code>, <code>reverseSniffing</code> — обратный VLESS-канал и его sniffing, специальный сценарий.</li>
+</ul>
+<p>Генератор VLESS Auth в v3.6.0 предлагает семейства <code>x25519</code>, <code>x25519_xorpub</code>, <code>x25519_random</code>, <code>mlkem768</code>, <code>mlkem768_xorpub</code>, <code>mlkem768_random</code>. Это отдельный слой аутентификации VLESS. Он не заменяет TLS/REALITY и требует совместимого клиентского ядра.</p>
+<p>Подробно значения <code>flow</code>, XTLS Vision и их ограничения разобраны в следующем разделе.</p>
+<h3 id="2-3-vless-flow-и-xtls-vision">2.3. VLESS Flow и XTLS Vision</h3>
+<h4 id="что-означает-flow">Что означает <code>flow</code></h4>
+<p><code>flow</code> — параметр VLESS-пользователя и VLESS outbound, выбирающий алгоритм XTLS. Это не транспорт и не transport security:</p>
+<pre><code>VLESS                         ← протокол
+flow: xtls-rprx-vision        ← алгоритм обработки потока XTLS
+RAW или XHTTP                 ← транспорт
+TLS / REALITY / VLESS Enc     ← защита подходящей схемы
+TCP/IP                        ← нижние уровни
+</code></pre>
+<p>Flow клиента и сервера должны быть совместимы. Выбор значения только в панели или только в клиенте не создаёт рабочую XTLS-сессию.</p>
+<h4 id="актуальные-значения">Актуальные значения</h4>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Значение в 3x-ui</th>
+<th>Поведение</th>
+<th>Когда выбирать</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>пусто / none в UI</td>
+<td>Обычный VLESS-поток без XTLS Vision; в JSON это пустая строка или отсутствие <code>flow</code>, но не буквальная строка <code>&quot;none&quot;</code></td>
+<td>Совместимость, намеренно обычный TLS proxy или схема, где Vision недоступен</td>
+</tr>
+<tr>
+<td><code>xtls-rprx-vision</code></td>
+<td>XTLS Vision с рандомным заполнением внутреннего handshake; клиент перехватывает назначения UDP/443, чтобы приложения по возможности перешли с QUIC на TCP HTTPS</td>
+<td>Основной вариант для VLESS + RAW + TLS/REALITY и обычных браузерных сценариев</td>
+</tr>
+<tr>
+<td><code>xtls-rprx-vision-udp443</code></td>
+<td>Тот же Vision, но клиент <strong>не</strong> перехватывает destination UDP/443</td>
+<td>Когда приложение обязательно использует QUIC и не умеет корректно вернуться к TCP</td>
+</tr>
+</tbody></table></div></div>
+<p>Важно: <code>udp443</code> относится к <strong>целевому UDP-порту 443 внутри проксируемого трафика</strong>, а не к порту, на котором слушает VLESS inbound.</p>
+<p>В Xray-core v26.7.28 inbound принимает только пустой flow или <code>xtls-rprx-vision</code>. Суффикс <code>-udp443</code> имеет смысл на клиентском VLESS outbound. Поэтому 3x-ui v3.6.0 работает асимметрично:</p>
+<pre><code>В базе 3x-ui и клиентской ссылке:
+flow = xtls-rprx-vision-udp443
+
+В сгенерированном server inbound Xray:
+flow = xtls-rprx-vision
+</code></pre>
+<p>Это не потеря настройки. Панель намеренно нормализует серверную запись до базового Vision, а различие «перехватывать ли UDP/443» передаёт клиенту в subscription/share link.</p>
+<h4 id="как-работает-обычныи-tls-proxy">Как работает обычный TLS proxy</h4>
+<p>При посещении HTTPS-сайта существуют два разных защищённых участка:</p>
+<pre><code>Внешняя защита proxy:
+клиент Xray ══ TLS/REALITY ══ сервер Xray
+
+Внутренняя прикладная защита:
+браузер ══ TLS сайта ══ конечный веб-сервер
+</code></pre>
+<p>В обычном TLS proxy внутренние TLS records сайта целиком переносятся внутри внешнего защищённого tunnel. Такой TLS-in-TLS создаёт дополнительные копирования данных, а размеры и последовательности records могут иметь характерный профиль.</p>
+<h4 id="что-меняет-vision">Что меняет Vision</h4>
+<p>XTLS Vision:</p>
+<ol>
+<li>добавляет случайное заполнение к внутреннему handshake, уменьшая стабильность его размерных признаков;</li>
+<li>распознаёт подходящий внутренний TLS-поток, не расшифровывая HTTPS-содержимое сайта;</li>
+<li>после завершения необходимой служебной части старается передавать уже зашифрованные данные внутреннего TLS напрямую, без лишней обработки вторым слоем;</li>
+<li>на подходящем Linux TCP-пути может передать копирование ядру ОС через <code>splice</code>.</li>
+</ol>
+<p>Vision не подменяет сертификат конечного сайта, не получает plaintext HTTPS и не отменяет проверку сертификата браузером. Он оптимизирует перенос уже зашифрованного прикладного потока.</p>
+<h4 id="direct-copy-и-linux-splice">Direct copy и Linux <code>splice</code></h4>
+<p><code>splice</code> — системная функция Linux, позволяющая ядру передавать TCP-данные между файловыми дескрипторами без постоянного копирования через память процесса Xray. Это уменьшает CPU overhead и переключения контекста.</p>
+<p>Для наиболее полного эффекта нужны:</p>
+<ul>
+<li>Linux на узле, где возможен <code>splice</code>;</li>
+<li>чистый TCP-путь на соответствующем участке;</li>
+<li>VLESS с Vision;</li>
+<li>TLS 1.3 во внутреннем прикладном соединении для direct-copy сценария;</li>
+<li>отсутствие промежуточного слоя, который обязан заново разбирать/упаковывать каждую порцию данных.</li>
+</ul>
+<p>Если условия не выполнены, соединение не обязано ломаться: Xray остаётся на обычной обработке, а выгода будет меньше. На Windows, iOS/Android или при нетипичной транспортной цепочке не следует ожидать Linux <code>splice</code>, хотя padding и протокольная логика Vision всё ещё могут использоваться.</p>
+<p>При активном <code>splice</code> статистика скорости/трафика способна обновляться с задержкой и окончательно учитываться после закрытия соединения: userspace Xray не видит каждый переданный ядром фрагмент в реальном времени.</p>
+<h4 id="поддерживаемые-сочетания-в-3x-ui-v3-6-0">Поддерживаемые сочетания в 3x-ui v3.6.0</h4>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Схема</th>
+<th>Flow доступен</th>
+<th>Что происходит</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VLESS + RAW/TCP + TLS</td>
+<td>Да</td>
+<td>Классический Vision; для внутреннего TLS 1.3 возможен direct copy/splice</td>
+</tr>
+<tr>
+<td>VLESS + RAW/TCP + REALITY</td>
+<td>Да</td>
+<td>Типовая серверная схема: REALITY защищает внешний участок, Vision оптимизирует внутренний TLS-поток</td>
+</tr>
+<tr>
+<td>VLESS + XHTTP + VLESS Encryption</td>
+<td>Да</td>
+<td>Vision «проникает» через VLESS Encryption; при не-TCP нижнем пути полного TCP splice не будет</td>
+</tr>
+<tr>
+<td>VLESS + XHTTP без VLESS Encryption</td>
+<td>Нет в штатном UI</td>
+<td>Нет слоя VLESS Encryption, на который рассчитана эта комбинация</td>
+</tr>
+<tr>
+<td>VLESS + WS/gRPC/HTTPUpgrade/mKCP без VLESS Encryption-сценария</td>
+<td>Нет в штатном UI</td>
+<td>Транспорт требует собственной упаковки, классический RAW Vision не применяется</td>
+</tr>
+<tr>
+<td>VMess/Trojan/Shadowsocks</td>
+<td>Нет</td>
+<td><code>flow</code> относится к VLESS; совпадение TLS/REALITY само по себе не добавляет Vision</td>
+</tr>
+</tbody></table></div></div>
+<p>На уровне Xray-core VLESS Encryption снимает ограничение по нижнему транспорту: если прямое TCP-копирование невозможно, Vision экономит обработку слоя VLESS Encryption. Панель v3.6.0 явно открывает этот дополнительный вариант для XHTTP + включённого VLESS Encryption.</p>
+<p>REALITY и Vision выполняют разные задачи:</p>
+<ul>
+<li>REALITY отвечает за внешний client↔server handshake и его вид;</li>
+<li>Vision отвечает за обработку потока VLESS и внутреннего TLS;</li>
+<li>uTLS fingerprint формирует ClientHello внешнего соединения.</li>
+</ul>
+<p>Поэтому комбинация VLESS + RAW + REALITY + Vision + uTLS логична, но ни один из элементов не скрывает destination IP сервера.</p>
+<h4 id="почему-обычныи-vision-перехватывает-udp-443">Почему обычный Vision перехватывает UDP/443</h4>
+<p>Браузер может выбрать HTTP/3 поверх QUIC/UDP вместо HTTPS поверх TCP. UDP-поток нельзя передать через TCP <code>splice</code>, поэтому доля трафика, для которой Vision получает максимальную выгоду, уменьшается.</p>
+<p><code>xtls-rprx-vision</code> блокирует/перехватывает проксируемый destination UDP/443, рассчитывая, что приложение повторит соединение по TCP. Он <strong>не конвертирует QUIC в TCP</strong>. Если приложение не умеет fallback, соединение не заработает.</p>
+<p><code>xtls-rprx-vision-udp443</code> оставляет QUIC разрешённым. Выбирайте его, когда подтверждено, что конкретное приложение требует UDP/443. При этом:</p>
+<ul>
+<li>inbound/outbound/routing должны действительно переносить UDP;</li>
+<li>Vision splice к этому QUIC-потоку не применяется;</li>
+<li>сетевой профиль и блокируемость UDP остаются свойствами QUIC;</li>
+<li>для большинства браузеров базовый <code>xtls-rprx-vision</code> остаётся более предсказуемым вариантом.</li>
+</ul>
+<h4 id="mux-xudp-и-xmux">Mux, XUDP и XMUX</h4>
+<p>3x-ui не включает обычный outbound Mux, если у VLESS задан непустой <code>flow</code>. Vision рассчитывает на свойства отдельного потока, тогда как Mux упаковывает несколько логических соединений в одно транспортное соединение.</p>
+<p>Не следует смешивать:</p>
+<ul>
+<li>suffix <code>-udp443</code> — разрешение клиенту не перехватывать destination QUIC;</li>
+<li>Mux <code>xudpProxyUDP443</code> — политика UDP/443 внутри XUDP;</li>
+<li>XHTTP XMUX — собственное мультиплексирование XHTTP.</li>
+</ul>
+<p>В классической RAW + Vision схеме обычный Mux оставляют выключенным. Для XHTTP используются параметры XMUX самого XHTTP, если они нужны и поддерживаются обеими сторонами.</p>
+<h4 id="совместимость-клиента-и-диагностика">Совместимость клиента и диагностика</h4>
+<p>Проверьте:</p>
+<ol>
+<li>клиентское ядро поддерживает выбранный flow и текущие поля REALITY/VLESS Encryption;</li>
+<li>share link действительно содержит <code>flow=xtls-rprx-vision</code> или <code>flow=xtls-rprx-vision-udp443</code>;</li>
+<li>server runtime содержит для пользователя <code>xtls-rprx-vision</code>;</li>
+<li>transport/security/VLESS Encryption входят в разрешённую комбинацию;</li>
+<li>обычный Mux не включён одновременно с flow;</li>
+<li>при <code>udp443</code> UDP разрешён firewall, routing и клиентом;</li>
+<li>ошибка не вызвана различием UUID, SNI, short ID, VLESS Encryption keys или версии core.</li>
+</ol>
+<p>Если серверному пользователю назначен Vision, а клиент приходит без совместимого flow, Xray отклонит такой режим. Если старый клиент не знает новое значение, решение — обновить ядро или выдать ему отдельный совместимый профиль, а не вручную подменять неизвестные поля.</p>
+<h4 id="устаревшие-xtls-значения">Устаревшие XTLS-значения</h4>
+<p><code>xtls-rprx-direct</code>, <code>xtls-rprx-origin</code> и <code>streamSettings.security: &quot;xtls&quot;</code> относятся к старым поколениям конфигурации. Xray-core v26.7.28 принимает в VLESS flow только пустое значение, <code>xtls-rprx-vision</code> и — на outbound — <code>xtls-rprx-vision-udp443</code>. Старые значения нельзя копировать в актуальную конфигурацию; для нового подключения используют TLS или REALITY как transport security и Vision как VLESS flow.</p>
+<p>Официальная семантика flow, UDP/443 и splice: <a class="link" href="https://xtls.github.io/en/config/outbounds/vless.html" target="_blank" rel="noopener">VLESS outbound Xray</a> и <a class="link" href="https://xtls.github.io/en/config/inbounds/vless.html" target="_blank" rel="noopener">VLESS inbound Xray</a>.</p>
+<h3 id="2-4-trojan">2.4. Trojan</h3>
+<p>Trojan использует пароль клиента. На inbound его собственная форма минимальна: список клиентов и, для допустимой RAW-схемы, fallbacks. Большинство важных решений находятся в Stream Settings: транспорт, TLS/REALITY, SNI, ALPN и сертификаты.</p>
+<p>Trojan удобно применять, когда нужна простая парольная модель и совместимый клиент. Пароль должен быть случайным и уникальным для пользователя; повторное использование затрудняет отзыв доступа и аудит.</p>
+<h3 id="2-5-hysteria2">2.5. Hysteria2</h3>
+<p>Hysteria2 в текущем Xray работает как версия <code>2</code> поверх QUIC/UDP. В панели выбирается протокол <code>hysteria</code>, но в ссылках и клиентах он обычно представлен как Hysteria2.</p>
+<p>Основные элементы:</p>
+<ul>
+<li>клиентский <code>auth</code> — секрет доступа;</li>
+<li><code>udpIdleTimeout</code> — сколько секунд неактивная UDP-сессия сохраняется;</li>
+<li><code>masquerade</code> — ответ неавторизованному HTTP-запросу: обычный 404, proxy, каталог файлов или статическая строка;</li>
+<li>TLS — обязательный слой с SNI/ALPN/сертификатом;</li>
+<li>FinalMask <code>Salamander</code> — парольная UDP-обфускация;</li>
+<li>QUIC-параметры — congestion, BBR profile, brutal up/down, UDP Hop, idle/keepalive, лимиты потоков и окна.</li>
+</ul>
+<p>Hysteria2 полезна не потому, что «UDP всегда быстрее», а когда QUIC-контроль перегрузки лучше соответствует линии. В сетях с блокировкой UDP нужен резервный TCP-вариант.</p>
+<h3 id="2-6-другие-рабочие-inbound-протоколы-панели">2.6. Другие рабочие inbound-протоколы панели</h3>
+<ul>
+<li><strong>VMess</strong> — исторический протокол экосистемы V2Ray/Xray. Поля клиента: UUID, <code>security</code>, <code>alterId</code>; для новых конфигураций <code>alterId</code> обычно <code>0</code>.</li>
+<li><strong>Shadowsocks</strong> — пароль и cipher. В v3.6.0 доступны <code>aes-256-gcm</code>, <code>chacha20-poly1305</code>, <code>chacha20-ietf-poly1305</code>, <code>xchacha20-ietf-poly1305</code> и семейство SS-2022: <code>2022-blake3-aes-128-gcm</code>, <code>2022-blake3-aes-256-gcm</code>, <code>2022-blake3-chacha20-poly1305</code>. У SS-2022 модель master/client passwords отличается от прежних AEAD-вариантов.</li>
+<li><strong>WireGuard</strong> — L3-туннель с ключами peer, адресами и AllowedIPs. Это не маскировочный HTTP-протокол.</li>
+<li><strong>HTTP</strong> — обычный HTTP proxy с учётными записями; без TLS внешний наблюдатель видит содержимое HTTP-прокси-сессии.</li>
+<li><strong>Mixed</strong> — совмещённый HTTP/SOCKS-вход, с auth/noauth и опциональным UDP.</li>
+<li><strong>Tunnel</strong> — перенаправление адреса/порта и <code>followRedirect</code>, аналог сценария dokodemo-door.</li>
+<li><strong>MTProto</strong> — Telegram proxy через управляемый 3x-ui процесс <code>mtg-multi</code>, а не Xray inbound. У него отдельные FakeTLS/domain-fronting/IPv4/IPv6 параметры.</li>
+</ul>
+<hr>
+<h2 id="3-tls-reality-sni-ech-alpn-и-utls">3. TLS, REALITY, SNI, ECH, ALPN и uTLS</h2>
+<h3 id="3-1-tls-по-шагам">3.1. TLS по шагам</h3>
+<p>Упрощённый TLS-сеанс выглядит так:</p>
+<pre><code>ClientHello: SNI, ALPN, версии, наборы шифров, расширения
+        ↓
+ServerHello + сертификат
+        ↓
+Проверка имени/цепочки или pin
+        ↓
+Согласование ключей
+        ↓
+Зашифрованные данные транспорта
+</code></pre>
+<p>TLS скрывает прикладной трафик, но не маршрутизируемый IP. Обычный ClientHello также раскрывает SNI; ECH может скрыть внутренний ClientHello при выполнении всех условий.</p>
+<h3 id="3-2-sni">3.2. SNI</h3>
+<p><strong>SNI (Server Name Indication)</strong> — имя сайта, которое клиент передаёт серверу в ClientHello, чтобы один IP мог обслуживать несколько сертификатов и виртуальных хостов.</p>
+<p>В 3x-ui поле SNI встречается в нескольких контекстах:</p>
+<ul>
+<li>TLS <code>serverName</code> на клиентской стороне — имя, отправляемое серверу;</li>
+<li>TLS <code>rejectUnknownSni</code> на сервере — отклонить рукопожатие с неизвестным именем;</li>
+<li>REALITY <code>serverNames</code> — разрешённые имена клиента, обычно совпадающие с SAN сертификата target;</li>
+<li>fallback <code>name</code> — отбор по принятому SNI;</li>
+<li>External Proxy/Hosts <code>sni</code> — SNI следующего участка.</li>
+</ul>
+<p>SNI не является паролем. Несовпадение SNI, сертификата, reverse proxy и ALPN часто приводит к ошибке рукопожатия. Подмена SNI не скрывает IP и не гарантирует, что соединение выглядит как настоящий браузер.</p>
+<h3 id="3-3-alpn">3.3. ALPN</h3>
+<p><strong>ALPN</strong> согласует прикладной протокол внутри TLS. Типичные значения:</p>
+<ul>
+<li><code>h2</code> — HTTP/2, необходим для классического gRPC;</li>
+<li><code>http/1.1</code> — WebSocket и HTTPUpgrade;</li>
+<li><code>h3</code> — HTTP/3/QUIC, когда его поддерживает конкретная схема.</li>
+</ul>
+<p>ALPN не шифрует трафик. Он должен соответствовать транспорту и промежуточному proxy. Список без необходимости расширять не следует: необычная комбинация становится частью fingerprint.</p>
+<h3 id="3-4-utls-fingerprint">3.4. uTLS fingerprint</h3>
+<p>Поле <code>fingerprint</code> управляет профилем ClientHello: <code>chrome</code>, <code>firefox</code>, <code>safari</code>, <code>ios</code>, <code>android</code>, <code>edge</code>, <code>360</code>, <code>qq</code>, <code>random</code>, <code>randomized</code>, <code>randomizednoalpn</code>, <code>unsafe</code> или отсутствие имитации.</p>
+<p>uTLS имитирует главным образом форму ClientHello. Дальнейшее поведение соединения, порядок HTTP-заголовков, трафик и тайминги всё равно могут отличаться от браузера. Обычно выбирают распространённый стабильный профиль, поддерживаемый клиентом, и не меняют его без причины.</p>
+<h3 id="3-5-ech">3.5. ECH</h3>
+<p><strong>Encrypted ClientHello</strong> шифрует внутреннюю часть ClientHello, включая реальный SNI. Снаружи остаются IP, транспортные признаки и внешний ClientHello с публичным именем. ECH требует совместимых клиента, сервера, конфигурации ECH и механизма доставки параметров, обычно DNS HTTPS/SVCB.</p>
+<p>Поля панели:</p>
+<ul>
+<li><code>echServerKeys</code> — ключи ECH на принимающей стороне;</li>
+<li><code>echConfigList</code> — конфигурация ECH на клиентской стороне;</li>
+<li>генерация/очистка пары ECH;</li>
+<li><code>echSockopt</code> — сетевые параметры отдельного ECH-диалера: <code>dialerProxy</code>, <code>domainStrategy</code>, <code>tcpFastOpen</code>, <code>tcpMptcp</code>.</li>
+</ul>
+<p>ECH не скрывает IP. Для прикладного sniffing внутренний SNI может стать недоступен: Xray увидит только доступные внешние метаданные. В текущей реализации Xray внешний ALPN формируется отдельно; актуальные детали следует проверять в <a class="link" href="https://xtls.github.io/en/config/transports/tls.html" target="_blank" rel="noopener">документации TLS Xray</a>.</p>
+<h3 id="3-6-все-актуальные-tls-поля-в-редакторе">3.6. Все актуальные TLS-поля в редакторе</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+<th>Когда менять</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>serverName</code></td>
+<td>SNI клиента</td>
+<td>Когда соединение идёт по имени, отличному от address</td>
+</tr>
+<tr>
+<td><code>cipherSuites</code></td>
+<td>Разрешённые наборы шифров</td>
+<td>Обычно оставить auto; ручное ограничение ухудшает совместимость</td>
+</tr>
+<tr>
+<td><code>minVersion</code>, <code>maxVersion</code></td>
+<td>Границы TLS, обычно 1.2–1.3</td>
+<td>Для требований совместимости/политики</td>
+</tr>
+<tr>
+<td><code>fingerprint</code></td>
+<td>Профиль uTLS ClientHello</td>
+<td>Для правдоподобного клиентского отпечатка</td>
+</tr>
+<tr>
+<td><code>alpn</code></td>
+<td>Допустимые прикладные протоколы</td>
+<td>Согласовать с WS/gRPC/XHTTP/HTTPUpgrade</td>
+</tr>
+<tr>
+<td><code>curvePreferences</code></td>
+<td>Предпочтения key exchange: X25519MLKEM768, X25519, P-256/384/521</td>
+<td>Оставлять по умолчанию без явной политики</td>
+</tr>
+<tr>
+<td><code>rejectUnknownSni</code></td>
+<td>Отклонять неизвестный SNI</td>
+<td>На сервере с известным набором имён</td>
+</tr>
+<tr>
+<td><code>disableSystemRoot</code></td>
+<td>Не использовать системные корневые CA</td>
+<td>Только с собственными trust anchors</td>
+</tr>
+<tr>
+<td><code>enableSessionResumption</code></td>
+<td>Разрешить возобновление TLS-сессий</td>
+<td>Уменьшает повторную передачу сертификата; это не Xray 0-RTT</td>
+</tr>
+<tr>
+<td><code>verifyPeerCertByName</code></td>
+<td>Имя для проверки сертификата peer</td>
+<td>Когда проверяемое имя отличается от sent SNI/address</td>
+</tr>
+<tr>
+<td><code>pinnedPeerCertSha256</code></td>
+<td>SHA-256 pins сертификата peer</td>
+<td>Закрытый контур; обновлять при ротации сертификата</td>
+</tr>
+<tr>
+<td><code>masterKeyLog</code></td>
+<td>Запись TLS session secrets</td>
+<td>Только краткая диагностика; файл позволяет расшифровать захваченный трафик</td>
+</tr>
+</tbody></table></div></div>
+<h4 id="сертификаты-tls">Сертификаты TLS</h4>
+<p>Каждая запись сертификата содержит:</p>
+<ul>
+<li><code>useFile</code> — читать файлы или хранить inline;</li>
+<li><code>certificateFile</code>, <code>keyFile</code> — пути к PEM;</li>
+<li><code>certificate</code>, <code>key</code> — inline PEM;</li>
+<li><code>ocspStapling</code> — интервал обновления OCSP staple в секундах;</li>
+<li><code>oneTimeLoading</code> — загрузить один раз, без дальнейшего чтения файла;</li>
+<li><code>usage</code> — <code>encipherment</code>, <code>verify</code> или <code>issue</code>;</li>
+<li><code>buildChain</code> — достраивать цепочку при <code>issue</code>.</li>
+</ul>
+<p>Pinning может заменить обычную проверку CA/имени. Это повышает контроль, но создаёт операционный риск: после ротации сертификата клиенты перестанут подключаться, пока pin не обновлён.</p>
+<h3 id="3-7-reality">3.7. REALITY</h3>
+<p>REALITY — транспортная защита Xray, изменяющая TLS-рукопожатие. Она доступна в текущей панели для VLESS/Trojan на RAW, XHTTP и gRPC. Это не CDN и не способ скрыть IP сервера. Точная семантика описана в <a class="link" href="https://xtls.github.io/en/config/transports/reality.html" target="_blank" rel="noopener">официальной документации REALITY</a>.</p>
+<pre><code>Совместимый клиент + правильные параметры
+        → REALITY-сессия Xray
+
+Сканер / неверный клиент
+        → соединение передаётся REALITY target
+</code></pre>
+<h4 id="поля-reality">Поля REALITY</h4>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>show</code></td>
+<td>Диагностический вывод REALITY; в штатной работе выключен</td>
+</tr>
+<tr>
+<td><code>xver</code></td>
+<td>Версия PROXY protocol к target: <code>0</code> — нет, <code>1</code> — v1, <code>2</code> — v2</td>
+</tr>
+<tr>
+<td><code>fingerprint</code></td>
+<td>uTLS-профиль клиента</td>
+</tr>
+<tr>
+<td><code>target</code></td>
+<td>Реальный TLS-сервис <code>host:port</code>, принимающий неавторизованный трафик; старое имя поля — <code>dest</code></td>
+</tr>
+<tr>
+<td><code>serverNames</code></td>
+<td>Допустимые SNI; wildcard не используется, имена должны соответствовать target</td>
+</tr>
+<tr>
+<td><code>maxTimediff</code></td>
+<td>Допустимая разница времени клиента и сервера в миллисекундах; <code>0</code> отключает проверку</td>
+</tr>
+<tr>
+<td><code>minClientVer</code>, <code>maxClientVer</code></td>
+<td>Диапазон объявляемых версий клиента</td>
+</tr>
+<tr>
+<td><code>shortIds</code></td>
+<td>Список идентификаторов: чётное число hex-символов, до 16; возможно пустое значение</td>
+</tr>
+<tr>
+<td><code>privateKey</code></td>
+<td>Серверный X25519 secret</td>
+</tr>
+<tr>
+<td><code>publicKey</code> / <code>password</code></td>
+<td>Клиентская часть пары; новая терминология Xray использует <code>password</code>, UI может показывать прежнее <code>publicKey</code></td>
+</tr>
+<tr>
+<td><code>spiderX</code></td>
+<td>Начальный путь для spider/crawler-поведения клиента</td>
+</tr>
+<tr>
+<td><code>mldsa65Seed</code></td>
+<td>Серверный seed ML-DSA-65</td>
+</tr>
+<tr>
+<td><code>mldsa65Verify</code></td>
+<td>Клиентский verify key ML-DSA-65</td>
+</tr>
+<tr>
+<td><code>masterKeyLog</code></td>
+<td>Диагностический TLS key log</td>
+</tr>
+<tr>
+<td><code>limitFallbackUpload</code>, <code>limitFallbackDownload</code></td>
+<td>Ограничение неавторизованного трафика: <code>afterBytes</code>, <code>bytesPerSec</code>, <code>burstBytesPerSec</code></td>
+</tr>
+</tbody></table></div></div>
+<p>Пустой <code>minClientVer</code> не обязательно означает «без ограничений»: в текущем core применяется встроенный минимум. Искусственно снижать его ради старого стороннего клиента следует только осознанно — это допускает старые TLS-отпечатки.</p>
+<p>Для target предпочтителен стабильный TLS-сервис в том же ASN/сетевом окружении, который действительно отвечает на выбранные SNI/ALPN. REALITY пересылает target неавторизованные запросы; неудачный target может выдать конфигурацию, создать нагрузку или быть недоступным из сети сервера. Встроенный scanner панели помогает проверить кандидата.</p>
+<p>Ограничители fallback сами формируют наблюдаемый профиль скорости, поэтому это не универсальное улучшение маскировки. Их используют как защиту ресурса, а не «для незаметности».</p>
+<hr>
+<h2 id="4-sniffing-что-он-видит-и-зачем-нужен">4. Sniffing: что он видит и зачем нужен</h2>
+<p>Sniffing выполняется после принятия и расшифровки inbound-трафика. Xray пытается восстановить имя назначения из доступных метаданных: HTTP Host, TLS ClientHello SNI, QUIC или FakeDNS. Затем это имя можно использовать в Routing.</p>
+<pre><code>Клиент
+  → inbound: доступ и расшифровка
+  → Sniffing: имя/метаданные
+  → Routing: первое совпавшее правило
+  → outbound или balancer
+  → Интернет
+</code></pre>
+<p>Sniffing <strong>не расшифровывает содержимое HTTPS</strong>, не скрывает IP и не является антивирусным DPI.</p>
+<h3 id="4-1-поля-sniffing">4.1. Поля Sniffing</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>enabled</code></td>
+<td>Включить анализ</td>
+</tr>
+<tr>
+<td><code>destOverride</code></td>
+<td>Какие источники могут заменить назначение: <code>http</code>, <code>tls</code>, <code>quic</code>, <code>fakedns</code></td>
+</tr>
+<tr>
+<td><code>metadataOnly</code></td>
+<td>Использовать только метаданные/FakeDNS, не ожидать payload</td>
+</tr>
+<tr>
+<td><code>routeOnly</code></td>
+<td>Применить распознанное имя только к маршрутизации, не подменять фактическое назначение</td>
+</tr>
+<tr>
+<td><code>ipsExcluded</code></td>
+<td>IP/CIDR, для которых sniffing не применяется</td>
+</tr>
+<tr>
+<td><code>domainsExcluded</code></td>
+<td>Домены, для которых sniffing не применяется</td>
+</tr>
+</tbody></table></div></div>
+<h3 id="4-2-выбор-режима">4.2. Выбор режима</h3>
+<ul>
+<li>Для доменных правил обычно включают <code>tls,http,quic</code> и рассматривают <code>routeOnly=true</code> как безопасный старт.</li>
+<li><code>routeOnly</code> важен для приложений, где подмена назначения на sniffed domain ломает соединение; исходный IP сохраняется, а домен участвует только в выборе маршрута.</li>
+<li><code>metadataOnly</code> полезен для FakeDNS и протоколов, где сервер говорит первым. Без него ожидание первых байтов клиента может ломать SMTP-подобные сценарии.</li>
+<li>Исключения используют для push-сервисов, голосовой связи, IoT и других известных конфликтов.</li>
+<li>ECH может скрыть внутренний SNI, поэтому маршрутизация по домену становится неполной. Иногда задачу решает контролируемый DNS/FakeDNS, но отключать ECH приложения без необходимости не следует.</li>
+</ul>
+<p>Подробные ограничения <code>routeOnly</code> и <code>metadataOnly</code> описаны в <a class="link" href="https://xtls.github.io/en/config/inbound.html" target="_blank" rel="noopener">InboundObject Xray</a>.</p>
+<hr>
+<h2 id="5-dpi-базовые-принципы-и-классификация-прокси-трафика">5. DPI: базовые принципы и классификация прокси-трафика</h2>
+<p><strong>DPI (Deep Packet Inspection)</strong> — не один конкретный алгоритм, а класс систем, которые сопоставляют пакеты и потоки с правилами или моделью классификации. DPI применяют для сетевой безопасности, QoS, обнаружения атак, корпоративной политики и цензурной фильтрации.</p>
+<p>Шифрование ограничивает содержательный анализ, но не делает поток невидимым. Даже TLS 1.3 допускает анализ по длинам и времени зашифрованных пакетов — это прямо отмечено в <a class="link" href="https://datatracker.ietf.org/doc/html/rfc8446.html" target="_blank" rel="noopener">RFC 8446</a>.</p>
+<h3 id="5-1-где-dpi-находится-в-сети">5.1. Где DPI находится в сети</h3>
+<pre><code>Клиент
+  → домашний/офисный router
+  → сеть доступа провайдера
+  → DPI / firewall / traffic classifier
+  → магистраль или peering
+  → сервер
+</code></pre>
+<p>Система может видеть один участок, оба направления потока или агрегированную статистику из нескольких узлов. Возможности различаются: простой firewall проверяет несколько полей пакета, а stateful DPI восстанавливает TCP/QUIC flow, хранит состояние и связывает его с последующими соединениями.</p>
+<h3 id="5-2-какие-уровни-анализируются">5.2. Какие уровни анализируются</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Уровень наблюдения</th>
+<th>Примеры признаков</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IP и инфраструктура</td>
+<td>Destination/source IP, IPv4/IPv6, ASN, hosting-провайдер, reputation, частота смены адреса</td>
+</tr>
+<tr>
+<td>TCP/UDP</td>
+<td>Порты, flags, размеры окон, MSS, retransmissions, продолжительность, число параллельных потоков</td>
+</tr>
+<tr>
+<td>TLS/QUIC handshake</td>
+<td>SNI без ECH, ALPN, версии, cipher suites, extensions, порядок/набор параметров, сертификат сервера</td>
+</tr>
+<tr>
+<td>Прикладной протокол без шифрования</td>
+<td>HTTP Host/path/method, DNS name, сигнатуры VLESS/VMess/MTProto и другие поля payload</td>
+</tr>
+<tr>
+<td>Статистика потока</td>
+<td>Направления, длины пакетов, интервалы, bursts, отношение upload/download, idle periods</td>
+</tr>
+<tr>
+<td>Поведение endpoint</td>
+<td>Ответ на корректный, ошибочный и специально сконструированный запрос</td>
+</tr>
+<tr>
+<td>Корреляция</td>
+<td>Совпадение времени и объёма входящего и исходящего потока в разных точках наблюдения</td>
+</tr>
+</tbody></table></div></div>
+<p>QUIC шифрует handshake, но Initial использует ключи, выводимые из открытых параметров версии и connection ID. Наблюдатель может извлекать часть ClientHello/transport parameters; открыты также UDP/IP metadata и connection IDs. Границы наблюдаемости описаны в <a class="link" href="https://datatracker.ietf.org/doc/html/rfc9000.html" target="_blank" rel="noopener">RFC 9000</a>, <a class="link" href="https://datatracker.ietf.org/doc/html/rfc9001.html" target="_blank" rel="noopener">RFC 9001</a> и <a class="link" href="https://datatracker.ietf.org/doc/rfc9312/" target="_blank" rel="noopener">RFC 9312</a>.</p>
+<h3 id="5-3-основные-методы-dpi">5.3. Основные методы DPI</h3>
+<ol>
+<li><strong>Статические сигнатуры.</strong> Поиск фиксированных magic bytes, полей, длин handshake или характерной последовательности сообщений.</li>
+<li><strong>Проверка протокольной корректности.</strong> Поток заявляет TLS/HTTP/QUIC, но его дальнейшее поведение не соответствует стандартному клиенту или серверу.</li>
+<li><strong>TLS/QUIC fingerprinting.</strong> Сочетание версий, extensions, ALPN, curves, transport parameters и порядка полей сравнивается с известными реализациями.</li>
+<li><strong>Статистическая классификация.</strong> Модель использует размеры, направления и timing, даже когда каждый байт payload зашифрован.</li>
+<li><strong>IP/ASN/reputation.</strong> Блокируется известный VPS, proxy/CDN range, отдельный port или набор endpoint без доказательства конкретного протокола.</li>
+<li><strong>DNS/SNI-корреляция.</strong> Сопоставляются plaintext DNS, SNI, destination IP и последующее соединение.</li>
+<li><strong>Active probing.</strong> После пассивного подозрения система сама подключается к endpoint и отправляет корректные/ошибочные варианты handshake, сравнивая ответ.</li>
+<li><strong>Replay и mutation probes.</strong> Повтор или небольшое изменение ранее замеченного начала потока выявляет серверную state machine и защиту от replay.</li>
+<li><strong>Долговременная корреляция.</strong> Учитываются повторяемость endpoint, расписание, объёмы и связи между потоками одного абонента.</li>
+</ol>
+<p>Активное зондирование proxy-серверов и пассивная классификация полностью зашифрованных протоколов подтверждены измерительными исследованиями: <a class="link" href="https://www.usenix.org/system/files/foci20-paper-frolov.pdf" target="_blank" rel="noopener">HTTPT: A Probe-Resistant Proxy</a> и <a class="link" href="https://www.usenix.org/conference/usenixsecurity23/presentation/wu-mingshi" target="_blank" rel="noopener">How the Great Firewall Detects and Blocks Fully Encrypted Traffic</a>.</p>
+<h3 id="5-4-какие-деи-ствия-выполняет-dpi">5.4. Какие действия выполняет DPI</h3>
+<ul>
+<li>разрешить поток;</li>
+<li>записать/пометить для последующего наблюдения;</li>
+<li>ограничить скорость или приоритет;</li>
+<li>отбросить отдельные пакеты/направления;</li>
+<li>внедрить TCP RST или искусственный timeout;</li>
+<li>блокировать destination IP, port, SNI, DNS response или QUIC/UDP целиком;</li>
+<li>перенаправить DNS/HTTP;</li>
+<li>запустить active probe и блокировать endpoint только после подтверждения.</li>
+</ul>
+<p>Поэтому «не подключается» не всегда означает полную блокировку протокола: это может быть throttling, выборочная потеря UDP, DNS-подмена, IPv4-only правило или временная reputation-блокировка.</p>
+<h3 id="5-5-как-dpi-классифицирует-vless-и-другие-протоколы">5.5. Как DPI классифицирует VLESS и другие протоколы</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Схема</th>
+<th>Что скрыто</th>
+<th>Что остаётся наблюдаемым</th>
+<th>Типичные методы DPI</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VLESS без TLS/REALITY/VLESS Encryption</td>
+<td>Практически ничего на транспортном уровне</td>
+<td>VLESS handshake/payload, IP, port, timing</td>
+<td>Прямая сигнатура и protocol validation; публично применять нельзя</td>
+</tr>
+<tr>
+<td>VLESS + TLS</td>
+<td>VLESS payload и трафик внутри TLS</td>
+<td>IP, SNI без ECH, ALPN, TLS fingerprint, сертификат, flow statistics</td>
+<td>TLS fingerprint, SNI/IP rules, активное подключение, статистика TLS-in-TLS</td>
+</tr>
+<tr>
+<td>VLESS + REALITY</td>
+<td>VLESS payload; корректный клиент отличается секретными параметрами</td>
+<td>IP/ASN, внешний ClientHello, target consistency, packet sizes/timing</td>
+<td>Reputation, несоответствие fingerprint/target/ASN, traffic analysis, специально сформированные probes</td>
+</tr>
+<tr>
+<td>VLESS + Vision</td>
+<td>Внутренний VLESS и TLS payload; уменьшены признаки TLS-in-TLS</td>
+<td>Внешний IP/handshake, направления/время/размеры, факт перехвата или разрешения UDP/443</td>
+<td>Flow statistics, endpoint reputation, active probing; Vision не является невидимостью</td>
+</tr>
+<tr>
+<td>VLESS + WS/gRPC/XHTTP через CDN</td>
+<td>Origin может быть скрыт от ISP клиента, VLESS payload защищён TLS</td>
+<td>Edge IP, внешний SNI/ALPN, HTTP-поведение; CDN видит свой участок и origin</td>
+<td>Проверка HTTP semantics/fingerprint, правила CDN, SNI/IP, объёмно-временная классификация</td>
+</tr>
+<tr>
+<td>Trojan + TLS/REALITY</td>
+<td>Password и proxy payload</td>
+<td>Те же внешние TLS/IP/flow признаки</td>
+<td>TLS fingerprint, поведение на неверный password/probe, reputation/statistics</td>
+</tr>
+<tr>
+<td>Hysteria2</td>
+<td>Payload внутри QUIC/TLS; с Salamander также скрыта стандартная QUIC-сигнатура</td>
+<td>UDP/IP/port, размеры, интервалы, connection behavior, высокая длительная UDP-нагрузка</td>
+<td>QUIC fingerprint либо generic encrypted-UDP classification; UDP block/throttle; active probes</td>
+</tr>
+<tr>
+<td>Shadowsocks/VMess без внешнего TLS-прикрытия</td>
+<td>Payload зашифрован</td>
+<td>Поток «высокой энтропии» без стандартного TLS/QUIC handshake, длины и ответы на probes</td>
+<td>Fully-encrypted-traffic classifier, replay/mutation, active probing, IP reputation</td>
+</tr>
+<tr>
+<td>WireGuard</td>
+<td>Tunnel payload</td>
+<td>Характерный UDP handshake, размеры и keepalive/timing</td>
+<td>Protocol signature, UDP/port rules и endpoint reputation</td>
+</tr>
+<tr>
+<td>MTProto/FakeTLS</td>
+<td>Telegram payload</td>
+<td>FakeTLS consistency, handshake/packet profile, endpoint</td>
+<td>Protocol validation, TLS-semantic mismatch, IP/ASN rules и active probe</td>
+</tr>
+</tbody></table></div></div>
+<p>Фраза «DPI видит VLESS» обычно неточна. При корректном TLS/REALITY DPI не читает VLESS-команды как открытый текст; он <strong>классифицирует весь внешний поток</strong> по доступным признакам и вероятности.</p>
+<h3 id="5-6-sni-ech-и-dns-с-точки-зрения-dpi">5.6. SNI, ECH и DNS с точки зрения DPI</h3>
+<ul>
+<li>обычный SNI — явный доменный признак в ClientHello;</li>
+<li>ECH скрывает внутренний ClientHello/SNI, но оставляет IP, внешний ClientHello и принадлежность service provider;</li>
+<li>ECH не помогает, если домен раскрыт plaintext DNS или имеет отдельный уникальный IP;</li>
+<li>encrypted DNS скрывает запрос от локального наблюдателя, но resolver и destination IP остаются частями модели доверия;</li>
+<li>сеть может применять политику к самому факту ECH/DoH/QUIC, хотя это повышает число false positives.</li>
+</ul>
+<p>Ограничения ECH прямо сформулированы в <a class="link" href="https://datatracker.ietf.org/doc/rfc9849/" target="_blank" rel="noopener">RFC 9849</a>: ECH сам по себе недостаточен, если имя раскрывается через DNS или видимый адрес сервера.</p>
+<h3 id="5-7-почему-нет-гарантированно-невидимои-конфигурации">5.7. Почему нет гарантированно «невидимой» конфигурации</h3>
+<ul>
+<li>любое соединение имеет видимый адрес следующего hop;</li>
+<li>маскировка одного признака оставляет другие: timing, длины, IP, handshake и поведение endpoint;</li>
+<li>слишком необычная обфускация сама может стать сигнатурой;</li>
+<li>allowlist-модель требует выглядеть как разрешённый протокол целиком, а не только первые пакеты;</li>
+<li>методы DPI и протоколы меняются, поэтому вчерашний профиль не гарантирует результат сегодня;</li>
+<li>агрессивная классификация даёт false positives, поэтому оператор DPI балансирует точность, стоимость и побочный ущерб.</li>
+</ul>
+<p>TLS, REALITY, Vision, CDN и FinalMask уменьшают разные классы признаков, но не обеспечивают абсолютную неразличимость. Правильная формулировка цели: <strong>сделать классификацию менее надёжной и отделить origin от конкретного наблюдателя</strong>, сохраняя приемлемую совместимость.</p>
+<h3 id="5-8-диагностика-без-догадок">5.8. Диагностика без догадок</h3>
+<ol>
+<li>Сравнить IPv4 и IPv6.</li>
+<li>Проверить DNS отдельно от TCP/UDP-connect.</li>
+<li>Сравнить TCP transport и Hysteria2/UDP.</li>
+<li>Проверить тот же endpoint из другой сети.</li>
+<li>Разделить TLS/REALITY handshake error, timeout, reset и throttling.</li>
+<li>Проверить server logs: дошёл ли запрос до inbound.</li>
+<li>Сравнить прямой VPS, relay и CDN edge только в разрешённой тестовой среде.</li>
+<li>Не делать вывод о DPI по одному неуспешному приложению: причиной могут быть MTU, firewall, NAT, certificate/SNI, ALPN или несовместимое client core.</li>
+</ol>
+<hr>
+<h2 id="6-создание-inbound-полныи-каталог-полеи-3x-ui-v3-6-0">6. Создание inbound: полный каталог полей 3x-ui v3.6.0</h2>
+<p>Inbound — точка, где Xray слушает адрес/порт, принимает клиента и передаёт запрос в Routing. Не все поля показываются одновременно: форма динамически зависит от protocol, transport и security.</p>
+<h3 id="6-1-общие-поля-inbound">6.1. Общие поля inbound</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле панели</th>
+<th>Назначение</th>
+<th>Замечание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Enable</td>
+<td>Включить listener</td>
+<td>Отключённая запись хранится, но не обслуживает подключения</td>
+</tr>
+<tr>
+<td>Remark</td>
+<td>Человекочитаемое имя</td>
+<td>Не участвует в протоколе; используйте единый шаблон имён</td>
+</tr>
+<tr>
+<td>Deploy to / <code>nodeId</code></td>
+<td>Узел, где разворачивать inbound</td>
+<td>Доступно для поддерживаемых протоколов в multi-node</td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>Тип входа</td>
+<td>От него зависят клиенты и Stream Settings</td>
+</tr>
+<tr>
+<td>Listen IP</td>
+<td>Локальный адрес bind</td>
+<td>Пусто/<code>0.0.0.0</code> — все IPv4-интерфейсы; <code>::</code> — IPv6 с учётом <code>v6only</code></td>
+</tr>
+<tr>
+<td>Share address strategy</td>
+<td>Какой адрес публиковать: node/listen/custom</td>
+<td>Bind-адрес и адрес в подписке — разные понятия</td>
+</tr>
+<tr>
+<td>Share address</td>
+<td>Публикуемый custom hostname/IP</td>
+<td>Нужен при NAT, reverse proxy, CDN, DNS-имени</td>
+</tr>
+<tr>
+<td>Subscription sort index</td>
+<td>Порядок в подписке</td>
+<td>Организационное поле</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>Порт listener</td>
+<td>Должен быть свободен и разрешён firewall/security group</td>
+</tr>
+<tr>
+<td>Total traffic</td>
+<td>Общая квота, отображается в GB</td>
+<td><code>0</code> — без лимита</td>
+</tr>
+<tr>
+<td>Traffic reset</td>
+<td>Never/hourly/daily/weekly/monthly</td>
+<td>Период автоматического сброса счётчика</td>
+</tr>
+<tr>
+<td>Traffic reset day</td>
+<td>День месяца 1–31</td>
+<td>Только для monthly; учитывайте короткие месяцы</td>
+</tr>
+<tr>
+<td>Expiry time</td>
+<td>Дата отключения inbound</td>
+<td>Отличается от expiry конкретного клиента</td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>Внутренний идентификатор Xray</td>
+<td>Панель обычно формирует его сама; Routing ссылается именно на tag</td>
+</tr>
+</tbody></table></div></div>
+<p><code>up</code>, <code>down</code>, время последнего сброса и другие счётчики — служебные поля базы, а не параметры соединения.</p>
+<h3 id="6-2-общие-поля-клиента">6.2. Общие поля клиента</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Email / Name</td>
+<td>Уникальное имя клиента внутри inbound; используется статистикой и routing <code>user</code></td>
+</tr>
+<tr>
+<td>Enable</td>
+<td>Разрешить клиенту доступ</td>
+</tr>
+<tr>
+<td>Credential</td>
+<td>UUID, password, auth или ключ — зависит от протокола</td>
+</tr>
+<tr>
+<td>IP Limit</td>
+<td>Максимум одновременно наблюдаемых IP; в типовой установке реализуется связкой логов и Fail2ban</td>
+</tr>
+<tr>
+<td>Total GB</td>
+<td>Квота клиента; <code>0</code> — без лимита</td>
+</tr>
+<tr>
+<td>Expiry time</td>
+<td>Срок действия клиента</td>
+</tr>
+<tr>
+<td>Reset</td>
+<td>Период сброса клиентской квоты</td>
+</tr>
+<tr>
+<td>Telegram ID</td>
+<td>Получатель уведомлений панели</td>
+</tr>
+<tr>
+<td>Subscription ID</td>
+<td>Стабильный идентификатор индивидуальной подписки</td>
+</tr>
+<tr>
+<td>Comment</td>
+<td>Административная заметка</td>
+</tr>
+<tr>
+<td>Group</td>
+<td>Организация клиентов в панели</td>
+</tr>
+<tr>
+<td>External links</td>
+<td>Дополнительные ссылки/метаданные для пользователя</td>
+</tr>
+</tbody></table></div></div>
+<p>Для VLESS/VMess credential — UUID, для Trojan — password, для Hysteria — auth, для WireGuard — peer key material. Секреты должны быть уникальными; удаление клиента важнее простого удаления ссылки из устройства.</p>
+<h3 id="6-3-поля-по-протоколам">6.3. Поля по протоколам</h3>
+<h4 id="vless">VLESS</h4>
+<ul>
+<li><code>decryption</code> — как правило <code>none</code>;</li>
+<li><code>encryption</code> — строка VLESS Encryption/Auth; <code>none</code> при обычной UUID-модели;</li>
+<li><strong>Generate Auth</strong> — генератор X25519/ML-KEM вариантов;</li>
+<li><code>testpre</code> — дополнительный тестовый prefix-параметр нового VLESS;</li>
+<li><code>testseed</code> — четыре положительных целых; UI предлагает базовый набор <code>900, 500, 900, 256</code> в совместимых TCP + TLS/REALITY Vision-сценариях;</li>
+<li>Clients: UUID, flow и общие лимиты;</li>
+<li>Fallbacks — только в допустимой RAW + TLS/REALITY конфигурации.</li>
+</ul>
+<h4 id="trojan">Trojan</h4>
+<ul>
+<li>Clients: password и общие лимиты;</li>
+<li>Fallbacks — при совместимой RAW + TLS/REALITY схеме;</li>
+<li>отдельного поля шифра нет: защита определяется transport security.</li>
+</ul>
+<h4 id="hysteria2">Hysteria2</h4>
+<ul>
+<li><code>version</code> — фиксированное <code>2</code>;</li>
+<li>Clients: auth и общие лимиты;</li>
+<li><code>udpIdleTimeout</code> — 2–600 секунд, типично 60;</li>
+<li><code>masquerade.type</code>:<ul>
+<li>пусто — стандартный 404;</li>
+<li><code>proxy</code> — <code>url</code>, <code>rewriteHost</code>, <code>insecure</code> для внутреннего proxy;</li>
+<li><code>file</code> — каталог <code>dir</code>;</li>
+<li><code>string</code> — <code>statusCode</code>, <code>content</code>, таблица <code>headers</code>;</li>
+</ul>
+</li>
+<li>TLS обязателен;</li>
+<li>FinalMask обычно <code>Salamander</code>; QUIC-поля вынесены в раздел 6.9.</li>
+</ul>
+<p><code>Masquerade</code> отвечает не за авторизованный прокси-трафик, а за правдоподобный ответ посетителю без Hysteria auth. Не публикуйте произвольный локальный каталог через тип <code>file</code>.</p>
+<h4 id="vmess">VMess</h4>
+<ul>
+<li>Clients: <code>id</code>, <code>security</code>, <code>alterId</code>, общие лимиты;</li>
+<li><code>security=auto</code> обычно оставляют клиентскому ядру;</li>
+<li><code>alterId=0</code> — нормальный современный вариант; ненулевой alterId — наследие старых конфигураций.</li>
+</ul>
+<h4 id="shadowsocks">Shadowsocks</h4>
+<ul>
+<li><code>method</code> — cipher из перечня главы 2;</li>
+<li><code>password</code> — inbound/master password; его роль зависит от старого AEAD или SS-2022;</li>
+<li><code>network</code> — TCP, UDP или оба;</li>
+<li><code>ivCheck</code> — проверка повторного IV для подходящих cipher;</li>
+<li>Clients — multi-user записи SS-2022 с методом/паролем и общими лимитами.</li>
+</ul>
+<p>Не смешивайте структуру ключей SS-2022 с привычным одиночным паролем старых методов: link и сервер должны сформировать ключи одинаково.</p>
+<h4 id="wireguard">WireGuard</h4>
+<ul>
+<li><code>secretKey</code> — приватный ключ интерфейса;</li>
+<li><code>publicKey</code> — вычисляемый UI публичный ключ;</li>
+<li><code>mtu</code> — MTU туннеля;</li>
+<li><code>dns</code> — DNS-адреса для клиентской конфигурации;</li>
+<li><code>noKernelTun</code> — запрет kernel TUN, переход к userspace;</li>
+<li><code>domainStrategy</code> — <code>ForceIP</code>, <code>ForceIPv4</code>, <code>ForceIPv4v6</code>, <code>ForceIPv6</code>, <code>ForceIPv6v4</code>;</li>
+<li>peer/client: private/public/pre-shared key, addresses, <code>allowedIPs</code>, <code>keepAlive</code> и общие лимиты.</li>
+</ul>
+<p>Private key не должен попадать в документацию или скриншоты. <code>AllowedIPs</code> одновременно задаёт допустимую сеть peer и выбор маршрута в WireGuard.</p>
+<h4 id="http">HTTP</h4>
+<ul>
+<li>Accounts: <code>user</code>, <code>pass</code>;</li>
+<li><code>allowTransparent</code> — разрешить прозрачный режим;</li>
+<li>внешнюю публикацию без TLS не использовать: basic credentials и запросы не получают транспортной защиты.</li>
+</ul>
+<h4 id="mixed">Mixed</h4>
+<ul>
+<li>Accounts: <code>user</code>, <code>pass</code>;</li>
+<li><code>auth</code> — password/noauth;</li>
+<li><code>udp</code> — принимать UDP через SOCKS;</li>
+<li><code>ip</code> — IP для UDP-ассоциации.</li>
+</ul>
+<p>Mixed заменяет отдельный SOCKS inbound в текущем интерфейсе и одновременно обслуживает HTTP proxy.</p>
+<h4 id="tunnel">Tunnel</h4>
+<ul>
+<li><code>rewriteAddress</code>, <code>rewritePort</code> — целевое назначение;</li>
+<li><code>allowedNetwork</code> — TCP, UDP или оба;</li>
+<li><code>portMap</code> — таблица отображения портов;</li>
+<li><code>followRedirect</code> — принять исходное назначение прозрачного redirect/TProxy;</li>
+<li>из Stream Settings здесь практически важен Sockopt/TProxy, а не HTTP-транспорт.</li>
+</ul>
+<h4 id="mtproto-mtg-multi">MTProto / mtg-multi</h4>
+<ul>
+<li><code>fakeTlsDomain</code> — домен FakeTLS;</li>
+<li><code>domainFronting.ip</code>, <code>.port</code>, <code>.proxyProtocol</code> — внешний front;</li>
+<li><code>proxyProtocolListener</code> — принимать PROXY protocol;</li>
+<li><code>preferIp</code> — prefer/only IPv4 или IPv6;</li>
+<li><code>debug</code> — расширенный журнал;</li>
+<li><code>throttleMaxConnections</code> — ограничение соединений;</li>
+<li><code>routeThroughXray</code> — передать трафик в Xray outbound;</li>
+<li><code>outboundTag</code> — какой outbound использовать;</li>
+<li><code>publicIpv4</code>, <code>publicIpv6</code> — публикуемые адреса;</li>
+<li>client: FakeTLS secret, <code>adTag</code>, общие лимиты.</li>
+</ul>
+<p>Это настройки <code>mtg-multi</code>. Они входят в возможности 3x-ui, но не являются полями Xray-core.</p>
+<h4 id="tun-только-совместимость">TUN — только совместимость</h4>
+<p>Старые записи могут содержать <code>name</code>, <code>mtu</code>, <code>gateway</code>, <code>dns</code>, <code>userLevel</code>, <code>autoSystemRoutingTable</code>, <code>autoOutboundsInterface</code>. В v3.6.0 frontend умеет их показать, но backend не принимает создание нового TUN inbound как рабочую Xray-конфигурацию. Для системного TUN используйте поддерживаемый клиент/ядро, а не этот legacy-пункт панели.</p>
+<h3 id="6-4-fallbacks">6.4. Fallbacks</h3>
+<p>Fallback позволяет одной RAW TLS/REALITY точке передавать неподходящий трафик другому локальному сервису или дочернему inbound. Правила проверяются по порядку.</p>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Child inbound</td>
+<td>Выбрать другой inbound как destination</td>
+</tr>
+<tr>
+<td><code>name</code> / SNI</td>
+<td>Совпадение принятого server name</td>
+</tr>
+<tr>
+<td><code>alpn</code></td>
+<td>Совпадение согласованного ALPN</td>
+</tr>
+<tr>
+<td><code>path</code></td>
+<td>Совпадение первого HTTP path</td>
+</tr>
+<tr>
+<td><code>dest</code></td>
+<td>Адрес/порт назначения fallback</td>
+</tr>
+<tr>
+<td><code>xver</code></td>
+<td>PROXY protocol до destination: 0/1/2</td>
+</tr>
+</tbody></table></div></div>
+<p><code>xver</code> включают только если destination действительно понимает соответствующий PROXY protocol. Иначе его первые байты будут восприняты как испорченный прикладной запрос.</p>
+<h3 id="6-5-raw-transport">6.5. RAW transport</h3>
+<p>RAW — минимальный TCP-транспорт.</p>
+<ul>
+<li><code>acceptProxyProtocol</code> — ожидать PROXY v1/v2 перед входным потоком;</li>
+<li>HTTP camouflage request: <code>version</code>, <code>method</code>, <code>path</code>, <code>headers</code>;</li>
+<li>HTTP camouflage response: <code>version</code>, <code>status</code>, <code>reason</code>, <code>headers</code>.</li>
+</ul>
+<p>HTTP camouflage RAW — не полноценный reverse proxy и не шифрование. Если upstream не посылает PROXY protocol, <code>acceptProxyProtocol</code> выключают.</p>
+<h3 id="6-6-websocket-grpc-и-httpupgrade">6.6. WebSocket, gRPC и HTTPUpgrade</h3>
+<h4 id="websocket">WebSocket</h4>
+<ul>
+<li><code>acceptProxyProtocol</code> — принять PROXY protocol до HTTP;</li>
+<li><code>host</code> — ожидаемый Host;</li>
+<li><code>path</code> — WebSocket path;</li>
+<li><code>heartbeatPeriod</code> — период heartbeat в секундах, <code>0</code> выключает;</li>
+<li><code>headers</code> — дополнительные HTTP-заголовки.</li>
+</ul>
+<h4 id="grpc">gRPC</h4>
+<ul>
+<li><code>serviceName</code> — имя gRPC service/path;</li>
+<li><code>authority</code> — HTTP/2 <code>:authority</code>;</li>
+<li><code>multiMode</code> — multi-mode Xray.</li>
+</ul>
+<h4 id="httpupgrade">HTTPUpgrade</h4>
+<ul>
+<li><code>acceptProxyProtocol</code>;</li>
+<li><code>host</code>;</li>
+<li><code>path</code>;</li>
+<li><code>headers</code>.</li>
+</ul>
+<p>Host/path/serviceName должны совпасть на клиенте, reverse proxy и сервере. За TLS-терминатором внутренний Xray inbound может работать без TLS только в доверенном локальном сегменте.</p>
+<h3 id="6-7-xhttp">6.7. XHTTP</h3>
+<p>XHTTP предоставляет разные режимы отправки uplink/downlink по HTTP. Большинство расширенных полей стоит оставлять по умолчанию: нестандартная раскладка обязана совпадать у клиента и сервера.</p>
+<h4 id="базовые-поля-xhttp">Базовые поля XHTTP</h4>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>path</code></td>
+<td>HTTP path</td>
+</tr>
+<tr>
+<td><code>host</code></td>
+<td>Host/authority</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>auto</code>, <code>packet-up</code>, <code>stream-up</code>, <code>stream-one</code></td>
+</tr>
+<tr>
+<td><code>headers</code></td>
+<td>Дополнительные HTTP headers</td>
+</tr>
+<tr>
+<td><code>xPaddingBytes</code></td>
+<td>Диапазон padding, UI по умолчанию <code>100-1000</code></td>
+</tr>
+<tr>
+<td><code>noSSEHeader</code></td>
+<td>Не использовать SSE-заголовок</td>
+</tr>
+<tr>
+<td><code>noGRPCHeader</code></td>
+<td>Не использовать gRPC-подобный заголовок</td>
+</tr>
+<tr>
+<td><code>uplinkHTTPMethod</code></td>
+<td>Метод HTTP uplink</td>
+</tr>
+<tr>
+<td><code>scMaxEachPostBytes</code></td>
+<td>Максимум данных одного POST</td>
+</tr>
+<tr>
+<td><code>scMinPostsIntervalMs</code></td>
+<td>Минимальный интервал POST клиента</td>
+</tr>
+<tr>
+<td><code>uplinkChunkSize</code></td>
+<td>Размер uplink chunk</td>
+</tr>
+<tr>
+<td><code>scMaxBufferedPosts</code></td>
+<td>Число буферизуемых POST, типично 30</td>
+</tr>
+<tr>
+<td><code>scStreamUpServerSecs</code></td>
+<td>Длительность server stream-up, типичный диапазон 20–80 c</td>
+</tr>
+<tr>
+<td><code>serverMaxHeaderBytes</code></td>
+<td>Максимальный размер заголовков на сервере</td>
+</tr>
+</tbody></table></div></div>
+<h4 id="размещение-и-ключи-полеи">Размещение и ключи полей</h4>
+<ul>
+<li><code>xPaddingObfsMode</code>, <code>xPaddingKey</code>, <code>xPaddingHeader</code>, <code>xPaddingPlacement</code>, <code>xPaddingMethod</code> — как формировать/передавать padding;</li>
+<li><code>sessionIDPlacement</code>, <code>sessionIDKey</code>, <code>sessionIDTable</code>, <code>sessionIDLength</code> — где и как кодировать session ID;</li>
+<li><code>seqPlacement</code>, <code>seqKey</code> — размещение sequence number;</li>
+<li><code>uplinkDataPlacement</code>, <code>uplinkDataKey</code> — где переносить uplink data.</li>
+</ul>
+<p>Значения <code>Placement</code> определяют, попадает элемент в path/query/header/body. <code>Key</code> задаёт имя соответствующего параметра/заголовка. <code>Table</code> — алфавит генерации ID. Пустые поля позволяют Xray использовать согласованные defaults.</p>
+<h4 id="xmux-внутри-xhttp">XMUX внутри XHTTP</h4>
+<ul>
+<li>Enable XMUX;</li>
+<li><code>maxConcurrency</code> — число конкурентных потоков на соединение;</li>
+<li><code>maxConnections</code> — число соединений; используется как альтернатива maxConcurrency, свежий default панели — 3;</li>
+<li><code>cMaxReuseTimes</code> — максимальное число повторных использований соединения;</li>
+<li><code>hMaxRequestTimes</code> — максимум запросов на HTTP-соединение, типично 600–900;</li>
+<li><code>hMaxReusableSecs</code> — срок повторного использования, типично 1800–3000 секунд;</li>
+<li><code>hKeepAlivePeriod</code> — период keepalive.</li>
+</ul>
+<p><code>maxConcurrency</code> и <code>maxConnections</code> — разные стратегии ограничения и в UI взаимоисключаются. Увеличение значений не гарантирует скорость: оно меняет число наблюдаемых соединений, нагрузку и head-of-line поведение.</p>
+<h3 id="6-8-mkcp">6.8. mKCP</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>mtu</code></td>
+<td>Размер пакета, 576–1460; default 1350</td>
+</tr>
+<tr>
+<td><code>tti</code></td>
+<td>Интервал обработки, 10–100 мс; default 20</td>
+</tr>
+<tr>
+<td><code>uplinkCapacity</code></td>
+<td>Оценка uplink capacity</td>
+</tr>
+<tr>
+<td><code>downlinkCapacity</code></td>
+<td>Оценка downlink capacity</td>
+</tr>
+<tr>
+<td><code>cwndMultiplier</code></td>
+<td>Множитель congestion window</td>
+</tr>
+<tr>
+<td><code>maxSendingWindow</code></td>
+<td>Максимальное send window</td>
+</tr>
+</tbody></table></div></div>
+<p>Старые <code>header</code>/<code>seed</code> представлены в новых схемах через FinalMask <code>mkcp-legacy</code>. Неверная MTU вызывает фрагментацию или black-hole; сначала проверяют path MTU, затем меняют окна/ёмкость.</p>
+<h3 id="6-9-hysteria-quic-transport">6.9. Hysteria/QUIC transport</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>auth</code></td>
+<td>Транспортный auth клиента</td>
+</tr>
+<tr>
+<td><code>udpIdleTimeout</code></td>
+<td>Таймаут неактивной UDP-сессии</td>
+</tr>
+<tr>
+<td><code>congestion</code></td>
+<td><code>reno</code>, <code>bbr</code>, <code>brutal</code>, <code>force-brutal</code></td>
+</tr>
+<tr>
+<td><code>bbrProfile</code></td>
+<td><code>conservative</code>, <code>standard</code>, <code>aggressive</code></td>
+</tr>
+<tr>
+<td><code>brutalUp</code>, <code>brutalDown</code></td>
+<td>Заявленная скорость для Brutal</td>
+</tr>
+<tr>
+<td><code>udpHop.ports</code></td>
+<td>Диапазон/список портов, например <code>20000-50000</code></td>
+</tr>
+<tr>
+<td><code>udpHop.interval</code></td>
+<td>Интервал смены порта, обычно 5–10 с</td>
+</tr>
+<tr>
+<td><code>maxIdleTimeout</code></td>
+<td>QUIC idle timeout, 4–120 c</td>
+</tr>
+<tr>
+<td><code>keepAlivePeriod</code></td>
+<td>QUIC keepalive, 2–60 c</td>
+</tr>
+<tr>
+<td><code>disablePathMTUDiscovery</code></td>
+<td>Не использовать PMTU discovery</td>
+</tr>
+<tr>
+<td><code>maxIncomingStreams</code></td>
+<td>Лимит входящих streams, минимум 8</td>
+</tr>
+<tr>
+<td><code>initialStreamReceiveWindow</code>, <code>maxStreamReceiveWindow</code></td>
+<td>Начальное/максимальное окно stream</td>
+</tr>
+<tr>
+<td><code>initialConnectionReceiveWindow</code>, <code>maxConnectionReceiveWindow</code></td>
+<td>Начальное/максимальное окно connection</td>
+</tr>
+<tr>
+<td><code>debug</code></td>
+<td>Расширенная диагностика QUIC</td>
+</tr>
+</tbody></table></div></div>
+<p>UDP Hop имеет смысл только когда весь диапазон открыт и направлен на один экземпляр, а клиент поддерживает те же параметры. Нельзя распределять hop-порты случайно между несогласованными backend: QUIC connection ID и состояние должны сохраняться.</p>
+<h3 id="6-10-sockopt">6.10. Sockopt</h3>
+<p>Sockopt управляет системным сокетом, а не прокси-протоколом.</p>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле inbound</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Real client IP preset</td>
+<td>Off / Cloudflare headers / PROXY protocol</td>
+</tr>
+<tr>
+<td><code>mark</code></td>
+<td>Linux fwmark для policy routing</td>
+</tr>
+<tr>
+<td><code>tcpKeepAliveInterval</code></td>
+<td>Интервал keepalive probes</td>
+</tr>
+<tr>
+<td><code>tcpKeepAliveIdle</code></td>
+<td>Простой перед началом keepalive</td>
+</tr>
+<tr>
+<td><code>tcpMaxSeg</code></td>
+<td>TCP maximum segment size</td>
+</tr>
+<tr>
+<td><code>tcpUserTimeout</code></td>
+<td>Максимум ожидания неподтверждённых данных</td>
+</tr>
+<tr>
+<td><code>tcpWindowClamp</code></td>
+<td>Ограничение receive window</td>
+</tr>
+<tr>
+<td><code>acceptProxyProtocol</code></td>
+<td>Принимать PROXY protocol на сокете</td>
+</tr>
+<tr>
+<td><code>tcpFastOpen</code></td>
+<td>TCP Fast Open, если поддержан ОС и сетью</td>
+</tr>
+<tr>
+<td><code>penetrate</code></td>
+<td>Специальный режим проникновения/обхода сетевых ограничений Xray; не универсальная оптимизация</td>
+</tr>
+<tr>
+<td><code>v6only</code></td>
+<td>На IPv6 listener запретить IPv4-mapped подключения</td>
+</tr>
+<tr>
+<td><code>tcpcongestion</code></td>
+<td><code>bbr</code>, <code>cubic</code>, <code>reno</code>, если алгоритм доступен ядру ОС</td>
+</tr>
+<tr>
+<td><code>tproxy</code></td>
+<td><code>off</code>, <code>redirect</code>, <code>tproxy</code> для прозрачного proxy</td>
+</tr>
+<tr>
+<td><code>trustedXForwardedFor</code></td>
+<td>Доверенные headers: CF-Connecting-IP, X-Real-IP, True-Client-IP, X-Client-IP</td>
+</tr>
+<tr>
+<td><code>customSockopt</code></td>
+<td>Список низкоуровневых socket options</td>
+</tr>
+</tbody></table></div></div>
+<p>Headers реального IP принимают только от доверенного reverse proxy, а origin firewall закрывают от прямого доступа. Иначе клиент сам подставит <code>X-Real-IP</code>. PROXY protocol включают на обеих сторонах одного участка.</p>
+<p>В outbound Sockopt дополнительно доступны:</p>
+<ul>
+<li><code>dialerProxy</code> — отправить dial через другой outbound tag;</li>
+<li><code>domainStrategy</code>, <code>addressPortStrategy</code> — разрешение адреса/выбор семейства;</li>
+<li><code>interface</code> — исходящий интерфейс;</li>
+<li><code>tcpMptcp</code> — Multipath TCP при поддержке ОС/peer;</li>
+<li>Happy Eyeballs: <code>tryDelayMs</code>, <code>prioritizeIPv6</code>, <code>interleave</code>, <code>maxConcurrentTry</code>;</li>
+<li>остальные TCP/mark/TProxy/custom options из таблицы.</li>
+</ul>
+<h3 id="6-11-finalmask-и-tcp-udp-masks">6.11. FinalMask и TCP/UDP masks</h3>
+<p>FinalMask применяется после выбора транспорта/security. Он не заменяет TLS и работает только с клиентом, который реализует ту же маску.</p>
+<h4 id="tcp-masks">TCP masks</h4>
+<ul>
+<li><strong>fragment</strong>: <code>packets</code> (например, TLS hello или диапазон), списки <code>lengths</code>, <code>delays</code>, <code>maxSplit</code>. Дробит начальные данные; чрезмерная фрагментация снижает скорость и сама становится fingerprint.</li>
+<li><strong>sudoku</strong>: <code>password</code>, <code>ascii</code>, <code>customTable</code>, <code>paddingMin</code>, <code>paddingMax</code>. Кодирует поток согласованной таблицей/паролем.</li>
+<li><strong>header-custom</strong>: наборы client/server items. Item может быть <code>array</code>, <code>str</code>, <code>hex</code>, <code>base64</code>, иметь <code>delay</code>, <code>rand</code>/<code>randRange</code> или packet. Это конструктор специализированного двустороннего заголовка.</li>
+<li><strong>XMC</strong>: <code>hostname</code>, профили Minecraft session (<code>username</code>, UUID, textures value/signature), <code>password</code>. Применять только в поддерживаемой XMC-схеме; неполный профиль текущий core отвергает.</li>
+</ul>
+<h4 id="udp-masks">UDP masks</h4>
+<ul>
+<li><strong>Salamander</strong>: <code>password</code>. Основная стабильная маска для Hysteria2 и поддерживаемых WireGuard-сценариев.</li>
+<li><strong>mkcp-legacy</strong>: прежние варианты <code>original</code>, <code>aes-128-gcm</code>, <code>dns</code>, <code>dtls</code>, <code>srtp</code>, <code>utp</code>, <code>wechat</code>, <code>wireguard</code> и их value.</li>
+<li><strong>header-custom</strong>: раздельные client/server элементы пользовательского заголовка.</li>
+<li><strong>XDNS</strong>: список доменов для DNS-подобного оформления.</li>
+<li><strong>XICMP</strong>: datagram mode и список IP для ICMP-подобной схемы.</li>
+<li><strong>noise</strong>: <code>reset</code> и последовательность noise items с packet/random/delay.</li>
+<li><strong>realm</strong>: <code>url</code>, STUN servers и опциональные TLS <code>serverName</code>, ALPN, fingerprint и локальный <code>allowInsecure</code> этой маски.</li>
+<li><strong>sudoku</strong> присутствует в схеме core, но в обычном списке UI v3.6.0 не предлагается; рассматривать его следует как advanced JSON, а не типовой выбор.</li>
+</ul>
+<p><code>allowInsecure</code> внутри специализированного Realm не следует переносить на общую TLS-настройку: в актуальной форме TLS 3x-ui для проверки используются корректное имя/CA, <code>verifyPeerCertByName</code> и pins.</p>
+<h3 id="6-12-external-proxy-hosts">6.12. External Proxy → Hosts</h3>
+<p>В пользовательских скриншотах старой версии встречались:</p>
+<ul>
+<li>force TLS: same/TLS/none;</li>
+<li>destination, port, remark;</li>
+<li>SNI, fingerprint, ALPN;</li>
+<li>pinned peer certificate SHA-256;</li>
+<li>verify peer certificate by name;</li>
+<li>ECH config list;</li>
+<li>VLESS route.</li>
+</ul>
+<p>В v3.6.0 эти поля больше не редактируются как вкладка inbound. Их функциональность перенесена на страницу <strong>Hosts</strong>, а прежние объекты читаются для обратной совместимости. Поэтому в новом справочнике они сохранены как карта миграции, но не как инструкция создавать legacy External Proxy.</p>
+<hr>
+<h2 id="7-xray-configs-что-это-за-раздел">7. Xray Configs: что это за раздел</h2>
+<p>3x-ui — панель управления, база пользователей и генератор конфигурации. Xray-core — процесс обработки трафика.</p>
+<pre><code>3x-ui: UI + база + шаблон
+        │
+        ▼
+Итоговый JSON Xray
+        │
+        ▼
+Xray-core: inbounds → sniffing → routing/DNS → outbounds/balancers
+</code></pre>
+<p>Раздел <strong>Xray Configs</strong> редактирует глобальный шаблон: Basics, Routing Rules, Outbounds, Balancers, DNS и Advanced. После изменения панель должна собрать валидный JSON и перезапустить/обновить core. Неверная ссылка на tag или синтаксическая ошибка Advanced может остановить все inbounds.</p>
+<h3 id="7-1-basics">7.1. Basics</h3>
+<h4 id="general">General</h4>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Freedom Strategy</td>
+<td>DNS-стратегия основного direct/freedom: <code>AsIs</code>, <code>UseIP</code>, <code>UseIPv4</code>, <code>UseIPv6</code>, <code>UseIPv6v4</code>, <code>UseIPv4v6</code>, <code>ForceIP</code>, <code>ForceIPv6v4</code>, <code>ForceIPv6</code>, <code>ForceIPv4v6</code>, <code>ForceIPv4</code></td>
+</tr>
+<tr>
+<td>Freedom Happy Eyeballs</td>
+<td>Параллельно/с задержкой пробовать IPv4 и IPv6</td>
+</tr>
+<tr>
+<td><code>tryDelayMs</code></td>
+<td>Задержка перед альтернативным семейством</td>
+</tr>
+<tr>
+<td><code>prioritizeIPv6</code></td>
+<td>Предпочитать IPv6 при гонке адресов</td>
+</tr>
+<tr>
+<td>Routing Strategy</td>
+<td><code>AsIs</code>, <code>IPIfNonMatch</code>, <code>IPOnDemand</code></td>
+</tr>
+<tr>
+<td>Outbound Test URL</td>
+<td>URL, которым панель/observer проверяет реальный выход</td>
+</tr>
+</tbody></table></div></div>
+<p><code>AsIs</code> сохраняет домен. <code>IPIfNonMatch</code> сначала проверяет доменные правила и только затем, если совпадения нет, разрешает IP для IP-правил. <code>IPOnDemand</code> может запрашивать IP раньше, как только встречается потенциально применимое IP-условие. Выбор влияет и на утечки DNS, и на задержку.</p>
+<h4 id="statistics">Statistics</h4>
+<ul>
+<li><code>statsInboundUplink</code> — считать upload по inbound/user;</li>
+<li><code>statsInboundDownlink</code> — считать download;</li>
+<li><code>statsOutboundUplink</code>, <code>statsOutboundDownlink</code> — считать outbound traffic;</li>
+<li><code>metrics.listen</code> — адрес HTTP metrics endpoint;</li>
+<li><code>metrics.tag</code> — внутренний tag metrics/stats listener.</li>
+</ul>
+<p>Статистика нужна квотам и отчётам, но добавляет память/CPU. Metrics listener нельзя бездумно публиковать в Интернет: он раскрывает служебные данные.</p>
+<h4 id="connection-limits-policy-level-0">Connection limits / Policy level 0</h4>
+<ul>
+<li><code>connIdle</code> — секунд без трафика до закрытия соединения;</li>
+<li><code>bufferSize</code> — размер буфера в KiB для policy level 0.</li>
+</ul>
+<p>Слишком низкий <code>connIdle</code> ломает долгие idle-сессии и push; слишком высокий удерживает ресурсы. Больший buffer не всегда ускоряет поток и увеличивает память на соединение.</p>
+<h4 id="logging">Logging</h4>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Log level</td>
+<td><code>none</code>, <code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code></td>
+</tr>
+<tr>
+<td>Access log</td>
+<td><code>none</code> или путь, типично <code>./access.log</code></td>
+</tr>
+<tr>
+<td>Error log</td>
+<td>пусто/stderr, <code>none</code> или путь</td>
+</tr>
+<tr>
+<td>Mask address</td>
+<td>пусто, <code>quarter</code>, <code>half</code>, <code>full</code> — маскировать адреса в логах</td>
+</tr>
+<tr>
+<td>DNS log</td>
+<td>Записывать DNS-запросы</td>
+</tr>
+<tr>
+<td>Reset</td>
+<td>Вернуть базовый шаблон панели</td>
+</tr>
+</tbody></table></div></div>
+<p><code>debug</code> и DNS log включают на ограниченное время: они быстро растят файл и собирают чувствительные домены/IP. Настройте rotation отдельно на уровне ОС.</p>
+<h3 id="7-2-routing-rules">7.2. Routing Rules</h3>
+<p>Routing рассматривает правила сверху вниз и применяет <strong>первое совпавшее</strong>. Если ничего не совпало, используется первый/default outbound. Подробная модель приведена в <a class="link" href="https://xtls.github.io/en/config/routing.html" target="_blank" rel="noopener">официальном разделе Routing</a>.</p>
+<h4 id="быстрые-настрои-ки">Быстрые настройки</h4>
+<ul>
+<li>Default outbound — основной выход;</li>
+<li>Block BitTorrent;</li>
+<li>Block IPs / Block domains;</li>
+<li>Direct IPs / Direct domains;</li>
+<li>IPv4 routing domains — домены, которые принудительно разрешаются/выводятся через IPv4.</li>
+</ul>
+<p>Это генераторы обычных rules, а не независимый firewall. После применения проверяйте фактический порядок.</p>
+<h4 id="поля-визуального-редактора-rule">Поля визуального редактора rule</h4>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Enable</td>
+<td>Включить правило</td>
+</tr>
+<tr>
+<td>Source IP</td>
+<td>IP/CIDR клиента до inbound</td>
+</tr>
+<tr>
+<td>Source port</td>
+<td>Исходный порт клиента</td>
+</tr>
+<tr>
+<td>VLESS Route</td>
+<td>Сопоставление специального VLESS route</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>TCP, UDP или оба</td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>Распознанный <code>http</code>, <code>tls</code>, <code>bittorrent</code>, <code>quic</code></td>
+</tr>
+<tr>
+<td>Attributes</td>
+<td>Пары key/value распознанных атрибутов</td>
+</tr>
+<tr>
+<td>IP</td>
+<td>Destination IP/CIDR/<code>geoip:</code></td>
+</tr>
+<tr>
+<td>Domain</td>
+<td><code>full:</code>, <code>domain:</code>, <code>regexp:</code>, <code>geosite:</code> и обычные доменные шаблоны</td>
+</tr>
+<tr>
+<td>User</td>
+<td>Email/идентификатор Xray user</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>Destination port/range</td>
+</tr>
+<tr>
+<td>Inbound tag</td>
+<td>От какого inbound пришёл поток</td>
+</tr>
+<tr>
+<td>Outbound tag</td>
+<td>Отправить в конкретный outbound</td>
+</tr>
+<tr>
+<td>Balancer tag</td>
+<td>Передать выбор группе balancer</td>
+</tr>
+</tbody></table></div></div>
+<p>У правила выбирают либо <code>outboundTag</code>, либо <code>balancerTag</code>. Одновременное заполнение создаёт неоднозначную/невалидную конфигурацию.</p>
+<p>Advanced JSON также поддерживает <code>localPort</code>, <code>localIP</code>, <code>process</code>, <code>ruleTag</code> и <code>webhook</code> (<code>url</code>, <code>deduplication</code>, <code>headers</code>). Визуальная форма сохраняет такие поля, но не предоставляет им полноценного редактора; менять их нужно только после сверки со схемой текущего core.</p>
+<h4 id="практическии-порядок-правил">Практический порядок правил</h4>
+<pre><code>1. Служебные API/metrics rules панели
+2. Явные deny/block
+3. Исключения direct
+4. Специальные proxy/balancer rules
+5. Общие региональные правила
+6. Default outbound
+</code></pre>
+<p>Более узкое правило ставят выше широкого. <code>geosite:</code> классифицирует домены, <code>geoip:</code> — уже IP; для доменной маршрутизации нужен домен от клиента, DNS или Sniffing.</p>
+<h3 id="7-3-outbounds">7.3. Outbounds</h3>
+<p>Outbound — способ, которым Xray устанавливает следующий участок соединения. Первый outbound шаблона обычно является default, если rule не выбрало другой.</p>
+<h4 id="общие-поля-outbound">Общие поля outbound</h4>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Protocol</td>
+<td><code>freedom</code>, <code>blackhole</code>, <code>dns</code>, <code>vmess</code>, <code>vless</code>, <code>trojan</code>, <code>shadowsocks</code>, <code>wireguard</code>, <code>hysteria</code>, <code>socks</code>, <code>http</code>, <code>loopback</code></td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>Уникальное имя для rules, balancers и dialerProxy</td>
+</tr>
+<tr>
+<td>Send Through</td>
+<td>Локальный source IP для исходящего socket</td>
+</tr>
+<tr>
+<td>Target Strategy</td>
+<td><code>AsIs</code> или стратегия разрешения IPv4/IPv6</td>
+</tr>
+<tr>
+<td>Stream Settings</td>
+<td>RAW/WS/gRPC/XHTTP/HTTPUpgrade, TLS/REALITY, FinalMask и Sockopt</td>
+</tr>
+<tr>
+<td>Flow</td>
+<td>Протокольный flow, прежде всего VLESS Vision</td>
+</tr>
+<tr>
+<td>Mux</td>
+<td>Мультиплексирование потоков</td>
+</tr>
+</tbody></table></div></div>
+<p>Tag должен быть уникальным и стабильным. Его переименование требует обновить rules, selectors, fallbackTag, dialerProxy и subscription references.</p>
+<h4 id="freedom-direct">Freedom / direct</h4>
+<ul>
+<li><code>domainStrategy</code> — как разрешать destination;</li>
+<li><code>redirect</code> — переписать адрес/порт назначения;</li>
+<li><code>userLevel</code> — policy level;</li>
+<li><code>proxyProtocol</code> — отправлять PROXY v1/v2 следующему сервису;</li>
+<li><code>fragment</code>: <code>packets</code>, <code>length</code>, <code>interval</code>, <code>maxSplit</code>;</li>
+<li><code>noises</code>: тип/packet, delay, <code>applyTo</code>;</li>
+<li><code>finalRules</code>: <code>action</code>, <code>network</code>, <code>port</code>, <code>ip</code>, <code>blockDelay</code>.</li>
+</ul>
+<p>Freedom — прямой выход сервера. Fragment/noise — специальные техники на участке server→destination; они не меняют IP выхода и могут ухудшить совместимость.</p>
+<h4 id="blackhole">Blackhole</h4>
+<ul>
+<li>response type: пусто/<code>none</code> или <code>http</code>;</li>
+<li>используется для блокировки rule;</li>
+<li>HTTP response уместен только когда клиент ожидает HTTP, иначе достаточно тихого закрытия/none.</li>
+</ul>
+<h4 id="dns-outbound">DNS outbound</h4>
+<ul>
+<li><code>rewriteNetwork</code> — UDP/TCP;</li>
+<li><code>rewriteAddress</code>, <code>rewritePort</code> — куда переписать DNS-запрос;</li>
+<li><code>userLevel</code>;</li>
+<li>rules: <code>action</code> (<code>direct</code>, <code>drop</code>, <code>return</code>, <code>hijack</code>), <code>qType</code>, <code>domain</code>, <code>rCode</code>.</li>
+</ul>
+<p>Это outbound для перехвата/передачи DNS-трафика, не глобальный DNS-модуль из главы 9.</p>
+<h4 id="vless-outbound">VLESS outbound</h4>
+<ul>
+<li><code>address</code>, <code>port</code>, <code>id</code>;</li>
+<li><code>encryption</code>, <code>flow</code>;</li>
+<li><code>reverseTag</code>, <code>reverseSniffing</code>;</li>
+<li><code>testpre</code>, <code>testseed</code>;</li>
+<li>Stream Security: none/TLS/REALITY в допустимой комбинации.</li>
+</ul>
+<h4 id="vmess-outbound">VMess outbound</h4>
+<ul>
+<li><code>address</code>, <code>port</code>, <code>id</code>, <code>security</code>;</li>
+<li>transport/security/mux;</li>
+<li>новый outbound должен совпадать с удалённым inbound по UUID и stream fields.</li>
+</ul>
+<h4 id="trojan-outbound">Trojan outbound</h4>
+<ul>
+<li><code>address</code>, <code>port</code>, <code>password</code>;</li>
+<li>transport/security;</li>
+<li>обычно требуется TLS или REALITY-совместимая схема.</li>
+</ul>
+<h4 id="shadowsocks-outbound">Shadowsocks outbound</h4>
+<ul>
+<li><code>address</code>, <code>port</code>, <code>password</code>, <code>method</code>;</li>
+<li><code>uot</code> — UDP over TCP;</li>
+<li><code>UoTVersion</code> — версия 1 или 2.</li>
+</ul>
+<p>UoT используют лишь при совпадающей поддержке сервера и клиента; он переносит UDP-семантику через TCP со свойственными TCP задержками.</p>
+<h4 id="wireguard-outbound">WireGuard outbound</h4>
+<ul>
+<li><code>secretKey</code>, вычисляемый <code>pubKey</code>;</li>
+<li><code>address</code>, <code>mtu</code>, <code>domainStrategy</code>, <code>reserved</code>, <code>noKernelTun</code>;</li>
+<li>peers: <code>publicKey</code>, <code>preSharedKey</code>, <code>allowedIPs</code>, <code>endpoint</code>, <code>keepAlive</code>.</li>
+</ul>
+<p>WireGuard outbound меняет egress IP на адрес выхода WireGuard peer, если AllowedIPs/rules охватывают destination. Он не скрывает IP inbound сервера от клиента.</p>
+<h4 id="hysteria-outbound">Hysteria outbound</h4>
+<ul>
+<li><code>address</code>, <code>port</code>, <code>version=2</code>;</li>
+<li>stream Hysteria: auth, congestion/QUIC settings;</li>
+<li>TLS и совместимый FinalMask.</li>
+</ul>
+<h4 id="socks-и-http-outbound">SOCKS и HTTP outbound</h4>
+<ul>
+<li>SOCKS: <code>address</code>, <code>port</code>, опциональные <code>user</code>, <code>pass</code>;</li>
+<li>HTTP: <code>address</code>, <code>port</code>, <code>user</code>, <code>pass</code>, <code>headers</code>.</li>
+</ul>
+<p>Это следующий proxy-hop. Проверяйте, где заканчивается TLS и кто видит конечное назначение.</p>
+<h4 id="loopback">Loopback</h4>
+<ul>
+<li><code>inboundTag</code> — повторно передать поток конкретному inbound;</li>
+<li><code>sniffing</code> — та же схема enabled/destOverride/metadataOnly/routeOnly/exclusions.</li>
+</ul>
+<p>Loopback — служебный механизм повторного ввода. 3x-ui использует скрытые loopback tags вида <code>_bl_...</code> для fallback одного balancer на другой. Самостоятельно строить loopback-циклы нельзя.</p>
+<h4 id="mux">Mux</h4>
+<ul>
+<li><code>enabled</code>;</li>
+<li><code>concurrency</code> — логические потоки на mux connection;</li>
+<li><code>xudpConcurrency</code> — конкурентность XUDP;</li>
+<li><code>xudpProxyUDP443</code> — <code>reject</code>, <code>allow</code>, <code>skip</code>.</li>
+</ul>
+<p>Mux уменьшает число transport connections, но один перегруженный/потерянный канал может повлиять на несколько потоков. Для Vision и некоторых transport комбинаций UI запрещает Mux.</p>
+<h4 id="outbound-subscriptions">Outbound subscriptions</h4>
+<p>Подписка импортирует набор поддерживаемых share links в Outbounds:</p>
+<ul>
+<li>URL;</li>
+<li><code>tagPrefix</code> — безопасный префикс tags;</li>
+<li>update interval, типично от 600 секунд;</li>
+<li>prepend — ставить импортированные записи раньше;</li>
+<li>priority — порядок обработки.</li>
+</ul>
+<p>После обновления проверьте, что selector balancer всё ещё выбирает ожидаемые tags, а неизвестные/несовместимые поля не были отброшены core.</p>
+<hr>
+<h2 id="8-balancers-подробное-руководство">8. Balancers — подробное руководство</h2>
+<h3 id="8-1-что-делает-xray-balancer">8.1. Что делает Xray Balancer</h3>
+<p>Balancer выбирает <strong>один outbound для нового соединения</strong> из группы tags. Он не распределяет входящие подключения между экземплярами 3x-ui и не объединяет пропускную способность нескольких каналов в один TCP-сеанс.</p>
+<pre><code>Inbound
+   │
+   ▼
+Routing rule: balancerTag = de-auto
+   │
+   ▼
+Balancer de-auto
+   ├── selector &quot;de-&quot; → de-1
+   ├── selector &quot;de-&quot; → de-2
+   └── selector &quot;de-&quot; → de-3
+             │
+             ▼
+       выбранный outbound
+</code></pre>
+<p>То есть это <strong>outbound egress balancer внутри Xray</strong>, а не AWS/HAProxy/Nginx перед сервером.</p>
+<h3 id="8-2-поля-balancer">8.2. Поля Balancer</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tag</code></td>
+<td>Уникальное имя balancer; на него ссылается rule <code>balancerTag</code></td>
+</tr>
+<tr>
+<td><code>selector</code></td>
+<td>Список префиксов outbound tags</td>
+</tr>
+<tr>
+<td><code>strategy</code></td>
+<td><code>random</code>, <code>roundRobin</code>, <code>leastPing</code>, <code>leastLoad</code></td>
+</tr>
+<tr>
+<td><code>fallbackTag</code></td>
+<td>Outbound или другой balancer для случая недоступности основной группы</td>
+</tr>
+</tbody></table></div></div>
+<p>Selector — префиксное сопоставление. <code>de-</code> выберет <code>de-1</code>, <code>de-backup</code> и <code>de-test</code>; поэтому имена должны исключать случайные совпадения.</p>
+<h3 id="8-3-стратегии">8.3. Стратегии</h3>
+<h4 id="random">Random</h4>
+<p>Выбирает случайный подходящий outbound для новых соединений. Прост, не требует измерять latency, если fallback не используется. Это статистическое распределение, а не гарантия равной нагрузки.</p>
+<h4 id="round-robin">Round Robin</h4>
+<p>Последовательно перебирает outbounds. Удобен для примерно одинаковых узлов и предсказуемого распределения количества соединений. Он не учитывает размер/длительность потоков: один узел может получить несколько тяжёлых сеансов.</p>
+<h4 id="least-ping">Least Ping</h4>
+<p>Использует результаты Observatory и выбирает outbound с минимальным измеренным RTT/успешным probe. Низкий ping до test URL не гарантирует лучшую скорость до каждого реального сайта, но хорошо решает выбор ближайшего здорового выхода.</p>
+<h4 id="least-load">Least Load</h4>
+<p>Использует Burst Observatory и оценку нагрузки/RTT. Дополнительные поля:</p>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>expected</code></td>
+<td>Ожидаемое число лучших кандидатов в выборке</td>
+</tr>
+<tr>
+<td><code>maxRTT</code></td>
+<td>Отсечь выходы с RTT выше порога</td>
+</tr>
+<tr>
+<td><code>tolerance</code></td>
+<td>Допуск 0–1 к различию оценки, чтобы не дёргать выбор при малой разнице</td>
+</tr>
+<tr>
+<td><code>baselines</code></td>
+<td>Окна времени для базовой оценки</td>
+</tr>
+<tr>
+<td><code>costs.regexp</code> / <code>match</code></td>
+<td>Какие tags/результаты получают поправку</td>
+</tr>
+<tr>
+<td><code>costs.value</code></td>
+<td>Стоимость; большее значение делает кандидат менее предпочтительным</td>
+</tr>
+</tbody></table></div></div>
+<p>Costs позволяют, например, предпочитать собственный выход платному резерву при сопоставимом состоянии. Неправильные regexp могут затронуть лишние tags.</p>
+<h3 id="8-4-observatory-и-burst-observatory">8.4. Observatory и Burst Observatory</h3>
+<h4 id="observatory">Observatory</h4>
+<ul>
+<li><code>subjectSelector</code> — префиксы наблюдаемых outbound tags;</li>
+<li><code>probeURL</code> — URL проверки;</li>
+<li><code>probeInterval</code> — период проверки;</li>
+<li><code>enableConcurrency</code> — проверять параллельно.</li>
+</ul>
+<h4 id="burst-observatory">Burst Observatory</h4>
+<ul>
+<li><code>subjectSelector</code>;</li>
+<li><code>pingConfig.destination</code> — адрес проверки;</li>
+<li><code>connectivity</code> — режим проверки доступности;</li>
+<li><code>interval</code>, <code>timeout</code>, <code>sampling</code>;</li>
+<li><code>httpMethod</code> — HEAD или GET.</li>
+</ul>
+<p>3x-ui v3.6.0 управляет observers автоматически:</p>
+<ul>
+<li><code>leastPing</code> использует обычный Observatory, если Burst не требуется другим balancer;</li>
+<li><code>leastLoad</code> использует Burst Observatory;</li>
+<li><code>random</code>/<code>roundRobin</code> с <code>fallbackTag</code> также требуют наблюдения доступности и в логике панели подключают Burst;</li>
+<li>если нужен Burst, панель объединяет в него selector-ы и не держит конкурирующий обычный Observatory.</li>
+</ul>
+<p>Модель и интервалы probe описаны в <a class="link" href="https://xtls.github.io/en/config/observatory.html" target="_blank" rel="noopener">Observatory Xray</a>.</p>
+<h3 id="8-5-fallback">8.5. Fallback</h3>
+<p><code>fallbackTag</code> используется, когда основная группа не даёт пригодного результата. Он может указывать на outbound или другой balancer. Для balancer→balancer 3x-ui создаёт внутреннюю loopback-связку и проверяет циклы.</p>
+<p>Пример:</p>
+<pre><code>eu-primary: selector eu-paid-, leastPing
+    fallbackTag → eu-backup
+
+eu-backup: selector eu-spare-, roundRobin
+</code></pre>
+<p>Fallback — не повтор каждого неудачного пользовательского запроса на всех узлах. Доступность определяется observers и состоянием, а уже затем выбирается маршрут нового соединения.</p>
+<h3 id="8-6-правильная-последовательность-настрои-ки">8.6. Правильная последовательность настройки</h3>
+<ol>
+<li>Создать и вручную проверить каждый outbound.</li>
+<li>Дать tags однозначные префиксы: <code>de-prod-1</code>, <code>de-prod-2</code>.</li>
+<li>Выбрать test URL, который стабильно отвечает извне и отражает реальный маршрут; ответ 204 удобен из-за отсутствия body.</li>
+<li>Создать balancer и selector <code>de-prod-</code>.</li>
+<li>Для heterogeneous-сети выбрать <code>leastPing</code>/<code>leastLoad</code>; для одинаковых узлов — roundRobin/random.</li>
+<li>Создать Routing Rule с <code>balancerTag</code>, не <code>outboundTag</code>.</li>
+<li>Проверить logs/observatory status и фактический внешний IP.</li>
+<li>Добавить fallback только после проверки основной группы.</li>
+</ol>
+<h3 id="8-7-какие-задачи-balancer-решает">8.7. Какие задачи Balancer решает</h3>
+<ul>
+<li>автоматический выбор живого egress;</li>
+<li>распределение новых соединений между несколькими провайдерами;</li>
+<li>выбор низкой задержки;</li>
+<li>предпочтение дешёвого/собственного выхода через costs;</li>
+<li>региональные пулы: отдельный balancer для DE, NL, US;</li>
+<li>обслуживание без остановки: вывести tag из selector и дождаться завершения старых сессий;</li>
+<li>использование импортированного subscription pool с устойчивым <code>tagPrefix</code>.</li>
+</ul>
+<h3 id="8-8-чего-balancer-не-делает">8.8. Чего Balancer не делает</h3>
+<ul>
+<li>не скрывает IP inbound VPS;</li>
+<li>не балансирует пользователей между несколькими 3x-ui серверами;</li>
+<li>не ускоряет один TCP/QUIC-сеанс сложением каналов;</li>
+<li>не синхронизирует state между backend;</li>
+<li>не заменяет DNS, BGP anycast, L4/L7 load balancer или CDN;</li>
+<li>не гарантирует, что низкий RTT означает отсутствие блокировки конкретного сайта.</li>
+</ul>
+<h3 id="8-9-ошибки-и-диагностика">8.9. Ошибки и диагностика</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Симптом</th>
+<th>Проверить</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Пул пуст</td>
+<td>Selector и реальные tags, регистр и prefix collision</td>
+</tr>
+<tr>
+<td>Всегда один outbound</td>
+<td>Стратегию, observer status, costs и текущие долгие соединения</td>
+</tr>
+<tr>
+<td>Fallback не включается</td>
+<td>Probe URL, timeout/interval, тип fallbackTag</td>
+</tr>
+<tr>
+<td>Слишком много фонового трафика</td>
+<td>Частоту probes, GET вместо HEAD, число outbounds</td>
+</tr>
+<tr>
+<td>Core не запускается</td>
+<td>Цикл balancers, отсутствующий tag, несовместимый observer JSON</td>
+</tr>
+<tr>
+<td>IP не меняется на каждом запросе</td>
+<td>Keep-alive/mux: несколько запросов идут в одном уже выбранном соединении</td>
+</tr>
+</tbody></table></div></div>
+<hr>
+<h2 id="9-dns-в-xray-configs">9. DNS в Xray Configs</h2>
+<p>Встроенный DNS нужен не для «ускорения Интернета вообще», а для согласованного разрешения доменов внутри Xray, работы domainStrategy, геомаршрутизации и FakeDNS. Актуальная логика серверов описана в <a class="link" href="https://xtls.github.io/en/config/dns.html" target="_blank" rel="noopener">DNS Xray</a>.</p>
+<h3 id="9-1-глобальные-поля">9.1. Глобальные поля</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Enable</td>
+<td>Включить DNS-модуль шаблона</td>
+</tr>
+<tr>
+<td><code>tag</code></td>
+<td>Tag DNS-модуля/трафика для routing</td>
+</tr>
+<tr>
+<td><code>clientIp</code></td>
+<td>EDNS Client Subnet, адрес подсети клиента для geo-ответа</td>
+</tr>
+<tr>
+<td><code>queryStrategy</code></td>
+<td><code>UseIP</code>, <code>UseIPv4</code>, <code>UseIPv6</code>, <code>UseSystem</code></td>
+</tr>
+<tr>
+<td><code>disableCache</code></td>
+<td>Не кешировать ответы</td>
+</tr>
+<tr>
+<td><code>disableFallback</code></td>
+<td>Не обращаться к fallback-серверам</td>
+</tr>
+<tr>
+<td><code>disableFallbackIfMatch</code></td>
+<td>Если сервер выбран по domain rule, не делать fallback</td>
+</tr>
+<tr>
+<td><code>enableParallelQuery</code></td>
+<td>Запрашивать подходящие серверы параллельно</td>
+</tr>
+<tr>
+<td><code>useSystemHosts</code></td>
+<td>Учитывать hosts ОС</td>
+</tr>
+<tr>
+<td><code>serveStale</code></td>
+<td>Возвращать устаревший кеш при проблеме обновления</td>
+</tr>
+<tr>
+<td><code>serveExpiredTTL</code></td>
+<td>Сколько ещё обслуживать истёкшую запись</td>
+</tr>
+</tbody></table></div></div>
+<p><code>clientIp</code> может улучшить географический ответ CDN, но раскрывает резолверу дополнительную информацию о подсети. <code>disableCache</code> увеличивает задержку и число запросов. <code>serveStale</code> повышает устойчивость ценой временно устаревших адресов.</p>
+<h3 id="9-2-hosts">9.2. Hosts</h3>
+<p>Hosts — локальная таблица <code>domain → address/domain</code>. Она применяется до внешнего resolver и подходит для:</p>
+<ul>
+<li>фиксированного внутреннего имени;</li>
+<li>тестового перенаправления;</li>
+<li>блокировки известным sink address;</li>
+<li>CNAME-подобной подстановки другого домена.</li>
+</ul>
+<p>Не путать DNS Hosts с отдельной страницей 3x-ui <strong>Hosts</strong>, заменившей legacy External Proxy: название похоже, слой и назначение различаются.</p>
+<h3 id="9-3-поля-dns-server">9.3. Поля DNS server</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>address</code></td>
+<td><code>localhost</code>, IP, <code>tcp://</code>, <code>tcp+local://</code>, <code>https://</code>, <code>https+local://</code>, <code>quic+local://</code>, <code>fakedns</code></td>
+</tr>
+<tr>
+<td><code>port</code></td>
+<td>Порт для схем, где он задаётся отдельно</td>
+</tr>
+<tr>
+<td><code>tag</code></td>
+<td>Tag запросов этого resolver</td>
+</tr>
+<tr>
+<td><code>clientIP</code></td>
+<td>ECS только для этого сервера</td>
+</tr>
+<tr>
+<td><code>queryStrategy</code></td>
+<td>IPv4/IPv6/system стратегия сервера</td>
+</tr>
+<tr>
+<td><code>timeoutMs</code></td>
+<td>Таймаут, UI по умолчанию около 4000 мс</td>
+</tr>
+<tr>
+<td><code>domains</code></td>
+<td>Для каких доменов сервер приоритетен</td>
+</tr>
+<tr>
+<td><code>expectedIPs</code></td>
+<td>Допустимые IP/CIDR/geoip результата</td>
+</tr>
+<tr>
+<td><code>unexpectedIPs</code></td>
+<td>Результаты, считаемые неприемлемыми</td>
+</tr>
+<tr>
+<td><code>skipFallback</code></td>
+<td>Не включать сервер в общий fallback</td>
+</tr>
+<tr>
+<td><code>finalQuery</code></td>
+<td>После выбора этого сервера не продолжать поиск</td>
+</tr>
+<tr>
+<td><code>disableCache</code></td>
+<td>Не кешировать его ответы</td>
+</tr>
+<tr>
+<td><code>serveStale</code>, <code>serveExpiredTTL</code></td>
+<td>Политика просроченного кеша</td>
+</tr>
+</tbody></table></div></div>
+<p>Суффикс <code>+local</code> означает локальное соединение resolver, минуя обычную Xray routing-схему; это может создать DNS leak, если ожидалось проксирование. Encrypted DNS защищает участок до resolver, но сам resolver всё равно знает запрошенное имя.</p>
+<p><code>expectedIPs</code>/<code>unexpectedIPs</code> позволяют признать ответ неподходящим и перейти к следующему resolver. <code>finalQuery</code> останавливает такой перебор. Порядок DNS servers и доменные filters поэтому важны.</p>
+<h3 id="9-4-fakedns">9.4. FakeDNS</h3>
+<ul>
+<li><code>ipPool</code> — виртуальная сеть адресов FakeDNS;</li>
+<li><code>poolSize</code> — размер пула.</li>
+</ul>
+<p>FakeDNS выдаёт приложению искусственный IP и сохраняет связь IP→domain, чтобы Xray восстановил домен при прозрачном/TUN-сценарии. Пул не должен конфликтовать с реальными локальными маршрутами. FakeDNS без перехвата трафика и sniffing <code>fakedns</code> не решает задачу сам по себе.</p>
+<h3 id="9-5-dns-проверка">9.5. DNS-проверка</h3>
+<ol>
+<li>Убедиться, где физически выполняется DNS-запрос: клиент, сервер, local resolver или proxy outbound.</li>
+<li>Проверить A и AAAA отдельно.</li>
+<li>Сверить Routing Strategy и outbound domainStrategy.</li>
+<li>Проверить домен с включённым и выключенным Sniffing.</li>
+<li>Проверить утечки через системный resolver.</li>
+<li>Учитывать ECH/HTTPS records, а не только A/AAAA.</li>
+</ol>
+<hr>
+<h2 id="10-advanced">10. Advanced</h2>
+<p>Advanced предоставляет прямое редактирование частей JSON:</p>
+<ul>
+<li><code>completeTemplate</code> — весь глобальный Xray template;</li>
+<li><code>inbounds</code> — raw массив дополнительных/служебных inbounds;</li>
+<li><code>outbounds</code> — raw массив outbounds;</li>
+<li><code>routing.rules</code> — raw rules.</li>
+</ul>
+<p>Использовать Advanced следует, только если визуальный редактор не поддерживает стабильное поле текущего core. Панель добавляет собственные API/stats/metrics objects и преобразует часть tags; ручной JSON может конфликтовать с генератором.</p>
+<h3 id="10-1-безопасныи-порядок-работы">10.1. Безопасный порядок работы</h3>
+<ol>
+<li>Экспортировать backup 3x-ui.</li>
+<li>Сохранить исходный template отдельно.</li>
+<li>Внести одно логическое изменение.</li>
+<li>Проверить JSON и ссылки на tags.</li>
+<li>Перезапустить core и проверить status/error log.</li>
+<li>Проверить inbound, DNS и каждый затронутый outbound.</li>
+<li>Только затем переносить изменение на другие nodes.</li>
+</ol>
+<p>Не вставляйте в публичный issue полный template: он может содержать UUID, passwords, private keys, ECH/REALITY secrets, subscription URLs и адреса инфраструктуры.</p>
+<hr>
+<h2 id="11-ipv6-anycast-rotating-ip-load-balancers-и-cloud-edge">11. IPv6, Anycast, rotating IP, load balancers и cloud edge</h2>
+<h3 id="11-1-что-именно-можно-скрыть">11.1. Что именно можно скрыть</h3>
+<pre><code>Прямой VPS
+Client → Origin
+ISP клиента видит IP Origin
+
+Через edge
+Client → CDN / L4 edge / relay → Origin
+ISP клиента видит IP edge
+Edge-провайдер знает Origin
+</code></pre>
+<p>IP не исчезает; меняется участник, адрес которого виден на конкретном участке. Защитить origin означает одновременно:</p>
+<ul>
+<li>не публиковать его в клиентской ссылке/DNS;</li>
+<li>разрешить firewall origin принимать proxy-порт только от edge/relay;</li>
+<li>исключить утечки через старые DNS records, панели, почту, другие vhosts и IPv6;</li>
+<li>защитить административную панель отдельно.</li>
+</ul>
+<h3 id="11-2-ipv6">11.2. IPv6</h3>
+<p>IPv6 использует 128-битные адреса и даёт каждому интерфейсу глобальную адресацию без обязательного NAT. Для 3x-ui это означает:</p>
+<ul>
+<li>bind <code>::</code> и осознанный <code>v6only</code>;</li>
+<li>AAAA record наряду с A;</li>
+<li>отдельные IPv6 firewall/security-group rules;</li>
+<li>корректные outbound <code>UseIPv6</code>/<code>ForceIPv6</code>/dual-stack strategies;</li>
+<li>Happy Eyeballs при dual stack;</li>
+<li>квадратные скобки вокруг literal IPv6 в URL: <code>https://[2001:db8::1]:443/</code>.</li>
+</ul>
+<p>IPv6 не маскирует сервер. Провайдер видит destination IPv6 так же, как IPv4. Он иногда обходит IPv4-only блокировку, но может создать незамеченный прямой путь к origin, если CDN/firewall настроены только для A/IPv4.</p>
+<h3 id="11-3-anycast">11.3. Anycast</h3>
+<p>Anycast — один и тот же IP-префикс объявляется из нескольких точек сети. BGP доставляет клиента к выбранной по политике маршрутизации точке; это не обязательно географически ближайший сервер. Архитектурные ограничения описаны в <a class="link" href="https://www.rfc-editor.org/rfc/rfc4786.html" target="_blank" rel="noopener">RFC 4786</a>.</p>
+<p>Свойства:</p>
+<ul>
+<li>видимый IP остаётся стабильным;</li>
+<li>ingress распределяется сетью, до Xray;</li>
+<li>failover возможен через изъятие BGP route/health logic;</li>
+<li>stateful TCP/QUIC требует, чтобы маршрут не «прыгал» между несинхронизированными POP во время сессии;</li>
+<li>собственный Anycast требует BGP/ASN/IP-prefix или услуги провайдера; это не переключатель 3x-ui.</li>
+</ul>
+<p>Anycast скрывает отдельный backend за сервисным адресом, но сам anycast IP прекрасно виден и может быть заблокирован.</p>
+<h3 id="11-4-rotating-ip">11.4. Rotating IP</h3>
+<p>Rotating IP — периодическая смена публикуемого ingress или egress address.</p>
+<p>Варианты:</p>
+<ul>
+<li>менять A/AAAA records и серверы;</li>
+<li>выдавать пользователям новые endpoints через subscription;</li>
+<li>выбирать разные egress outbounds;</li>
+<li>получать меняющийся egress от внешнего proxy/WARP-подобного сервиса.</li>
+</ul>
+<p>Ограничения:</p>
+<ul>
+<li>текущая TCP/QUIC-сессия не переносится на новый IP автоматически;</li>
+<li>DNS TTL и кеш resolver задерживают ротацию;</li>
+<li>сертификат/SNI и ссылки должны оставаться валидными;</li>
+<li>слишком частая смена создаёт сбои и аномальный профиль;</li>
+<li>egress rotation не меняет адрес inbound, который видит ISP клиента;</li>
+<li>старый origin надо закрывать, иначе ротация лишь добавляет адреса.</li>
+</ul>
+<p>Ротация полезна для замены заблокированного/перегруженного адреса и распределения egress, но не создаёт анонимность сама по себе.</p>
+<h3 id="11-5-четыре-разных-вида-балансировки">11.5. Четыре разных вида балансировки</h3>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Механизм</th>
+<th>Где работает</th>
+<th>Что выбирает</th>
+<th>Скрывает origin от ISP клиента</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Xray Balancer</td>
+<td>После inbound, внутри Xray</td>
+<td>Исходящий outbound для нового соединения</td>
+<td>Нет</td>
+</tr>
+<tr>
+<td>Внешний L4/L7 load balancer</td>
+<td>Перед 3x-ui/Xray backend</td>
+<td>Backend server</td>
+<td>Да, если direct доступ закрыт</td>
+</tr>
+<tr>
+<td>DNS round-robin/geo DNS</td>
+<td>До соединения</td>
+<td>IP, возвращаемый клиенту</td>
+<td>Только если возвращаются edge, а не origins</td>
+</tr>
+<tr>
+<td>Anycast/cloud edge</td>
+<td>Сетевая граница провайдера</td>
+<td>POP/edge по маршрутизации и health</td>
+<td>Да, backend не виден клиентскому участку</td>
+</tr>
+</tbody></table></div></div>
+<h4 id="l4-load-balancer">L4 load balancer</h4>
+<p>Балансирует TCP/UDP без понимания внутреннего HTTP. Может переносить RAW TCP и UDP/QUIC, если сервис провайдера поддерживает нужный протокол и сохраняет state. TLS часто проходит passthrough до Xray.</p>
+<h4 id="l7-reverse-proxy-cdn">L7 reverse proxy/CDN</h4>
+<p>Понимает HTTP Host/path/headers и обычно завершает TLS на edge. Подходит для WebSocket, HTTPUpgrade, XHTTP и, при поддержке, gRPC. Прямой VLESS RAW + REALITY нельзя просто поместить за обычный HTTP CDN: CDN не передаёт произвольное REALITY-рукопожатие как HTTP request.</p>
+<h4 id="dns-balancing">DNS balancing</h4>
+<p>Возвращает несколько A/AAAA или разные адреса по географии. Клиент/recursive resolver кеширует выбор; DNS сам не проверяет прикладное состояние каждой уже начатой сессии и публикует выбранные IP.</p>
+<h3 id="11-6-cloud-edge">11.6. Cloud edge</h3>
+<p>Cloud edge — POP провайдера, который становится первой точкой соединения. Он может быть:</p>
+<ul>
+<li>CDN/reverse proxy уровня HTTP;</li>
+<li>anycast L4 accelerator;</li>
+<li>защищённый relay;</li>
+<li>глобальный load balancer с health checks.</li>
+</ul>
+<p>Например, AWS Global Accelerator выдаёт статические anycast IP и направляет трафик к здоровым regional endpoints; выбор endpoints и health checks описан в <a class="link" href="https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html" target="_blank" rel="noopener">официальной документации AWS</a>.</p>
+<p>Cloud edge решает origin shielding, DDoS absorption, близкий ingress и failover, но:</p>
+<ul>
+<li>edge-провайдер видит origin и метаданные участка;</li>
+<li>совместимость зависит от L4/L7 и поддерживаемых TCP/UDP/HTTP функций;</li>
+<li>TLS termination определяет, кто видит plaintext транспортного HTTP;</li>
+<li>backend firewall должен принимать только адреса/аутентифицированные tunnels edge;</li>
+<li>логирование real client IP требует доверенного PROXY protocol/header и защиты от spoofing.</li>
+</ul>
+<h3 id="11-7-рабочие-архитектуры">11.7. Рабочие архитектуры</h3>
+<h4 id="простая-и-производительная">Простая и производительная</h4>
+<pre><code>Client → VLESS + RAW + REALITY → один VPS → direct/balancer egress
+</code></pre>
+<p>Плюсы: минимум компонентов. Минус: ISP клиента видит VPS IP; origin не скрыт.</p>
+<h4 id="cdn-совместимая">CDN-совместимая</h4>
+<pre><code>Client → TLS → CDN → WebSocket/XHTTP/HTTPUpgrade → Xray origin
+</code></pre>
+<p>Плюсы: ISP видит edge IP, origin можно закрыть firewall. Минусы: совместимость транспорта, правила CDN, HTTP overhead, доверие провайдеру.</p>
+<h4 id="l4-relay-accelerator">L4 relay/accelerator</h4>
+<pre><code>Client → anycast/L4 edge → RAW TCP или UDP/QUIC → Xray backend
+</code></pre>
+<p>Плюсы: сохраняет больше транспортов. Минусы: стоимость, stateful routing, поддержка UDP и PROXY protocol.</p>
+<h4 id="два-управляемых-сервера">Два управляемых сервера</h4>
+<pre><code>Client → Front Xray → защищённый outbound → Backend Xray → Internet
+</code></pre>
+<p>Плюсы: backend скрыт от клиента/его ISP. Минусы: дополнительная задержка, front остаётся видимым, две точки эксплуатации.</p>
+<hr>
+<h2 id="12-xray-и-реально-используемые-альтернативные-ядра">12. Xray и реально используемые альтернативные ядра</h2>
+<h3 id="12-1-роль-xray-core">12.1. Роль Xray-core</h3>
+<p>Xray-core — основной data plane 3x-ui: listeners, VLESS/VMess/Trojan/Hysteria/WireGuard proxy, transport security, sniffing, DNS, routing, outbounds, observatory и balancers. Панель не «является Xray» и не шифрует трафик сама.</p>
+<p>3x-ui v3.6.0 собирает конфигурации под Xray-core v26.7.28. Поставить другое core технически возможно только с учётом формата JSON и функций; несовпадение версии особенно критично для новых XHTTP session fields, VLESS Encryption, REALITY ML-DSA и FinalMask.</p>
+<h3 id="12-2-другие-применяемые-проекты">12.2. Другие применяемые проекты</h3>
+<ul>
+<li><strong>v2ray-core</strong> — предшествующая/родственная экосистема, но без полного набора новых Xray-specific функций.</li>
+<li><strong>sing-box</strong> — самостоятельное универсальное proxy-ядро; популярно на клиентах и серверах, но названия/семантика полей не тождественны Xray.</li>
+<li><strong>Mihomo</strong> — ядро Clash-экосистемы для rule-based клиентов; поддерживает многие links, но совместимость новых Xray features может отставать.</li>
+<li><strong>native WireGuard</strong> — отдельный VPN-интерфейс ОС, если нужен чистый L3 tunnel без Xray orchestration.</li>
+<li><strong>официальный Hysteria2 core</strong> — специализированная реализация Hysteria2.</li>
+<li><strong>mtg-multi</strong> — фактически используется 3x-ui для MTProto и управляется рядом с Xray.</li>
+</ul>
+<p>3x-ui не предоставляет универсальный переключатель «заменить Xray на sing-box/Mihomo». Наличие протокола в клиенте ещё не означает поддержку всех security/mask/auth полей конкретной версии сервера.</p>
+<hr>
+<h2 id="13-практические-профили-и-проверка">13. Практические профили и проверка</h2>
+<h3 id="13-1-vless-reality-для-прямого-vps">13.1. VLESS + REALITY для прямого VPS</h3>
+<ol>
+<li>VLESS, RAW, REALITY.</li>
+<li>UUID клиента; <code>xtls-rprx-vision</code> — основной flow при поддержке клиента.</li>
+<li><code>xtls-rprx-vision-udp443</code> выбирать только если приложению действительно нужен QUIC и оно не делает TCP fallback.</li>
+<li>Убедиться, что клиентская ссылка содержит выбранный flow, а серверная runtime-запись содержит базовый <code>xtls-rprx-vision</code>.</li>
+<li>Target и serverNames проверить scanner-ом.</li>
+<li>Сгенерировать REALITY key pair и short ID.</li>
+<li>Выбрать распространённый uTLS fingerprint.</li>
+<li>Обычный Mux выключить.</li>
+<li>Sniffing включить только если нужны domain rules; начать с routeOnly.</li>
+<li>Не ожидать скрытия IP VPS.</li>
+</ol>
+<h3 id="13-2-xhttp-ws-через-cdn">13.2. XHTTP/WS через CDN</h3>
+<ol>
+<li>Создать hostname и сертификат на edge.</li>
+<li>Выбрать транспорт, поддерживаемый CDN.</li>
+<li>Согласовать Host/path/ALPN на клиенте, edge и origin.</li>
+<li>На origin разрешить соединения только от edge/relay.</li>
+<li>Настроить real IP только через доверенный header/PROXY protocol.</li>
+<li>Проверить, что прямой IPv4 и IPv6 origin недоступны.</li>
+</ol>
+<h3 id="13-3-hysteria2-с-резервом">13.3. Hysteria2 с резервом</h3>
+<ol>
+<li>Проверить UDP на клиентской сети.</li>
+<li>Валидный TLS certificate/SNI/ALPN.</li>
+<li>Уникальный auth и Salamander password.</li>
+<li>Начать с стандартного congestion profile; не завышать Brutal speed.</li>
+<li>UDP Hop включать только после открытия и маршрутизации полного диапазона.</li>
+<li>Отдельно выдать TCP-профиль на случай блокировки UDP.</li>
+</ol>
+<h3 id="13-4-outbound-balancer">13.4. Outbound balancer</h3>
+<ol>
+<li>Проверить каждый outbound без balancer.</li>
+<li>Префиксы tags без пересечений.</li>
+<li>Probe URL и reasonable interval.</li>
+<li>Rule с <code>balancerTag</code>.</li>
+<li>Проверить новый внешний IP в новых соединениях без keep-alive/mux.</li>
+<li>Смоделировать отказ одного выхода и возврат после восстановления.</li>
+</ol>
+<h3 id="13-5-общии-чек-лист-перед-публикациеи-подключения">13.5. Общий чек-лист перед публикацией подключения</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Port открыт только там, где требуется.</li>
+<li><input disabled="" type="checkbox"> Panel/API не опубликованы на том же незащищённом endpoint.</li>
+<li><input disabled="" type="checkbox"> UUID/password/auth/private keys уникальны.</li>
+<li><input disabled="" type="checkbox"> Client и server поддерживают все выбранные новые поля.</li>
+<li><input disabled="" type="checkbox"> Transport, Host/path/serviceName и security совпадают.</li>
+<li><input disabled="" type="checkbox"> SNI соответствует certificate либо REALITY target/serverNames.</li>
+<li><input disabled="" type="checkbox"> ALPN соответствует transport/proxy.</li>
+<li><input disabled="" type="checkbox"> PROXY protocol включён или выключен на обеих сторонах участка.</li>
+<li><input disabled="" type="checkbox"> Sniffing и routeOnly проверены на реальных приложениях.</li>
+<li><input disabled="" type="checkbox"> Routing rules расположены от узких к широким.</li>
+<li><input disabled="" type="checkbox"> Default outbound известен.</li>
+<li><input disabled="" type="checkbox"> A и AAAA проверены; нет обходного прямого origin path.</li>
+<li><input disabled="" type="checkbox"> DNS не утекает мимо предполагаемого маршрута.</li>
+<li><input disabled="" type="checkbox"> Logs не хранят лишние IP/domains и ротируются.</li>
+<li><input disabled="" type="checkbox"> Backup конфигурации сделан без публикации secrets.</li>
+</ul>
+<hr>
+<h2 id="14-быстрыи-указатель-полеи-со-скриншотов">14. Быстрый указатель полей со скриншотов</h2>
+<p>Этот раздел нужен как карта поиска по справочнику.</p>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Группа со скриншотов</th>
+<th>Где разобрано</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>REALITY: Xver, Target, SNI, Max Time Diff, client versions, Short IDs, SpiderX, keys, ML-DSA</td>
+<td>3.7</td>
+</tr>
+<tr>
+<td>Sniffing: destOverride, metadataOnly, routeOnly, exclusions</td>
+<td>4</td>
+</tr>
+<tr>
+<td>DPI: видимые признаки, классификация VLESS/Trojan/Hysteria2/Shadowsocks/WireGuard</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Hysteria2: QUIC/BBR/Brutal/UDP Hop/windows</td>
+<td>6.3 и 6.9</td>
+</tr>
+<tr>
+<td>TLS: Reject Unknown SNI, Session Resumption, certificates, OCSP, ECH, pinned SHA-256</td>
+<td>3.6</td>
+</tr>
+<tr>
+<td>VLESS Encryption/Auth и testseed</td>
+<td>2.2 и 6.3</td>
+</tr>
+<tr>
+<td>VLESS flow, XTLS Vision, Vision UDP/443, Mux и legacy XTLS</td>
+<td>2.3</td>
+</tr>
+<tr>
+<td>RAW, Proxy Protocol, HTTP camouflage</td>
+<td>6.4–6.5</td>
+</tr>
+<tr>
+<td>External Proxy</td>
+<td>6.12: перенесён в Hosts</td>
+</tr>
+<tr>
+<td>Sockopt</td>
+<td>6.10</td>
+</tr>
+<tr>
+<td>TCP/UDP Masks, Salamander</td>
+<td>6.11</td>
+</tr>
+<tr>
+<td>Xray Configs Basics/Routing/Outbounds/DNS/Advanced</td>
+<td>7, 9, 10</td>
+</tr>
+<tr>
+<td>Balancers</td>
+<td>8</td>
+</tr>
+<tr>
+<td>IPv6/Anycast/rotating IP/load balancers/cloud edge</td>
+<td>11</td>
+</tr>
+</tbody></table></div></div>
+<hr>
+<h2 id="15-термины-которые-нельзя-смешивать">15. Термины, которые нельзя смешивать</h2>
+<div class="table-wrap" tabindex="0"><div class="tbl"><table>
+<thead>
+<tr>
+<th>Термин</th>
+<th>Правильный короткий смысл</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Inbound</td>
+<td>Где Xray принимает клиента</td>
+</tr>
+<tr>
+<td>Outbound</td>
+<td>Куда и как Xray устанавливает следующий участок</td>
+</tr>
+<tr>
+<td>Proxy protocol</td>
+<td>VLESS/Trojan/VMess и т. п.; не путать с HAProxy PROXY protocol</td>
+</tr>
+<tr>
+<td>PROXY protocol</td>
+<td>Служебный заголовок v1/v2 с исходным IP между доверенными proxy</td>
+</tr>
+<tr>
+<td>Transport</td>
+<td>RAW/WS/gRPC/XHTTP/HTTPUpgrade/mKCP/Hysteria</td>
+</tr>
+<tr>
+<td>TLS</td>
+<td>Шифрование и проверка transport endpoint</td>
+</tr>
+<tr>
+<td>REALITY</td>
+<td>Модифицированная TLS transport security Xray с target</td>
+</tr>
+<tr>
+<td>SNI</td>
+<td>Имя хоста в TLS ClientHello</td>
+</tr>
+<tr>
+<td>ECH</td>
+<td>Шифрование внутреннего ClientHello, не IP</td>
+</tr>
+<tr>
+<td>ALPN</td>
+<td>Согласование HTTP/2, HTTP/1.1, HTTP/3 и т. п.</td>
+</tr>
+<tr>
+<td>uTLS</td>
+<td>Имитация формы ClientHello</td>
+</tr>
+<tr>
+<td>DPI</td>
+<td>Stateful-анализ пакетов и потоков по содержимому, handshake, метаданным и статистике</td>
+</tr>
+<tr>
+<td>Sniffing</td>
+<td>Извлечение доступного домена/метаданных после inbound</td>
+</tr>
+<tr>
+<td>FinalMask</td>
+<td>Дополнительное оформление transport, не обязательно шифрование</td>
+</tr>
+<tr>
+<td>Xray Balancer</td>
+<td>Выбор egress outbound</td>
+</tr>
+<tr>
+<td>External load balancer</td>
+<td>Выбор inbound backend перед Xray</td>
+</tr>
+<tr>
+<td>Anycast</td>
+<td>Сетевая доставка одного IP к одному из POP</td>
+</tr>
+<tr>
+<td>CDN/cloud edge</td>
+<td>Посредник на edge; L7 или L4 в зависимости от продукта</td>
+</tr>
+</tbody></table></div></div>
+<hr>
+<h2 id="istochniki">Источники</h2><ol class="srclist"><li id="src-1"><span class="sn">1</span><div>3x-ui v3.6.0 — Release v3.6.0<a class="link" href="https://github.com/MHSanaei/3x-ui/releases/tag/v3.6.0" target="_blank" rel="noopener">https://github.com/MHSanaei/3x-ui/releases/tag/v3.6.0</a></div></li><li id="src-2"><span class="sn">2</span><div>3x-ui v3.6.0 — Release workflow v3.6.0 — версия комплектного Xray-core<a class="link" href="https://github.com/MHSanaei/3x-ui/blob/v3.6.0/.github/workflows/release.yml" target="_blank" rel="noopener">https://github.com/MHSanaei/3x-ui/blob/v3.6.0/.github/workflows/release.yml</a></div></li><li id="src-3"><span class="sn">3</span><div>3x-ui v3.6.0 — Inbounds<a class="link" href="https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/inbounds.mdx" target="_blank" rel="noopener">https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/inbounds.mdx</a></div></li><li id="src-4"><span class="sn">4</span><div>3x-ui v3.6.0 — Clients<a class="link" href="https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/clients.mdx" target="_blank" rel="noopener">https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/clients.mdx</a></div></li><li id="src-5"><span class="sn">5</span><div>3x-ui v3.6.0 — Transports<a class="link" href="https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/transports.mdx" target="_blank" rel="noopener">https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/transports.mdx</a></div></li><li id="src-6"><span class="sn">6</span><div>3x-ui v3.6.0 — REALITY<a class="link" href="https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/reality.mdx" target="_blank" rel="noopener">https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/config/reality.mdx</a></div></li><li id="src-7"><span class="sn">7</span><div>3x-ui v3.6.0 — Outbounds and routing<a class="link" href="https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/operations/outbounds-routing.mdx" target="_blank" rel="noopener">https://github.com/MHSanaei/3x-ui/blob/v3.6.0/docs/content/docs/en/operations/outbounds-routing.mdx</a></div></li><li id="src-8"><span class="sn">8</span><div>Генерация runtime client flow в 3x-ui v3.6.0<a class="link" href="https://github.com/MHSanaei/3x-ui/blob/v3.6.0/internal/web/service/xray.go" target="_blank" rel="noopener">https://github.com/MHSanaei/3x-ui/blob/v3.6.0/internal/web/service/xray.go</a></div></li><li id="src-9"><span class="sn">9</span><div>Xray-core — Configuration overview<a class="link" href="https://xtls.github.io/en/config/" target="_blank" rel="noopener">https://xtls.github.io/en/config/</a></div></li><li id="src-10"><span class="sn">10</span><div>Xray-core — VLESS inbound и серверный flow<a class="link" href="https://xtls.github.io/en/config/inbounds/vless.html" target="_blank" rel="noopener">https://xtls.github.io/en/config/inbounds/vless.html</a></div></li><li id="src-11"><span class="sn">11</span><div>Xray-core — VLESS outbound, Vision, UDP/443 и splice<a class="link" href="https://xtls.github.io/en/config/outbounds/vless.html" target="_blank" rel="noopener">https://xtls.github.io/en/config/outbounds/vless.html</a></div></li><li id="src-12"><span class="sn">12</span><div>Допустимые значения flow в Xray-core v26.7.28<a class="link" href="https://github.com/XTLS/Xray-core/blob/v26.7.28/infra/conf/vless.go" target="_blank" rel="noopener">https://github.com/XTLS/Xray-core/blob/v26.7.28/infra/conf/vless.go</a></div></li><li id="src-13"><span class="sn">13</span><div>Xray-core — Transport<a class="link" href="https://xtls.github.io/en/config/transport.html" target="_blank" rel="noopener">https://xtls.github.io/en/config/transport.html</a></div></li><li id="src-14"><span class="sn">14</span><div>Xray-core — TLS<a class="link" href="https://xtls.github.io/en/config/transports/tls.html" target="_blank" rel="noopener">https://xtls.github.io/en/config/transports/tls.html</a></div></li><li id="src-15"><span class="sn">15</span><div>Xray-core — REALITY<a class="link" href="https://xtls.github.io/en/config/transports/reality.html" target="_blank" rel="noopener">https://xtls.github.io/en/config/transports/reality.html</a></div></li><li id="src-16"><span class="sn">16</span><div>Xray-core — Inbound and Sniffing<a class="link" href="https://xtls.github.io/en/config/inbound.html" target="_blank" rel="noopener">https://xtls.github.io/en/config/inbound.html</a></div></li><li id="src-17"><span class="sn">17</span><div>Xray-core — Routing and Balancers<a class="link" href="https://xtls.github.io/en/config/routing.html" target="_blank" rel="noopener">https://xtls.github.io/en/config/routing.html</a></div></li><li id="src-18"><span class="sn">18</span><div>Xray-core — DNS<a class="link" href="https://xtls.github.io/en/config/dns.html" target="_blank" rel="noopener">https://xtls.github.io/en/config/dns.html</a></div></li><li id="src-19"><span class="sn">19</span><div>Xray-core — Observatory<a class="link" href="https://xtls.github.io/en/config/observatory.html" target="_blank" rel="noopener">https://xtls.github.io/en/config/observatory.html</a></div></li><li id="src-20"><span class="sn">20</span><div>DPI и анализ зашифрованного трафика — RFC 8446: TLS 1.3 — traffic analysis по длинам и времени<a class="link" href="https://datatracker.ietf.org/doc/html/rfc8446.html" target="_blank" rel="noopener">https://datatracker.ietf.org/doc/html/rfc8446.html</a></div></li><li id="src-21"><span class="sn">21</span><div>DPI и анализ зашифрованного трафика — RFC 9000 и RFC 9001: QUIC и TLS для QUIC<a class="link" href="https://datatracker.ietf.org/doc/html/rfc9000.html" target="_blank" rel="noopener">https://datatracker.ietf.org/doc/html/rfc9000.html</a></div></li><li id="src-22"><span class="sn">22</span><div>DPI и анализ зашифрованного трафика — RFC 9312: наблюдаемость и управление QUIC<a class="link" href="https://datatracker.ietf.org/doc/rfc9312/" target="_blank" rel="noopener">https://datatracker.ietf.org/doc/rfc9312/</a></div></li><li id="src-23"><span class="sn">23</span><div>DPI и анализ зашифрованного трафика — RFC 9849: Encrypted ClientHello и его границы<a class="link" href="https://datatracker.ietf.org/doc/rfc9849/" target="_blank" rel="noopener">https://datatracker.ietf.org/doc/rfc9849/</a></div></li><li id="src-24"><span class="sn">24</span><div>DPI и анализ зашифрованного трафика — USENIX Security 2023: пассивное обнаружение полностью зашифрованного proxy-трафика<a class="link" href="https://www.usenix.org/conference/usenixsecurity23/presentation/wu-mingshi" target="_blank" rel="noopener">https://www.usenix.org/conference/usenixsecurity23/presentation/wu-mingshi</a></div></li><li id="src-25"><span class="sn">25</span><div>DPI и анализ зашифрованного трафика — FOCI 2020: active probing и probe-resistant proxies<a class="link" href="https://www.usenix.org/system/files/foci20-paper-frolov.pdf" target="_blank" rel="noopener">https://www.usenix.org/system/files/foci20-paper-frolov.pdf</a></div></li><li id="src-26"><span class="sn">26</span><div>Сетевая инфраструктура — RFC 4786: Operation of Anycast Services<a class="link" href="https://www.rfc-editor.org/rfc/rfc4786.html" target="_blank" rel="noopener">https://www.rfc-editor.org/rfc/rfc4786.html</a></div></li><li id="src-27"><span class="sn">27</span><div>Сетевая инфраструктура — RFC 4291: IPv6 Addressing Architecture<a class="link" href="https://www.rfc-editor.org/rfc/rfc4291.html" target="_blank" rel="noopener">https://www.rfc-editor.org/rfc/rfc4291.html</a></div></li><li id="src-28"><span class="sn">28</span><div>Сетевая инфраструктура — AWS Global Accelerator: how it works<a class="link" href="https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html</a></div></li><li id="src-29"><span class="sn">29</span><div>Сетевая инфраструктура — AWS Global Accelerator endpoints<a class="link" href="https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoints.html</a></div></li></ol>

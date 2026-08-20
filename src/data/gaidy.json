@@ -1,4 +1,8 @@
 {
   "pokazyvat": true,
-  "poryadok": ["logic-apollo-fm9", "uad-plaginy"]
+  "poryadok": [
+    "logic-apollo-fm9",
+    "uad-plaginy",
+    "3x-ui-xray"
+  ]
 }

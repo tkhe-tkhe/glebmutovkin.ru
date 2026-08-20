@@ -852,3 +852,32 @@ figure.risunok figcaption{
   font-family:var(--mono);font-size:.66rem;letter-spacing:.05em;
   color:var(--fg-3);margin:.5rem 0 1.2rem;
 }
+
+/* блок кода и конфига в справочнике. Коробки нет — как и везде: левая
+   волосяная линия вместо рамки и заливки, текст моноширинный.
+   overflow-x на самом блоке, а не на странице: в справочнике есть схемы
+   из палочек и стрелок шириной под сотню знаков, и без этого они тянули бы
+   горизонтальную прокрутку всей страницы на телефоне. */
+article.razbor pre{
+  max-width:var(--measure-wide);margin:1.8rem 0;
+  padding:.2rem 0 .2rem 1.1rem;border-left:1px solid var(--line);
+  overflow-x:auto;
+}
+article.razbor pre code{
+  display:block;font-family:var(--mono);font-size:.7rem;line-height:1.7;
+  color:var(--fg-2);white-space:pre;
+}
+
+/* имя поля, значение, кусок JSON внутри предложения. :not(.ui) — чтобы
+   не спорить с code.ui, у которого свой кегль и своё назначение */
+article.razbor code:not(.ui){
+  font-family:var(--mono);font-size:.82em;letter-spacing:-.01em;color:var(--fg);
+  overflow-wrap:anywhere;
+}
+
+/* длинные неразрывные куски вроде enabled/destOverride/metadataOnly тянули
+   горизонтальную прокрутку страницы на 390px. break-word рвёт слово только
+   тогда, когда иначе оно не помещается, обычный текст не трогает */
+article.razbor p,
+article.razbor li{overflow-wrap:break-word}
+article.razbor pre code:not(.ui){font-size:.7rem;color:var(--fg-2)}
