@@ -2,11 +2,12 @@
 // Каталог гайдов.
 //
 // Список строится из src/data/gaidy/*.json, порядок — из src/data/gaidy.ts.
-// Когда раздел скрыт (pokazyvat = false), страница всё равно собирается
+// Когда раздел скрыт (razdely.json), страница всё равно собирается
 // и открывается по прямой ссылке: нет только пункта в меню, поиска и индексации.
 
 import Base from '../../layouts/Base.astro';
-import { pokazyvat, poryadok } from '../../data/gaidy';
+import { poryadok } from '../../data/gaidy';
+import { vidno } from '../../data/razdely';
 
 const meta = import.meta.glob('../../data/gaidy/*.json', { eager: true });
 
@@ -32,7 +33,6 @@ const dva = (n: number) => String(n).padStart(2, '0');
 <Base
   title="Гайды — Глеб Мутовкин"
   description="Инструкции, которые я собираю для себя и проверяю на своей практике."
-  noindex={!pokazyvat}
 >
   <main class="page" data-pagefind-ignore>
     <section class="hero">
@@ -62,7 +62,7 @@ const dva = (n: number) => String(n).padStart(2, '0');
         ))}
       </ul>
 
-      {!pokazyvat && (
+      {!vidno.gaidy && (
         <p class="meta" style="margin-top:2.4rem">
           Раздел скрыт: в меню его нет, в поиске по сайту тоже. Страницы открыты
           по прямой ссылке.

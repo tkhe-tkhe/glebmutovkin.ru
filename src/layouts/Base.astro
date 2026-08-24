@@ -6,7 +6,7 @@ import '@fontsource-variable/literata';
 import '@fontsource-variable/literata/wght-italic.css';
 import '@fontsource-variable/jetbrains-mono';
 import '../styles/tkhe.css';
-import { pokazyvat as gaidyVidny } from '../data/gaidy';
+import { vidno, skryt as razdelSkryt } from '../data/razdely';
 import Znak from '../components/Znak.astro';
 import { zakryt } from '../data/sait';
 
@@ -22,20 +22,34 @@ const {
   noindex = false,
 } = Astro.props;
 
+// Меню собирается из открытых разделов: src/data/razdely.ts. Лента стоит
+// всегда — это главная. Порядок задан здесь, а не в данных: он про смысл
+// («музыка первична»), а не про настройку.
 const nav = [
   { href: '/', label: 'Лента' },
-  { href: '/muzyka/', label: 'Музыка' },
-  { href: '/esse/', label: 'Эссе и проза' },
-  { href: '/razbory/', label: 'Разборы' },
-  // Пункт появляется, только когда раздел открыт: src/data/gaidy.ts
-  ...(gaidyVidny ? [{ href: '/gaidy/', label: 'Гайды' }] : []),
-  { href: '/foto/', label: 'Фото' },
-  { href: '/o-mne/', label: 'Обо мне' },
+  ...(vidno.muzyka ? [{ href: '/muzyka/', label: 'Музыка' }] : []),
+  ...(vidno.esse ? [{ href: '/esse/', label: 'Эссе и проза' }] : []),
+  ...(vidno.razbory ? [{ href: '/razbory/', label: 'Разборы' }] : []),
+  ...(vidno.gaidy ? [{ href: '/gaidy/', label: 'Гайды' }] : []),
+  ...(vidno.foto ? [{ href: '/foto/', label: 'Фото' }] : []),
+  ...(vidno.o_mne ? [{ href: '/o-mne/', label: 'Обо мне' }] : []),
 ];
 
 // Текущий раздел: на главной точное совпадение, в остальных — по началу пути.
 const path = Astro.url.pathname;
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+
+// Страница скрытого раздела: noindex. Считается здесь, в одном месте
+// на весь сайт, а не в каждом макете по отдельности — иначе новая страница
+// однажды приедет без этой проверки и утечёт в выдачу.
+//
+// Поиск по сайту отсюда закрыть нельзя: data-pagefind-ignore на <body>
+// Pagefind не читает — body для него и есть корень страницы. Проверено
+// 20 августа 2026: с меткой на body разборы продолжали попадать в индекс.
+// Поэтому индексацию гасят те макеты, где стоит data-pagefind-body:
+// Razbor.astro, Gaid.astro и chelovek-pered-bogom.astro. Витрины разделов
+// в индекс не попадают и так — у них data-pagefind-ignore на <main>.
+const naSkrytoy = razdelSkryt(path);
 ---
 
 <!doctype html>
@@ -52,7 +66,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    {(noindex || zakryt) && <meta name="robots" content="noindex,nofollow" />}
+    {(noindex || zakryt || naSkrytoy) && <meta name="robots" content="noindex,nofollow" />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -93,7 +107,10 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
       <div style="max-width:42rem">
         glebmutovkin.ru — музыка, разборы и заметки.<br />
         Материалы можно свободно цитировать со ссылкой на источник.<br /><br />
-        <a href="/">Лента</a> · <a href="/o-mne/">Обо мне</a> · <a href="/poisk/">Поиск</a>
+        {/* «Обо мне» уходит из подвала вместе с разделом: скрытый раздел,
+            на который сайт сам же и ссылается, — это не скрытый раздел */}
+        <a href="/">Лента</a>{vidno.o_mne && <Fragment> · <a href="/o-mne/">Обо мне</a></Fragment>} ·
+        <a href="/poisk/">Поиск</a>
       </div>
     </footer>
   </body>

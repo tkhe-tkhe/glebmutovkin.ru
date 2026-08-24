@@ -10,7 +10,7 @@
 // врезки и пути в интерфейсе в Markdown не выражаются.
 
 import Base from './Base.astro';
-import { pokazyvat } from '../data/gaidy';
+import { vidno } from '../data/razdely';
 import { faily } from '../lib/skachat';
 
 interface Props {
@@ -45,7 +45,7 @@ const PO_UMOLCHANIYU =
 const kakChitat = (meta.kak_chitat || PO_UMOLCHANIYU).replace('{n}', String(nsrc));
 ---
 
-<Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede} noindex={!pokazyvat}>
+<Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede}>
   <main class="page">
     <div style="max-width:44rem;margin-bottom:3rem">
       <div class="count" style="margin-bottom:1.1rem">Гайд</div>
@@ -88,8 +88,7 @@ const kakChitat = (meta.kak_chitat || PO_UMOLCHANIYU).replace('{n}', String(nsrc
 
       <article
         class="razbor gaid"
-        data-pagefind-body={pokazyvat ? '' : undefined}
-        data-pagefind-ignore={pokazyvat ? undefined : ''}
+        data-pagefind-body={vidno.gaidy ? '' : undefined}
       >
         <details class="toc-m">
           <summary>Содержание</summary>

@@ -11,6 +11,7 @@
 // сноски-кнопки и таблицы не выражаются без своего слоя компонентов.
 
 import Base from './Base.astro';
+import { vidno } from '../data/razdely';
 
 interface Props {
   meta: {
@@ -63,7 +64,7 @@ const dva = (n: number) => String(n).padStart(2, '0');
         {meta.toc.map((t) => <a href={t.href}>{t.label}</a>)}
       </aside>
 
-      <article class="razbor" data-pagefind-body>
+      <article class="razbor" data-pagefind-body={vidno.razbory ? '' : undefined}>
         <details class="toc-m">
           <summary>Содержание</summary>
           {meta.toc.map((t) => <a href={t.href}>{t.label}</a>)}

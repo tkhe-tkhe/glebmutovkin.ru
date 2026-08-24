@@ -157,16 +157,40 @@ collections:
                   Для читалок и на случай, если картинка не загрузилась.
                   Подписей под снимками на странице нет.
 
-      - name: gaidy
-        label: Гайды — видимость и порядок
-        file: src/data/gaidy.json
+      - name: razdely
+        label: Разделы сайта
+        file: src/data/razdely.json
         fields:
-          - name: pokazyvat
-            label: Показывать раздел всем
+          - name: muzyka
+            label: Музыка
             widget: boolean
             hint: >-
-              Выключено — пункта «Гайды» нет в меню, раздел не индексируется
-              и не ищется по сайту, но страницы открываются по прямой ссылке.
+              Вместе с разделом уходят клипы, концерты, инструменталы
+              и тексты песен.
+          - name: esse
+            label: Эссе и проза
+            widget: boolean
+            hint: >-
+              Прячется только список. Сами тексты остаются в ленте и открыты
+              по своим адресам — у каждого одно место, и оно в ленте.
+          - name: razbory
+            label: Разборы
+            widget: boolean
+          - name: gaidy
+            label: Гайды
+            widget: boolean
+          - name: foto
+            label: Фото
+            widget: boolean
+          - name: o_mne
+            label: Обо мне
+            widget: boolean
+            hint: Ссылка в подвале сайта пропадёт вместе с пунктом меню.
+
+      - name: gaidy
+        label: Гайды — порядок в каталоге
+        file: src/data/gaidy.json
+        fields:
           - name: poryadok
             label: Порядок в каталоге
             widget: list

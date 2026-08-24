@@ -13,6 +13,7 @@ import article from '../../content/razbory/chelovek-pered-bogom.html?raw';
 import toc from '../../data/razbor-toc.json';
 import istochniki from '../../data/istochniki.json';
 import plan from '../../data/razbory-plan.json';
+import { vidno } from '../../data/razdely';
 
 const title = 'Человек перед Богом: тело, душа, дух и путь исцеления';
 const lede =
@@ -47,7 +48,7 @@ const lede =
         {toc.map((t) => <a href={t.href}>{t.label}</a>)}
       </aside>
 
-      <article class="razbor" data-pagefind-body>
+      <article class="razbor" data-pagefind-body={vidno.razbory ? '' : undefined}>
         <details class="toc-m">
           <summary>Содержание</summary>
           {toc.map((t) => <a href={t.href}>{t.label}</a>)}
