@@ -3,7 +3,7 @@
   "muzyka_klipy": true,
   "muzyka_koncerty": true,
   "muzyka_instrumentaly": true,
-  "muzyka_stihi": false,
+  "muzyka_stihi": true,
   "esse": true,
   "razbory": true,
   "gaidy": true,
