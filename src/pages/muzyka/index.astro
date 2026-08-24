@@ -9,6 +9,7 @@ import TekstPop from '../../components/TekstPop.astro';
 import m from '../../data/muzyka.json';
 import { sklon, TEKST, ZAPIS } from '../../lib/sklon';
 import dannye from '../../data/stihi.json';
+import { vidno } from '../../data/razdely';
 
 const dni = m.studiya[0];
 const tekstDney = dannye.teksty.find((t) => t.slug === dni.tekst);
@@ -19,40 +20,55 @@ const tekstDney = dannye.teksty.find((t) => t.slug === dni.tekst);
 const stihov = dannye.teksty.length;
 
 const koncertnyh = m.koncerty.reduce((n, k) => n + k.treki.length, 0);
-const vsego = m.studiya.length + m.klipy.length + koncertnyh + m.instrumentaly.length;
 
+const dva = (n: number) => String(n).padStart(2, '0');
+
+// Полки: каждая гасится своим переключателем в razdely.json. Номера
+// проставляются после отбора, а не записаны руками, — иначе выключенная
+// полка оставила бы дырку в счёте: 01, 03, 04.
 const polki = [
   {
-    n: '01',
+    vidna: vidno.muzyka_klipy,
     title: 'Клипы',
     href: '/muzyka/klipy/',
     meta: 'видео на песни · YouTube',
     kolvo: m.klipy.length,
   },
   {
-    n: '02',
+    vidna: vidno.muzyka_koncerty,
     title: 'Концерты',
     href: '/muzyka/koncerty/',
     meta: `живые записи · ${m.koncerty.length} концерта · YouTube`,
     kolvo: koncertnyh,
   },
   {
-    n: '03',
+    vidna: vidno.muzyka_instrumentaly,
     title: 'Инструментальная музыка',
     href: '/muzyka/instrumentaly/',
     meta: 'гитарные пьесы · SoundCloud',
     kolvo: m.instrumentaly.length,
   },
   {
-    n: '04',
+    vidna: vidno.muzyka_stihi,
     title: 'Тексты песен',
     href: '/muzyka/stihi/',
     meta: 'слова к песням',
     kolvo: stihov,
   },
-];
+]
+  .filter((p) => p.vidna)
+  .map((p, i) => ({ ...p, n: dva(i + 1) }));
 
-const dva = (n: number) => String(n).padStart(2, '0');
+// Счёт в строке «Собрание» считаем по тем же полкам, что показаны. Обещать
+// восемьдесят записей и показывать одну полку — хуже, чем не обещать ничего.
+// Студийная запись стоит выше списка и звучит всегда, поэтому она в счёте
+// независимо от полок.
+const vsego =
+  m.studiya.length +
+  (vidno.muzyka_klipy ? m.klipy.length : 0) +
+  (vidno.muzyka_koncerty ? koncertnyh : 0) +
+  (vidno.muzyka_instrumentaly ? m.instrumentaly.length : 0);
+const tekstov = vidno.muzyka_stihi ? stihov : 0;
 
 ---
 
@@ -100,8 +116,12 @@ const dva = (n: number) => String(n).padStart(2, '0');
       )}
     </section>
 
+    {polki.length > 0 && (
     <section>
-      <div class="count" style="margin-bottom:1.2rem">Собрание — {vsego} {sklon(vsego, ZAPIS)} и {stihov} {sklon(stihov, TEKST)}</div>
+      <div class="count" style="margin-bottom:1.2rem">
+        Собрание — {vsego} {sklon(vsego, ZAPIS)}
+        {tekstov > 0 && <> и {tekstov} {sklon(tekstov, TEKST)}</>}
+      </div>
 
       <ul class="cat">
         {polki.map((p) => (
@@ -116,6 +136,7 @@ const dva = (n: number) => String(n).padStart(2, '0');
         ))}
       </ul>
     </section>
+    )}
   </main>
 
   <TekstPop />

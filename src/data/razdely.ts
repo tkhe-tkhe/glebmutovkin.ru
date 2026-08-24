@@ -22,6 +22,10 @@
 // в ленте и на /zapis/<id> — у каждого текста одно каноническое место,
 // и оно в ленте. Решение Глеба от 20 августа 2026.
 //
+// То же и внутри музыки: скрытая полка «Тексты песен» убирает собрание,
+// но кнопка «Текст» у клипа, концерта и студийной записи остаётся. Слова
+// у видео — часть самой записи, а не ссылка на собрание. Решение Глеба.
+//
 // Значения лежат в razdely.json — это формат, который читает админка.
 // Здесь остались пояснения: JSON комментариев не держит. Поля вроде
 // "_comment" в этот файл класть нельзя: админка сохраняет ровно те поля,
@@ -29,10 +33,29 @@
 
 import dannye from './razdely.json';
 
-export type Razdel = 'muzyka' | 'esse' | 'razbory' | 'gaidy' | 'foto' | 'o_mne';
+export type Razdel =
+  | 'muzyka'
+  | 'muzyka_klipy'
+  | 'muzyka_koncerty'
+  | 'muzyka_instrumentaly'
+  | 'muzyka_stihi'
+  | 'esse'
+  | 'razbory'
+  | 'gaidy'
+  | 'foto'
+  | 'o_mne';
+
+// У музыки четыре полки, и каждая гасится отдельно. Полка внутри скрытого
+// раздела скрыта в любом случае — иначе «Музыка» выключена, а концерты
+// остались бы в поиске и в карте сайта.
+const vnutriMuzyki = (svoy: boolean) => dannye.muzyka && svoy;
 
 export const vidno: Record<Razdel, boolean> = {
   muzyka: dannye.muzyka,
+  muzyka_klipy: vnutriMuzyki(dannye.muzyka_klipy),
+  muzyka_koncerty: vnutriMuzyki(dannye.muzyka_koncerty),
+  muzyka_instrumentaly: vnutriMuzyki(dannye.muzyka_instrumentaly),
+  muzyka_stihi: vnutriMuzyki(dannye.muzyka_stihi),
   esse: dannye.esse,
   razbory: dannye.razbory,
   gaidy: dannye.gaidy,
@@ -40,10 +63,14 @@ export const vidno: Record<Razdel, boolean> = {
   o_mne: dannye.o_mne,
 };
 
-// Начало пути -> раздел. Порядок важен только для чтения: пути не вложены
-// друг в друга. Всё, чего здесь нет (/, /zapis/, /poisk/, 404), — лента
-// и служебное, они видны всегда.
+// Начало пути -> раздел. Порядок здесь значим: полки музыки лежат внутри
+// /muzyka/, и проверять их надо раньше самого раздела — иначе /muzyka/klipy/
+// совпадёт с общим префиксом и своего переключателя не увидит.
 const PUTI: [string, Razdel][] = [
+  ['/muzyka/klipy/', 'muzyka_klipy'],
+  ['/muzyka/koncerty/', 'muzyka_koncerty'],
+  ['/muzyka/instrumentaly/', 'muzyka_instrumentaly'],
+  ['/muzyka/stihi/', 'muzyka_stihi'],
   ['/muzyka/', 'muzyka'],
   ['/esse/', 'esse'],
   ['/razbory/', 'razbory'],

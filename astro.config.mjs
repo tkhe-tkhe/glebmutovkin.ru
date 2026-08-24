@@ -7,6 +7,10 @@ import { vidno } from './src/data/razdely.ts';
 
 // Пути разделов, которые сейчас скрыты.
 const SKRYTYE = Object.entries({
+  '/muzyka/klipy/': vidno.muzyka_klipy,
+  '/muzyka/koncerty/': vidno.muzyka_koncerty,
+  '/muzyka/instrumentaly/': vidno.muzyka_instrumentaly,
+  '/muzyka/stihi/': vidno.muzyka_stihi,
   '/muzyka/': vidno.muzyka,
   '/esse/': vidno.esse,
   '/razbory/': vidno.razbory,

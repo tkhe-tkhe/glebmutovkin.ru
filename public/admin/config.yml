@@ -165,8 +165,23 @@ collections:
             label: Музыка
             widget: boolean
             hint: >-
-              Вместе с разделом уходят клипы, концерты, инструменталы
-              и тексты песен.
+              Выключено — уходит весь раздел целиком, вместе со всеми
+              четырьмя полками, что бы ни стояло у них ниже.
+          - name: muzyka_klipy
+            label: Музыка → Клипы
+            widget: boolean
+          - name: muzyka_koncerty
+            label: Музыка → Концерты
+            widget: boolean
+          - name: muzyka_instrumentaly
+            label: Музыка → Инструментальная музыка
+            widget: boolean
+          - name: muzyka_stihi
+            label: Музыка → Тексты песен
+            widget: boolean
+            hint: >-
+              Прячется собрание текстов. Кнопка «Текст» у клипов, концертов
+              и студийной записи остаётся — слова там часть самой записи.
           - name: esse
             label: Эссе и проза
             widget: boolean
