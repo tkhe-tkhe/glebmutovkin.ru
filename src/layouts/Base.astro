@@ -45,7 +45,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
 //
 // Поиск по сайту отсюда закрыть нельзя: data-pagefind-ignore на <body>
 // Pagefind не читает — body для него и есть корень страницы. Проверено
-// 20 августа 2026: с меткой на body разборы продолжали попадать в индекс.
+// 24 августа 2026: с меткой на body разборы продолжали попадать в индекс.
 // Поэтому индексацию гасят те макеты, где стоит data-pagefind-body:
 // Razbor.astro, Gaid.astro и chelovek-pered-bogom.astro. Витрины разделов
 // в индекс не попадают и так — у них data-pagefind-ignore на <main>.
