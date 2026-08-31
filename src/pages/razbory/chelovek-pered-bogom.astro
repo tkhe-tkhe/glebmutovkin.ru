@@ -14,6 +14,7 @@ import toc from '../../data/razbor-toc.json';
 import istochniki from '../../data/istochniki.json';
 import plan from '../../data/razbory-plan.json';
 import { vidno } from '../../data/razdely';
+import Polosa from '../../components/Polosa.astro';
 
 const title = 'Человек перед Богом: тело, душа, дух и путь исцеления';
 const lede =
@@ -22,7 +23,7 @@ const lede =
 
 <Base title={`${title} — Глеб Мутовкин`} description={lede}>
   <!-- Сколько текста пройдено. Единственный указатель «где я» на 79 минутах чтения. -->
-  <div class="progress" id="pb"></div>
+  <Polosa domoy="/razbory/" domoyLabel="Разборы" put="Разбор 01 / 12" toc={toc} />
 
   <main class="page numbered">
     <div style="max-width:44rem;margin-bottom:3rem">
@@ -121,16 +122,7 @@ const lede =
       if (e.key === 'Escape') pop.hidden = true;
     });
 
-    // Полоса прочитанного.
-    const pb = document.getElementById('pb');
-    addEventListener(
-      'scroll',
-      () => {
-        const h = document.body.scrollHeight - innerHeight;
-        pb.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
-      },
-      { passive: true }
-    );
+    // Полосу прочитанного рисует полоса чтения.
 
     // Подсветка текущего раздела в оглавлении.
     const links = [...document.querySelectorAll('.toc a')];

@@ -3,16 +3,24 @@
 //
 // Обычный разбор помещается на одну страницу. Том — нет: «Царская семья» это
 // 131 000 слов, пять частей и 96 таблиц. Разрезано конвейером tools/tom.py,
-// здесь собирается вход: вводные разделы исходника (о документе, краткий
-// вывод, как пользоваться, условные обозначения) и содержание тома по частям.
+// здесь собирается вход: карта частей, вводные разделы исходника (о документе,
+// краткий вывод, как пользоваться, условные обозначения) и полное содержание.
+//
+// Порядок блоков не случайный. В первой сборке 31 августа содержание стояло
+// последним, под всем введением, и Глеб сказал: «нет понимания о документе» —
+// устройство тома открывалось только тому, кто прокрутил страницу до конца.
+// Теперь сразу под заголовком идут пять частей с весом каждой, а плашка
+// «Как читать» уехала вниз, к введению: обложка отвечает на вопрос «из чего
+// это состоит», и он возникает раньше вопроса «зачем это читать».
 //
 // Тела страниц — src/content/toma/<slug>/*.html
 // Разбивка, оглавления и статистика — src/data/toma/<slug>.json
 
 import Base from './Base.astro';
 import { vidno } from '../data/razdely';
+import Polosa from '../components/Polosa.astro';
 import { sklon, CHAS, STRANICA, SSYLKA } from '../lib/sklon';
-import type { TomMeta } from '../data/toma';
+import type { TomMeta, TomChast } from '../data/toma';
 
 interface Props {
   meta: TomMeta;
@@ -23,46 +31,88 @@ interface Props {
 
 const { meta, n, vsego, vvedenie } = Astro.props;
 
+// Обложка тоже страница — она в счёте страниц, но не в счёте разделов ниже.
 const stranic = meta.chasti.reduce((s, c) => s + c.stranicy.length, 0) + 1;
 const chasov = Math.round(meta.min / 60);
 const dva = (x: number) => String(x).padStart(2, '0');
+const slovChasti = (c: TomChast) => c.stranicy.reduce((s, st) => s + st.slov, 0);
+
+// Время чтения части: до полутора часов понятнее в минутах, дальше «~525 мин»
+// перестаёт что-либо значить.
+function skolko(slov: number) {
+  const min = Math.max(1, Math.round(slov / 160));
+  if (min < 90) return `~${min} мин`;
+  const ch = Math.round(min / 60);
+  return `~${ch} ${sklon(ch, CHAS)}`;
+}
 ---
 
 <Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede}>
+  <Polosa domoy="/razbory/" domoyLabel={meta.title} yakor="#soderzhanie" />
+
   <main class="page">
     <div style="max-width:44rem;margin-bottom:3rem">
       <div class="count" style="margin-bottom:1.1rem">Разбор — {n} / {dva(vsego)}</div>
       <h1>{meta.title}</h1>
       <p class="lede" style="margin:1.2rem 0 1rem">{meta.lede}</p>
-      <p class="meta">
+      <p class="meta" style="margin:0">
         {meta.data} · {meta.slov.toLocaleString('ru')} слов · {stranic}{' '}
         {sklon(stranic, STRANICA)} · ~{chasov} {sklon(chasov, CHAS)} чтения
         {meta.versiya && ` · версия ${meta.versiya}`}
       </p>
+    </div>
 
-      <div class="origin">
-        <b>Как читать этот том</b>
-        <p
-          set:html={meta.kak_chitat.replace(
-            '{n}',
-            `${meta.ssylok} ${sklon(meta.ssylok, SSYLKA)}`
-          )}
-        />
-        <p>Область: {meta.oblast}</p>
-      </div>
+    <!-- Карта тома: пять строк, из которых видно, что часть II — это две трети
+         объёма. Ссылка ведёт на первую страницу части. Ссылка на разделы одна,
+         под списком: если ставить её в каждую строку, на телефоне колонка
+         съезжает под заголовок и «разделы» повторяется пять раз подряд. -->
+    <section style="margin-bottom:3.5rem">
+      <ul class="cat">
+        {meta.chasti.map((c) => (
+          <li>
+            <span class="num">{c.nomer}</span>
+            <a href={`/razbory/${meta.slug}/${c.stranicy[0].slug}/`}>
+              <span class="ct">{c.nazv}</span>
+              <div class="cm">
+                {c.stranicy.length} {sklon(c.stranicy.length, STRANICA)} ·{' '}
+                {slovChasti(c).toLocaleString('ru')} слов
+              </div>
+            </a>
+            <span class="cn">{skolko(slovChasti(c))}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="meta" style="margin:1.1rem 0 0">
+        <a href="#soderzhanie">Все {stranic - 1} {sklon(stranic - 1, STRANICA)} — в содержании тома</a>
+      </p>
+    </section>
+
+    <div class="origin" style="margin-bottom:2.6rem">
+      <b>Как читать этот том</b>
+      <p
+        set:html={meta.kak_chitat.replace(
+          '{n}',
+          `${meta.ssylok} ${sklon(meta.ssylok, SSYLKA)}`
+        )}
+      />
+      <p>Область: {meta.oblast}</p>
     </div>
 
     <div class="reading">
       <aside class="toc">
-        <b>На этой странице</b>
-        {meta.vvedenie.toc.map((t) => <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>)}
+        <b>О документе</b>
+        {meta.vvedenie.toc.map((t) => (
+          <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>
+        ))}
         <a href="#soderzhanie" style="margin-top:.6rem">Содержание тома</a>
       </aside>
 
       <article class="razbor" data-pagefind-body={vidno.razbory ? '' : undefined}>
         <details class="toc-m">
-          <summary>Содержание страницы</summary>
-          {meta.vvedenie.toc.map((t) => <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>)}
+          <summary>О документе</summary>
+          {meta.vvedenie.toc.map((t) => (
+            <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>
+          ))}
           <a href="#soderzhanie">Содержание тома</a>
         </details>
 

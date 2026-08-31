@@ -12,6 +12,7 @@
 
 import Base from './Base.astro';
 import { vidno } from '../data/razdely';
+import Polosa from '../components/Polosa.astro';
 
 interface Props {
   meta: {
@@ -36,7 +37,12 @@ const dva = (n: number) => String(n).padStart(2, '0');
 
 <Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede}>
   <!-- Сколько текста пройдено -->
-  <div class="progress" id="pb"></div>
+  <Polosa
+    domoy="/razbory/"
+    domoyLabel="Разборы"
+    put={`Разбор ${meta.n} / ${dva(vsego)}`}
+    toc={meta.toc}
+  />
 
   <main class="page numbered">
     <div style="max-width:44rem;margin-bottom:3rem">
@@ -138,16 +144,7 @@ const dva = (n: number) => String(n).padStart(2, '0');
       if (e.key === 'Escape') pop.hidden = true;
     });
 
-    // Полоса прочитанного.
-    const pb = document.getElementById('pb');
-    addEventListener(
-      'scroll',
-      () => {
-        const h = document.body.scrollHeight - innerHeight;
-        pb.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
-      },
-      { passive: true }
-    );
+    // Полосу прочитанного рисует полоса чтения.
 
     // Подсветка текущего раздела в оглавлении.
     const links = [...document.querySelectorAll('.toc a')];

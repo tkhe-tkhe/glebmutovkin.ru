@@ -1,0 +1,170 @@
+---
+// Полоса чтения — липкая строка на длинных страницах.
+//
+// Зачем. Страница разбора на телефоне — до 143 экранов. Шапка не липкая,
+// боковое оглавление есть только от 1180px, значит с середины такой страницы
+// вернуться некуда: надо крутить наверх руками. Полоса даёт три вещи, которые
+// Глеб назвал 31 августа: начало этой страницы, оглавление документа и возврат
+// туда, откуда прыгнул по ссылке.
+//
+// Появляется не сразу, а когда шапка уехала: первый экран остаётся чистым.
+
+interface Props {
+  /** куда ведёт левая ссылка: обложка тома, каталог гайдов, каталог разборов */
+  domoy: string;
+  /** подпись левой ссылки, коротко */
+  domoyLabel: string;
+  /** где мы внутри документа: «Часть II · 15 / 22». Пусто — не рисуем */
+  put?: string;
+  /** оглавление текущей страницы для выпадающей панели; пусто — кнопки нет */
+  toc?: { href: string; label: string; uroven?: number }[];
+  /** ссылка на полное содержание документа, если оно есть отдельной страницей */
+  soderzhanie?: string;
+  /** Якорь содержания на этой же странице. Задан — «Содержание» прыгает туда,
+      а панель не рисуется вовсе: на обложке тома список частей и так лежит
+      на странице, и вторая его копия в панели была бы обманом. */
+  yakor?: string;
+}
+
+const { domoy, domoyLabel, put = '', toc = [], soderzhanie, yakor } = Astro.props;
+const panel = !yakor && toc.length > 0;
+---
+
+<div class="polosa" id="polosa" hidden>
+  <div class="pinner">
+    <a class="pdom" href={domoy}>{domoyLabel}</a>
+    {put && <span class="pput">{put}</span>}
+    <span class="ptek" id="ptek"></span>
+
+    <span class="pdeystvia">
+      <button type="button" class="pkn" id="pnazad" hidden aria-label="Вернуться туда, откуда пришли">←<span class="slovo"> Назад</span></button>
+      {yakor && <a class="pkn" href={yakor}>Содержание</a>}
+      {panel && (
+        <button type="button" class="pkn" id="pogl" aria-expanded="false">Содержание</button>
+      )}
+      <button type="button" class="pkn" id="pverh" aria-label="В начало страницы">↑<span class="slovo"> В начало</span></button>
+    </span>
+  </div>
+  <div class="pbar" id="pbar"></div>
+</div>
+
+{panel && (
+  <div class="ppanel" id="ppanel" hidden>
+    <div class="ppinner">
+      <b>На этой странице</b>
+      {toc.map((t) => (
+        <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>
+      ))}
+      {soderzhanie && <a class="pvse" href={soderzhanie}>← Содержание документа</a>}
+    </div>
+  </div>
+)}
+
+<script is:inline>
+  // Полоса стоит в начале страницы, поэтому её скрипт выполняется раньше,
+  // чем разобран текст: без ожидания DOMContentLoaded список заголовков
+  // оказывается пустым и в полосе не видно, какой раздел читаешь.
+  addEventListener('DOMContentLoaded', () => {
+    const polosa = document.getElementById('polosa');
+    const panel = document.getElementById('ppanel');
+    const knOgl = document.getElementById('pogl');
+    const tek = document.getElementById('ptek');
+    const bar = document.getElementById('pbar');
+    const nazad = document.getElementById('pnazad');
+
+    // Полоса вылезает, когда шапка ушла с экрана: первый экран не трогаем.
+    const porog = 420;
+    let vidna = false;
+
+    function prokrutka() {
+      const y = scrollY;
+      const nado = y > porog;
+      if (nado !== vidna) {
+        vidna = nado;
+        polosa.hidden = !nado;
+        if (!nado) zakryt();
+      }
+      const h = document.body.scrollHeight - innerHeight;
+      bar.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+    }
+    addEventListener('scroll', prokrutka, { passive: true });
+    prokrutka();
+
+    // Оглавление панелью — это единственный способ добраться до него
+    // на телефоне и планшете, где боковой колонки нет. Панели может не быть:
+    // на обложке тома содержание лежит прямо на странице.
+    function zakryt() {
+      if (!panel) return;
+      panel.hidden = true;
+      knOgl.setAttribute('aria-expanded', 'false');
+    }
+    if (panel && knOgl) {
+      knOgl.onclick = () => {
+        const open = panel.hidden;
+        panel.hidden = !open;
+        knOgl.setAttribute('aria-expanded', String(open));
+      };
+      panel.addEventListener('click', (e) => {
+        if (e.target.closest('a')) zakryt();
+      });
+      addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') zakryt();
+      });
+    }
+
+    document.getElementById('pverh').onclick = () => {
+      zakryt();
+      scrollTo({ top: 0, behavior: 'smooth' });
+      // адрес чистим, иначе после прыжка по якорю «в начало» вернёт обратно
+      history.replaceState(null, '', location.pathname);
+    };
+
+    // «Назад» показываем только когда есть куда: либо пришли со своей же
+    // страницы, либо уже прыгали по якорю внутри этой.
+    let bylPryzhok = document.referrer.startsWith(location.origin);
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href*="#"]');
+      if (a && a.getAttribute('href').includes('#')) {
+        bylPryzhok = true;
+        nazad.hidden = false;
+      }
+    });
+    if (bylPryzhok) nazad.hidden = false;
+    nazad.onclick = () => {
+      zakryt();
+      history.back();
+    };
+
+    // Текущий раздел считаем от прокрутки, а не наблюдателем пересечений:
+    // наблюдатель срабатывает только когда заголовок проезжает экран, поэтому
+    // при заходе по якорю или после перезагрузки посреди страницы полоса
+    // оставалась бы пустой.
+    // Ищем по всей странице, а не внутри article.razbor: на странице текстов
+    // песен заголовки лежат в article.stih, и жёсткий селектор молча оставил бы
+    // полосу пустой ровно там, где она нужнее всего — 78 экранов подряд.
+    const heads = [...document.querySelectorAll('main h2[id]')];
+    let zhdem = false;
+
+    function razdel() {
+      zhdem = false;
+      if (!heads.length) return;
+      let tekushchiy = '';
+      for (const h of heads) {
+        if (h.getBoundingClientRect().top > 90) break;
+        tekushchiy = h.textContent.trim();
+      }
+      if (tek.textContent !== tekushchiy) tek.textContent = tekushchiy;
+    }
+
+    addEventListener(
+      'scroll',
+      () => {
+        if (zhdem) return;
+        zhdem = true;
+        requestAnimationFrame(razdel);
+      },
+      { passive: true }
+    );
+    razdel();
+  });
+</script>

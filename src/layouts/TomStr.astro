@@ -11,6 +11,7 @@
 import Base from './Base.astro';
 import { vidno } from '../data/razdely';
 import type { TomMeta, TomStranica } from '../data/toma';
+import Polosa from '../components/Polosa.astro';
 
 interface Props {
   meta: TomMeta;
@@ -31,7 +32,13 @@ const koren = `/razbory/${meta.slug}/`;
   title={`${stranica.label} — ${meta.title} — Глеб Мутовкин`}
   description={`${meta.title}. Часть ${chast.nomer}: ${chast.nazv}. ${stranica.label}`}
 >
-  <div class="progress" id="pb"></div>
+  <Polosa
+    domoy={koren}
+    domoyLabel={meta.title}
+    put={`Часть ${chast.nomer}${vsego > 1 ? ` · ${nomer} / ${vsego}` : ''}`}
+    toc={stranica.toc}
+    soderzhanie={koren}
+  />
 
   <main class="page">
     <div style="max-width:44rem;margin-bottom:2.6rem">
@@ -89,16 +96,7 @@ const koren = `/razbory/${meta.slug}/`;
   </main>
 
   <script is:inline>
-    // Полоса прочитанного — та же, что у разбора.
-    const pb = document.getElementById('pb');
-    addEventListener(
-      'scroll',
-      () => {
-        const h = document.body.scrollHeight - innerHeight;
-        pb.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
-      },
-      { passive: true }
-    );
+    // Полосу прочитанного теперь рисует полоса чтения, отдельной нет.
 
     // Подсветка текущего раздела в оглавлении.
     const links = [...document.querySelectorAll('.toc a')];

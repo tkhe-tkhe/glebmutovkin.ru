@@ -14,6 +14,7 @@
 
 import Base from '../../layouts/Base.astro';
 import Verse from '../../components/Verse.astro';
+import Polosa from '../../components/Polosa.astro';
 import dannye from '../../data/stihi.json';
 import { sklon, TEKST, STROKA } from '../../lib/sklon';
 
@@ -38,7 +39,7 @@ const vTekst = (t: (typeof stihi)[number]) =>
   title="Тексты песен — Глеб Мутовкин"
   description="Тексты песен."
 >
-  <div class="progress" id="pb"></div>
+  <Polosa domoy="/muzyka/" domoyLabel="Музыка" put="Тексты песен" toc={stihi.map((t) => ({ href: `#${t.slug}`, label: vMenyu(t) }))} />
 
   <main class="page">
     <section class="hero" style="max-width:44rem">
@@ -80,16 +81,7 @@ const vTekst = (t: (typeof stihi)[number]) =>
   </main>
 
   <script is:inline>
-    // Полоса прочитанного — та же, что в разборе.
-    const pb = document.getElementById('pb');
-    addEventListener(
-      'scroll',
-      () => {
-        const h = document.body.scrollHeight - innerHeight;
-        pb.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
-      },
-      { passive: true }
-    );
+    // Полосу прочитанного рисует полоса чтения.
 
     const links = [...document.querySelectorAll('.toc a')];
     const heads = [...document.querySelectorAll('article.stih h2[id]')];

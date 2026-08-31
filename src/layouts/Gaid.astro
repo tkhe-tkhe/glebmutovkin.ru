@@ -11,6 +11,7 @@
 
 import Base from './Base.astro';
 import { vidno } from '../data/razdely';
+import Polosa from '../components/Polosa.astro';
 import { faily } from '../lib/skachat';
 
 interface Props {
@@ -46,6 +47,8 @@ const kakChitat = (meta.kak_chitat || PO_UMOLCHANIYU).replace('{n}', String(nsrc
 ---
 
 <Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede}>
+  <Polosa domoy="/gaidy/" domoyLabel="Гайды" put={meta.oblast} toc={meta.toc} />
+
   <main class="page">
     <div style="max-width:44rem;margin-bottom:3rem">
       <div class="count" style="margin-bottom:1.1rem">Гайд</div>

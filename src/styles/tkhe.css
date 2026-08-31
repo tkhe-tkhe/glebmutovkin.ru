@@ -911,3 +911,86 @@ article.razbor code:not(.ui){
 article.razbor p,
 article.razbor li{overflow-wrap:break-word}
 article.razbor pre code:not(.ui){font-size:.7rem;color:var(--fg-2)}
+
+/* --------------------------------------------------------------------------
+   ПРОТОТИП. Полоса чтения
+   Липкая строка на длинных страницах: где ты, оглавление, начало страницы,
+   возврат туда, откуда прыгнул. Появляется, когда шапка уехала.
+   -------------------------------------------------------------------------- */
+.polosa{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  background:var(--bg);border-bottom:1px solid var(--line);
+}
+.pinner{
+  display:flex;align-items:baseline;gap:1rem;
+  padding:.1rem max(var(--pad),calc((100% - var(--page))/2 + var(--pad)));
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;color:var(--fg-3);
+}
+.pdom{
+  color:var(--fg-2);text-decoration:none;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;max-width:34ch;
+}
+.pdom:hover{color:var(--fg)}
+.pput{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ptek{
+  color:var(--fg-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+}
+.pdeystvia{margin-left:auto;display:flex;gap:1.1rem;white-space:nowrap}
+/* Зона нажатия важнее вида: на телефоне у «←» и «↑» остаётся один знак,
+   и без отступов палец целится в семь пикселей ширины. Отступы поднимают
+   зону до ~44px, поэтому вертикальное поле самой строки ужато. */
+.pkn{
+  appearance:none;background:none;border:0;cursor:pointer;
+  display:inline-block;padding:.62rem .35rem;line-height:1.2;text-decoration:none;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;color:var(--fg-3);
+}
+.pkn:hover{color:var(--fg)}
+.pbar{height:2px;background:var(--fg);width:0;transition:width .1s linear}
+
+/* До 900px текущий раздел не влезает: он длинный, и путь рядом с ним
+   обрезается на полуслове. Ниже этой ширины остаётся короткий путь. */
+@media(max-width:900px){.ptek{display:none}}
+
+/* От 1180px оглавление и так стоит липкой колонкой слева — вторая копия
+   в выпадающей панели была бы лишней. Кнопка остаётся там, где колонки нет:
+   на планшете и телефоне. */
+@media(min-width:1180px){#pogl{display:none}}
+
+/* Панель оглавления: на телефоне и планшете это единственный вход в него */
+.ppanel{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:59;
+  background:var(--bg);overflow-y:auto;
+  padding:3.4rem max(var(--pad),calc((100% - var(--page))/2 + var(--pad))) 3rem;
+}
+@media(min-width:900px){
+  .ppanel{bottom:auto;max-height:70vh;border-bottom:1px solid var(--line)}
+}
+.ppinner{max-width:var(--measure-wide)}
+.ppanel b{
+  display:block;font-family:var(--mono);font-size:.62rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--fg-3);margin-bottom:1rem;
+}
+.ppanel a{
+  display:block;font-family:var(--mono);font-size:.72rem;line-height:1.5;
+  color:var(--fg-2);text-decoration:none;padding:.34rem 0;
+}
+.ppanel a:hover{color:var(--fg)}
+.ppanel a.l2{padding-left:.9rem;font-size:.68rem;color:var(--fg-3)}
+.ppanel a.pvse{
+  margin-top:1.2rem;padding-top:.9rem;border-top:1px solid var(--line);color:var(--fg);
+}
+
+/* На узком экране в строку не влезает всё сразу. Остаётся то, что отвечает
+   на «где я» коротко (Часть II · 15 / 22) и три действия; название документа
+   и текущий раздел уходят — они длинные, а название есть на самой странице. */
+@media(max-width:720px){
+  .pdom,.ptek{display:none}
+  .pput{max-width:52vw}
+  .slovo{display:none}
+  .pdeystvia{gap:.5rem}
+  .pdeystvia .pkn{min-width:2.75rem;text-align:center}
+}
+
+/* Заголовок, к которому прыгнули, не должен прятаться под полосой */
+body:has(.polosa) article.razbor :is(h2,h3,h4){scroll-margin-top:3.8rem}
+body:has(.polosa) .toc{top:4.2rem}
