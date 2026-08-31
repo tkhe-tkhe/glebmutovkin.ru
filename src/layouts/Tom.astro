@@ -1,0 +1,99 @@
+---
+// Обложка тома — многостраничного разбора.
+//
+// Обычный разбор помещается на одну страницу. Том — нет: «Царская семья» это
+// 131 000 слов, пять частей и 96 таблиц. Разрезано конвейером tools/tom.py,
+// здесь собирается вход: вводные разделы исходника (о документе, краткий
+// вывод, как пользоваться, условные обозначения) и содержание тома по частям.
+//
+// Тела страниц — src/content/toma/<slug>/*.html
+// Разбивка, оглавления и статистика — src/data/toma/<slug>.json
+
+import Base from './Base.astro';
+import { vidno } from '../data/razdely';
+import { sklon, CHAS, STRANICA, SSYLKA } from '../lib/sklon';
+import type { TomMeta } from '../data/toma';
+
+interface Props {
+  meta: TomMeta;
+  n: string;
+  vsego: number;
+  vvedenie: string;
+}
+
+const { meta, n, vsego, vvedenie } = Astro.props;
+
+const stranic = meta.chasti.reduce((s, c) => s + c.stranicy.length, 0) + 1;
+const chasov = Math.round(meta.min / 60);
+const dva = (x: number) => String(x).padStart(2, '0');
+---
+
+<Base title={`${meta.title} — Глеб Мутовкин`} description={meta.lede}>
+  <main class="page">
+    <div style="max-width:44rem;margin-bottom:3rem">
+      <div class="count" style="margin-bottom:1.1rem">Разбор — {n} / {dva(vsego)}</div>
+      <h1>{meta.title}</h1>
+      <p class="lede" style="margin:1.2rem 0 1rem">{meta.lede}</p>
+      <p class="meta">
+        {meta.data} · {meta.slov.toLocaleString('ru')} слов · {stranic}{' '}
+        {sklon(stranic, STRANICA)} · ~{chasov} {sklon(chasov, CHAS)} чтения
+        {meta.versiya && ` · версия ${meta.versiya}`}
+      </p>
+
+      <div class="origin">
+        <b>Как читать этот том</b>
+        <p
+          set:html={meta.kak_chitat.replace(
+            '{n}',
+            `${meta.ssylok} ${sklon(meta.ssylok, SSYLKA)}`
+          )}
+        />
+        <p>Область: {meta.oblast}</p>
+      </div>
+    </div>
+
+    <div class="reading">
+      <aside class="toc">
+        <b>На этой странице</b>
+        {meta.vvedenie.toc.map((t) => <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>)}
+        <a href="#soderzhanie" style="margin-top:.6rem">Содержание тома</a>
+      </aside>
+
+      <article class="razbor" data-pagefind-body={vidno.razbory ? '' : undefined}>
+        <details class="toc-m">
+          <summary>Содержание страницы</summary>
+          {meta.vvedenie.toc.map((t) => <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>)}
+          <a href="#soderzhanie">Содержание тома</a>
+        </details>
+
+        <Fragment set:html={vvedenie} />
+      </article>
+    </div>
+
+    <section id="soderzhanie" style="margin-top:4.5rem;scroll-margin-top:2rem">
+      <h2 style="margin-bottom:.6rem">Содержание тома</h2>
+      <p class="meta" style="margin-bottom:2.4rem">
+        {meta.chasti.length} частей · {stranic - 1}{' '}
+        {sklon(stranic - 1, STRANICA)} · читаются подряд и по отдельности
+      </p>
+
+      {meta.chasti.map((c) => (
+        <div style="margin-bottom:2.8rem">
+          <div class="count" style="margin-bottom:1rem">Часть {c.nomer} · {c.nazv}</div>
+          <ul class="cat">
+            {c.stranicy.map((st, i) => (
+              <li>
+                <span class="num">{c.nomer}.{dva(i + 1)}</span>
+                <a href={`/razbory/${meta.slug}/${st.slug}/`}>
+                  <span class="ct">{st.label}</span>
+                  <div class="cm">{st.slov.toLocaleString('ru')} слов · ~{st.min} мин</div>
+                </a>
+                <span class="cn"></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+  </main>
+</Base>

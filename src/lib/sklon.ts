@@ -15,3 +15,6 @@ export function sklon(n: number, formy: [string, string, string]) {
 export const TEKST: [string, string, string] = ['текст', 'текста', 'текстов'];
 export const ZAPIS: [string, string, string] = ['запись', 'записи', 'записей'];
 export const STROKA: [string, string, string] = ['строка', 'строки', 'строк'];
+export const STRANICA: [string, string, string] = ['страница', 'страницы', 'страниц'];
+export const CHAS: [string, string, string] = ['час', 'часа', 'часов'];
+export const SSYLKA: [string, string, string] = ['ссылка', 'ссылки', 'ссылок'];

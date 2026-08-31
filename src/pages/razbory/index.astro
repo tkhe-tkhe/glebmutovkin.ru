@@ -11,8 +11,10 @@
 
 import Base from '../../layouts/Base.astro';
 import plan from '../../data/razbory-plan.json';
+import { sklon, STRANICA } from '../../lib/sklon';
 
 const meta = import.meta.glob('../../data/razbory/*.json', { eager: true });
+const toma = import.meta.glob('../../data/toma/*.json', { eager: true });
 
 const sobrannye = new Map(
   Object.entries(meta).map(([put, mod]: [string, any]) => [
@@ -21,8 +23,31 @@ const sobrannye = new Map(
   ])
 );
 
+const sobrannye_toma = new Map(
+  Object.entries(toma).map(([put, mod]: [string, any]) => [
+    put.split('/').pop()!.replace('.json', ''),
+    mod.default ?? mod,
+  ])
+);
+
 const temy = plan.temy.map((t) => {
   const m = sobrannye.get(t.slug);
+  if (t.tom) {
+    // Том: одна строка в каталоге, как у остальных, но подпись говорит,
+    // что внутри несколько страниц — иначе «~14 часов» читается как ошибка.
+    const v = sobrannye_toma.get(t.slug);
+    if (!v) return { ...t, gotov: false, podpis: `${t.oblast} · в работе`, god: '' };
+    const stranic = v.chasti.reduce((s: number, c: any) => s + c.stranicy.length, 0) + 1;
+    return {
+      ...t,
+      gotov: true,
+      href: `/razbory/${t.slug}/`,
+      podpis:
+        `${t.oblast} · ${v.chasti.length} частей, ` +
+        `${stranic} ${sklon(stranic, STRANICA)} · ~${Math.round(v.min / 60)} ч`,
+      god: v.god,
+    };
+  }
   if (t.svoya_stranica) {
     // «Человек перед Богом»: собран вручную, метрики берём из его страницы
     return {

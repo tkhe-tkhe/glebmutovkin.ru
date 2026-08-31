@@ -442,6 +442,36 @@ article.razbor > ul,
 article.razbor > ol{max-width:var(--measure)}
 article.razbor h2{margin:3.4rem 0 1rem;scroll-margin-top:2rem}
 article.razbor h3{margin:2.4rem 0 .7rem;scroll-margin-top:2rem}
+/* Четвёртый уровень нужен тому: там под разделом идут досье и дни, а под
+   ними — «установлено», «требует проверки», «не следует смешивать».
+   Без своего правила h4 наследовал бы отступы h3 и слился с ним. */
+article.razbor h4{
+  margin:1.8rem 0 .5rem;scroll-margin-top:2rem;
+  font-family:var(--mono);font-size:.74rem;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--fg-2);
+}
+
+/* Перелистывание тома: назад и вперёд по порядку чтения.
+   Держится той же линией слева, что .origin и .note, — рамок и кнопок
+   на сайте нет нигде. */
+.perelist{
+  display:grid;gap:1.6rem;margin:4.5rem 0 0;padding-top:1.6rem;
+  border-top:1px solid var(--line);max-width:var(--measure);
+}
+@media(min-width:640px){.perelist{grid-template-columns:1fr 1fr;gap:2.4rem}}
+.perelist a{
+  display:block;text-decoration:none;color:var(--fg-2);
+  font:600 .98rem/1.35 var(--serif);letter-spacing:-.01em;
+}
+.perelist a:hover{
+  color:var(--fg);
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;
+}
+.perelist span{
+  display:block;font-family:var(--mono);font-size:.62rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--fg-3);margin-bottom:.5rem;
+}
+@media(min-width:640px){.perelist .vpered{text-align:right}}
 
 /* номер раздела перед заголовком */
 /* только там, где номер задан: у «Исполнительного резюме» и «Источников»

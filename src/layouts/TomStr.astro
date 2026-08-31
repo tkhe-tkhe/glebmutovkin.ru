@@ -1,0 +1,120 @@
+---
+// Страница тома: одна часть целиком либо один её раздел.
+//
+// От каркаса обычного разбора отличается тремя вещами: заголовок страницы
+// стоит на своём якоре из исходника (на него ссылаются из соседних страниц),
+// сверху обратная дорога к обложке, снизу перелистывание по всему тому.
+//
+// Сносок и всплывающих карточек источника здесь нет: в исходнике тома
+// ссылки на источники стоят прямо в тексте, а не номерами внизу.
+
+import Base from './Base.astro';
+import { vidno } from '../data/razdely';
+import type { TomMeta, TomStranica } from '../data/toma';
+
+interface Props {
+  meta: TomMeta;
+  stranica: TomStranica;
+  chast: { nomer: string; nazv: string };
+  nomer: number;      // какая по счёту внутри части
+  vsego: number;      // сколько страниц в части
+  ran: { slug: string; label: string } | null;
+  sled: { slug: string; label: string } | null;
+  body: string;
+}
+
+const { meta, stranica, chast, nomer, vsego, ran, sled, body } = Astro.props;
+const koren = `/razbory/${meta.slug}/`;
+---
+
+<Base
+  title={`${stranica.label} — ${meta.title} — Глеб Мутовкин`}
+  description={`${meta.title}. Часть ${chast.nomer}: ${chast.nazv}. ${stranica.label}`}
+>
+  <div class="progress" id="pb"></div>
+
+  <main class="page">
+    <div style="max-width:44rem;margin-bottom:2.6rem">
+      <div class="count" style="margin-bottom:1.1rem">
+        <a href={koren} style="color:inherit">{meta.title}</a>
+        {' · '}Часть {chast.nomer}
+        {vsego > 1 && ` · ${nomer} / ${vsego}`}
+      </div>
+      <h1 id={stranica.yakor || undefined}>{stranica.label}</h1>
+      <p class="meta" style="margin-top:1.2rem">
+        {chast.nazv} · {stranica.slov.toLocaleString('ru')} слов · ~{stranica.min} мин
+      </p>
+    </div>
+
+    <div class="reading">
+      <aside class="toc">
+        <b>На этой странице</b>
+        {stranica.toc.map((t) => (
+          <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>
+        ))}
+        <a href={koren} style="margin-top:1rem">← Содержание тома</a>
+      </aside>
+
+      <article class="razbor" data-pagefind-body={vidno.razbory ? '' : undefined}>
+        <details class="toc-m">
+          <summary>Содержание страницы</summary>
+          {stranica.toc.map((t) => (
+            <a href={t.href} class={t.uroven === 2 ? 'l2' : undefined}>{t.label}</a>
+          ))}
+        </details>
+
+        <Fragment set:html={body} />
+
+        <nav class="perelist" data-pagefind-ignore>
+          {ran ? (
+            <a href={`${koren}${ran.slug}/`}>
+              <span>Предыдущая</span>
+              {ran.label}
+            </a>
+          ) : (
+            <a href={koren}>
+              <span>Назад</span>
+              Обложка тома
+            </a>
+          )}
+          {sled && (
+            <a href={`${koren}${sled.slug}/`} class="vpered">
+              <span>Следующая</span>
+              {sled.label}
+            </a>
+          )}
+        </nav>
+      </article>
+    </div>
+  </main>
+
+  <script is:inline>
+    // Полоса прочитанного — та же, что у разбора.
+    const pb = document.getElementById('pb');
+    addEventListener(
+      'scroll',
+      () => {
+        const h = document.body.scrollHeight - innerHeight;
+        pb.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
+      },
+      { passive: true }
+    );
+
+    // Подсветка текущего раздела в оглавлении.
+    const links = [...document.querySelectorAll('.toc a')];
+    const heads = [...document.querySelectorAll('article.razbor h2[id], article.razbor h3[id]')];
+    if (links.length && heads.length) {
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (!e.isIntersecting) return;
+            links.forEach((l) => l.classList.remove('on'));
+            const a = links.find((l) => l.getAttribute('href') === '#' + e.target.id);
+            if (a) a.classList.add('on');
+          }),
+        { rootMargin: '-8% 0px -75% 0px' }
+      );
+      heads.forEach((h) => io.observe(h));
+    }
+  </script>
+</Base>

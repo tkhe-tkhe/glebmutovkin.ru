@@ -1,0 +1,47 @@
+---
+// Обложка тома: /razbory/<tom>/
+//
+// Том — разбор, который не помещается на одну страницу. Его мета и разбивка
+// лежат в src/data/toma/<slug>.json, тела страниц — в src/content/toma/<slug>/.
+// Чтобы добавить том, кладём эти файлы прогоном tools/tom.py и строку
+// в src/data/razbory-plan.json. Больше ничего править не нужно.
+//
+// С маршрутом /razbory/[slug].astro пересечения нет: тот собирает темы
+// из src/data/razbory/*.json, а тома лежат отдельно.
+
+import Tom from '../../../layouts/Tom.astro';
+import plan from '../../../data/razbory-plan.json';
+import type { TomMeta } from '../../../data/toma';
+
+export function getStaticPaths() {
+  const meta = import.meta.glob('../../../data/toma/*.json', { eager: true });
+  const vvedeniya = import.meta.glob('../../../content/toma/*/vvedenie.html', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  });
+
+  return Object.entries(meta).map(([put, mod]: [string, any]) => {
+    const m: TomMeta = mod.default ?? mod;
+    const kluch = Object.keys(vvedeniya).find((p) => p.includes(`/toma/${m.slug}/`));
+    if (!kluch) throw new Error(`Нет введения тома: src/content/toma/${m.slug}/vvedenie.html`);
+
+    const tema = plan.temy.find((t) => t.slug === m.slug);
+    if (!tema) throw new Error(`Тома ${m.slug} нет в src/data/razbory-plan.json`);
+
+    return {
+      params: { tom: m.slug },
+      props: {
+        meta: m,
+        n: tema.n,
+        vsego: plan.temy.length,
+        vvedenie: vvedeniya[kluch] as string,
+      },
+    };
+  });
+}
+
+const { meta, n, vsego, vvedenie } = Astro.props;
+---
+
+<Tom meta={meta} n={n} vsego={vsego} vvedenie={vvedenie} />

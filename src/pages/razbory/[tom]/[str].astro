@@ -1,0 +1,67 @@
+---
+// Страница тома: /razbory/<tom>/<страница>/
+//
+// Порядок чтения — плоский список всех страниц всех частей подряд, из него
+// же берётся перелистывание. Части нужны только для подписи и содержания:
+// читателю важно, что после «Тобольска в марте» идут последние тринадцать
+// дней, а не то, что кончилась часть.
+
+import TomStr from '../../../layouts/TomStr.astro';
+import type { TomMeta } from '../../../data/toma';
+
+export function getStaticPaths() {
+  const meta = import.meta.glob('../../../data/toma/*.json', { eager: true });
+  const tela = import.meta.glob('../../../content/toma/*/*.html', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  });
+
+  return Object.values(meta).flatMap((mod: any) => {
+    const m: TomMeta = mod.default ?? mod;
+
+    // порядок чтения: части подряд, внутри части — её страницы
+    const poryadok = m.chasti.flatMap((c) =>
+      c.stranicy.map((st, i) => ({ st, chast: c, nomer: i + 1, vsego: c.stranicy.length }))
+    );
+
+    return poryadok.map((p, i) => {
+      const kluch = Object.keys(tela).find((put) =>
+        put.endsWith(`/toma/${m.slug}/${p.st.slug}.html`)
+      );
+      if (!kluch) {
+        throw new Error(`Нет тела страницы: src/content/toma/${m.slug}/${p.st.slug}.html`);
+      }
+      const sosed = (j: number) =>
+        poryadok[j] ? { slug: poryadok[j].st.slug, label: poryadok[j].st.label } : null;
+
+      return {
+        params: { tom: m.slug, str: p.st.slug },
+        props: {
+          meta: m,
+          stranica: p.st,
+          chast: { nomer: p.chast.nomer, nazv: p.chast.nazv },
+          nomer: p.nomer,
+          vsego: p.vsego,
+          ran: i > 0 ? sosed(i - 1) : null,
+          sled: sosed(i + 1),
+          body: tela[kluch] as string,
+        },
+      };
+    });
+  });
+}
+
+const { meta, stranica, chast, nomer, vsego, ran, sled, body } = Astro.props;
+---
+
+<TomStr
+  meta={meta}
+  stranica={stranica}
+  chast={chast}
+  nomer={nomer}
+  vsego={vsego}
+  ran={ran}
+  sled={sled}
+  body={body}
+/>
