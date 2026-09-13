@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# файлы, которые приложение Claude кладёт рядом с проектом
+Claude outputs/
+
+# windows-specific files
+Thumbs.db
+desktop.ini
