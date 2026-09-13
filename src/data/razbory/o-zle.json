@@ -1,0 +1,676 @@
+{
+ "slug": "o-zle",
+ "n": "02",
+ "title": "О зле",
+ "lede": "Природа зла в христианском понимании: от творения и свободы ангелов до суда и завершения истории",
+ "oblast": "богословие",
+ "data": "Сентябрь 2026",
+ "god": "2026",
+ "toc": [
+  {
+   "href": "#vvedenie-chto-nazyvaetsya-zlom",
+   "label": "Введение. Что называется злом"
+  },
+  {
+   "href": "#bog-tvorit-mir",
+   "label": "1. Бог творит мир"
+  },
+  {
+   "href": "#angelskiy-mir-i-vozmozhnost-svobodnogo-otveta",
+   "label": "2. Ангельский мир и возможность свободного ответа"
+  },
+  {
+   "href": "#pervoe-otpadenie-zlo-voznikaet-v-napravlennosti-voli",
+   "label": "3. Первое отпадение: зло возникает в направленности воли"
+  },
+  {
+   "href": "#chelovek-vstrechaet-iskushenie",
+   "label": "4. Человек встречает искушение"
+  },
+  {
+   "href": "#chto-izmenilos-suschnost-ili-sposob-zhizni",
+   "label": "5. Что изменилось: сущность или способ жизни?"
+  },
+  {
+   "href": "#ot-otdelnogo-resheniya-k-strasti",
+   "label": "6. От отдельного решения к страсти"
+  },
+  {
+   "href": "#nositeli-proyavleniya-i-posledstviya-zla",
+   "label": "7. Носители, проявления и последствия зла"
+  },
+  {
+   "href": "#tyazhest-zla-i-stepen-otvetstvennosti",
+   "label": "8. Тяжесть зла и степень ответственности"
+  },
+  {
+   "href": "#chuzhoy-greh-deti-i-vremya-vozdayaniya",
+   "label": "9. Чужой грех, дети и время воздаяния"
+  },
+  {
+   "href": "#stradanie-stavit-vopros-k-bogu",
+   "label": "10. Страдание ставит вопрос к Богу"
+  },
+  {
+   "href": "#hristos-proschenie-iscelenie-i-pobeda",
+   "label": "11. Христос: прощение, исцеление и победа"
+  },
+  {
+   "href": "#sud-ad-i-geenna",
+   "label": "12. Суд, ад и геенна"
+  },
+  {
+   "href": "#chem-dolzhna-zavershitsya-istoriya-zla",
+   "label": "13. Чем должна завершиться история зла"
+  },
+  {
+   "href": "#pravoslavie-i-katolicizm-odna-osnova-raznye-akcenty",
+   "label": "14. Православие и католицизм: одна основа, разные акценты"
+  },
+  {
+   "href": "#drugie-hristianskie-otvety",
+   "label": "15. Другие христианские ответы"
+  },
+  {
+   "href": "#bolee-shirokiy-vzglyad-religii-i-svetskaya-mysl",
+   "label": "16. Более широкий взгляд: религии и светская мысль"
+  },
+  {
+   "href": "#zaklyuchenie-tak-chto-zhe-takoe-zlo",
+   "label": "Заключение. Так что же такое зло?"
+  },
+  {
+   "href": "#dopolneniya-k-issledovaniyu",
+   "label": "Дополнения к исследованию"
+  },
+  {
+   "href": "#dopolnenie-1-suschnost-substanciya-i-ipostas",
+   "label": "Дополнение 1. Сущность, субстанция и ипостась"
+  },
+  {
+   "href": "#dopolnenie-2-dennica-i-hronologiya-angelskogo-padeniya",
+   "label": "Дополнение 2. Денница и хронология ангельского падения"
+  },
+  {
+   "href": "#dopolnenie-3-alternativy-ucheniyu-o-lishenii-dobra",
+   "label": "Дополнение 3. Альтернативы учению о лишении добра"
+  },
+  {
+   "href": "#dopolnenie-4-chto-imenno-dolzhna-obyasnit-teodiceya",
+   "label": "Дополнение 4. Что именно должна объяснить теодицея"
+  },
+  {
+   "href": "#dopolnenie-5-kogda-pisanie-svyazyvaet-bedstvie-s-bozhim-deys",
+   "label": "Дополнение 5. Когда Писание связывает бедствие с Божьим действием"
+  },
+  {
+   "href": "#dopolnenie-6-argumenty-o-vechnosti-nakazaniya",
+   "label": "Дополнение 6. Аргументы о вечности наказания"
+  },
+  {
+   "href": "#istochniki",
+   "label": "Источники"
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "Todd Calder. The Concept of Evil",
+   "used": "Исследовательский обзор в Stanford Encyclopedia of Philosophy. Широкое и узкое понятия зла, критика теории лишения, моральные свойства.",
+   "url": "https://plato.stanford.edu/entries/concept-evil/"
+  },
+  "2": {
+   "title": "Василий Великий. Беседа 9 «О том, что Бог не виновник зла»",
+   "used": "Русский текст на «Азбуке веры».",
+   "url": "https://azbyka.ru/otechnik/Vasilij_Velikij/Besedi/9"
+  },
+  "3": {
+   "title": "Августин. «Энхиридион»",
+   "used": "В особенности §§ 11–14 о природе зла; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/1302.htm"
+  },
+  "4": {
+   "title": "Катехизис Католической церкви. «Творец», §§ 279–324",
+   "used": "В особенности §§ 302–315 о Промысле и проблеме зла.",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_one/article_1/paragraph_4_the_creator.html"
+  },
+  "5": {
+   "title": "Иоанн Дамаскин. «Точное изложение православной веры», книга I, глава 13",
+   "used": "Первичный богословский текст. Бог и место, присутствие в творении без смешения с ним; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/33041.htm"
+  },
+  "6": {
+   "title": "IV Латеранский собор, 1215. Канон 1, исповедание веры",
+   "used": "Католический соборный текст. Единый Творец и первоначальная благость демонов; английский перевод, Fordham Internet Medieval Sourcebook.",
+   "url": "https://sourcebooks.fordham.edu/basis/lateran4.asp"
+  },
+  "7": {
+   "title": "Бытие, глава 1",
+   "used": "Англоязычный текст и примечания USCCB.",
+   "url": "https://bible.usccb.org/bible/genesis/1"
+  },
+  "8": {
+   "title": "Robin Routledge. Did God Create Chaos? Unresolved Tension in Genesis 1:1–2",
+   "used": "Исследовательская статья. Tyndale Bulletin 61.1 (2010), DOI: 10.53751/001c.29296. Источник также указан в разборе «Хаос и Бог» на GlebMutovkin.ru.",
+   "url": "https://www.tyndalebulletin.org/article/29296-did-god-create-chaos-unresolved-tension-in-genesis-1-1-2.pdf"
+  },
+  "9": {
+   "title": "GlebMutovkin.ru. «Хаос и Бог»",
+   "used": "Связанный авторский разбор на GlebMutovkin.ru с источниками; не церковное вероучительное определение.",
+   "url": "https://glebmutovkin.ru/razbory/haos-i-bog/"
+  },
+  "10": {
+   "title": "Orthodox Church in America. Angels and Evil Spirits",
+   "used": "Православное катехизическое изложение.",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/doctrine-scripture/the-symbol-of-faith/angels-and-evil-spirits"
+  },
+  "11": {
+   "title": "Григорий Богослов. Слово 38, §§ 9–11",
+   "used": "Первичный святоотеческий текст. Творение ангельских сил, видимого мира и человека; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/310238.htm"
+  },
+  "12": {
+   "title": "Иоанн Дамаскин. «Точное изложение православной веры», книга II",
+   "used": "В особенности главы об ангелах, дьяволе и свободе; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/33042.htm"
+  },
+  "13": {
+   "title": "Катехизис Католической церкви. «Грехопадение», §§ 385–421",
+   "used": "Ангельское падение и первородный грех.",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_one/article_1/paragraph_7_the_fall.html"
+  },
+  "14": {
+   "title": "Августин. «О граде Божием», книга XII",
+   "used": "Первичный богословский текст. Особенно главы 6–9: первый дурной выбор и недостаточность воли; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/120112.htm"
+  },
+  "15": {
+   "title": "GlebMutovkin.ru. «Человек перед Богом: тело, душа, дух и путь исцеления»",
+   "used": "Связанный авторский разбор о человеческой природе, свободе, грехе и исцелении; содержит собственную библиографию.",
+   "url": "https://glebmutovkin.ru/razbory/chelovek-pered-bogom/"
+  },
+  "16": {
+   "title": "Бытие, глава 3",
+   "used": "Грехопадение и повреждение отношений.",
+   "url": "https://bible.usccb.org/bible/genesis/3"
+  },
+  "17": {
+   "title": "Откровение, глава 12",
+   "used": "Библейский текст. Дракон, сатана, небесная война; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/revelation/12"
+  },
+  "18": {
+   "title": "Бытие, глава 4",
+   "used": "Библейский текст. Каин и Авель; английский перевод NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/genesis/4"
+  },
+  "19": {
+   "title": "Orthodox Church in America. Original Sin",
+   "used": "Православный ответ о наследуемом состоянии; католическое учение в данном разборе сверяется отдельно по катехизису.",
+   "url": "https://www.oca.org/questions/teaching/original-sin"
+  },
+  "20": {
+   "title": "Иоанн Дамаскин. «Философские главы», глава 30",
+   "used": "Первичный текст. Философское и святоотеческое употребление терминов.",
+   "url": "https://azbyka.ru/otechnik/Ioann_Damaskin/filosofskie_glavy/30"
+  },
+  "21": {
+   "title": "Фома Аквинский. «Сумма теологии», I, вопрос 48",
+   "used": "Различение зла и простого отсутствия совершенства.",
+   "url": "https://www.newadvent.org/summa/1048.htm"
+  },
+  "22": {
+   "title": "Иоанн Лествичник. «Лествица», слово 15",
+   "used": "Различение прилога, сочетания, согласия и страсти; номер страницы сайта не равен номеру слова.",
+   "url": "https://azbyka.ru/otechnik/Ioann_Lestvichnik/lestvitsa-ili-skrizhali-dukhovnye/20"
+  },
+  "23": {
+   "title": "Максим Исповедник. Введение к «Вопросоответам к Фалассию»",
+   "used": "О зле и неправильном употреблении естественных сил.",
+   "url": "https://www.hesychasm.ru/library/max/answer0.htm"
+  },
+  "24": {
+   "title": "Г. И. Шиманский. «Нравственный закон и совесть»",
+   "used": "Православное учебное изложение на Pravoslavie.ru. Нравственный закон, совесть и её воспитание.",
+   "url": "https://pravoslavie.ru/53313.html"
+  },
+  "25": {
+   "title": "Катехизис Католической церкви. Ошибочное суждение совести, §§ 1790–1794",
+   "used": "Официальный католический текст. Ошибка совести и ответственность; английская версия.",
+   "url": "https://www.vatican.va/content/catechism/en/part_three/section_one/chapter_one/article_6/iv_erroneous_judgment.html"
+  },
+  "26": {
+   "title": "Катехизис Католической церкви, §§ 1865–1869",
+   "used": "Умножение греха, пороки и общественные последствия.",
+   "url": "https://www.vatican.va/content/catechism/en/part_three/section_one/chapter_one/article_8/v_the_proliferation_of_sin.html"
+  },
+  "27": {
+   "title": "Катехизис Католической церкви, §§ 1033–1037",
+   "used": "Ад, окончательное отпадение и суд.",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_three/article_12/iv_hell.html"
+  },
+  "28": {
+   "title": "Катехизис Католической церкви, §§ 1755–1756",
+   "used": "Добрые и злые действия.",
+   "url": "https://www.vatican.va/content/catechism/en/part_three/section_one/chapter_one/article_4/ii_good_acts_and_evil_acts.html"
+  },
+  "29": {
+   "title": "Катехизис Католической церкви, §§ 1854–1864",
+   "used": "Смертный и простительный грех.",
+   "url": "https://www.vatican.va/content/catechism/en/part_three/section_one/chapter_one/article_8/iv_the_gravity_of_sin_mortal_and_venial_sin.html"
+  },
+  "30": {
+   "title": "«Грех смертный». «Азбука веры»",
+   "used": "Православный справочный материал.",
+   "url": "https://azbyka.ru/grex-smertnyj"
+  },
+  "31": {
+   "title": "Иоанн Кассиан. «О постановлениях общежительных монастырей», книга V",
+   "used": "Перечень восьми главных пороков; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/350705.htm"
+  },
+  "32": {
+   "title": "Евангелие от Матфея, глава 25",
+   "used": "Суд, дела милосердия и огонь, приготовленный дьяволу и его ангелам.",
+   "url": "https://bible.usccb.org/bible/matthew/25"
+  },
+  "33": {
+   "title": "Исход, глава 20, стихи 5–6",
+   "used": "Слова о поколениях в контексте заповеди против идолопоклонства; библейский текст и примечания NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/exodus/20"
+  },
+  "34": {
+   "title": "Второзаконие, глава 24, стих 16",
+   "used": "Норма о личной ответственности в человеческом суде; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/deuteronomy/24"
+  },
+  "35": {
+   "title": "Книга пророка Иезекииля, глава 18",
+   "used": "В особенности стихи 14–23: сын, отказавшийся от греха отца, и возможность обращения; Синодальный перевод.",
+   "url": "https://www.biblegateway.com/passage/?search=Ezekiel%2018&version=RUSV"
+  },
+  "36": {
+   "title": "Книга пророка Иеремии, глава 31, стихи 29–30",
+   "used": "Пословица об отцах и детях и ответственность за собственное беззаконие; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/jeremiah/31"
+  },
+  "37": {
+   "title": "Книга Иова, глава 21, стихи 7–13",
+   "used": "Вопрос о долголетии и благополучии нечестивых; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/job/21"
+  },
+  "38": {
+   "title": "Евангелие от Иоанна, глава 9",
+   "used": "Слепорождённый и вопрос о причине его страдания.",
+   "url": "https://bible.usccb.org/bible/john/9"
+  },
+  "39": {
+   "title": "Иоанн Златоуст. Беседа 56 на Евангелие от Иоанна",
+   "used": "Первичный святоотеческий текст: Ин. 9:1–3 и сопоставление с Иез. 18, Втор. 24:16 и словами о поколениях; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/240156.htm"
+  },
+  "40": {
+   "title": "Евангелие от Луки, глава 13",
+   "used": "Погибшие при бедствиях и призыв к покаянию.",
+   "url": "https://bible.usccb.org/bible/luke/13"
+  },
+  "41": {
+   "title": "Вторая книга Царств, глава 12, стихи 9–23",
+   "used": "Преступление Давида, прощение и смерть ребёнка. В англоязычной нумерации — 2 Samuel; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/2samuel/12"
+  },
+  "42": {
+   "title": "Фома Аквинский. «Сумма теологии», II–II, вопрос 108, статья 4",
+   "used": "Основной ответ и ответы на возражения 1–3: личная вина, временное наказание и ограничения человеческого суда; первичный богословский текст.",
+   "url": "https://www.newadvent.org/summa/3108.htm"
+  },
+  "43": {
+   "title": "Григорий Нисский. «О младенцах, преждевременно похищаемых смертью»",
+   "used": "Первичный святоотеческий текст: отсутствие лично совершённого младенцем порока и рассуждение о предведении; английский перевод трактата, указанного также в источниках разбора «Почему умирают дети».",
+   "url": "https://www.newadvent.org/fathers/2912.htm"
+  },
+  "44": {
+   "title": "Архиепископ Иоанн Белгородский, Мария Городова. «Расплачиваются ли дети за грехи родителей?»",
+   "used": "«Правмир», 19 сентября 2007 года. Современная пастырская беседа: влияние семейной истории и отсутствие роковой предопределённости расплаты.",
+   "url": "https://www.pravmir.ru/rasplachivayutsya-li-deti-za-grexi-roditelej-1/"
+  },
+  "45": {
+   "title": "Боэций. «Утешение философией», книга V, проза 6",
+   "used": "Первичный философско-богословский текст. Вечность, Божье знание и свобода; английский перевод.",
+   "url": "https://monadnock.net/boethius/consolation5-p6.html"
+  },
+  "46": {
+   "title": "Фома Аквинский. «Сумма теологии», I, вопрос 14, статья 13",
+   "used": "Первичный богословский текст. Знание будущих случайных событий и вечность Божьего знания; английский перевод.",
+   "url": "https://www.newadvent.org/summa/1014.htm"
+  },
+  "47": {
+   "title": "Бенедикт XVI. Spe salvi, 2007, §§ 44–48",
+   "used": "Папская энциклика. Суд, справедливость, очищающая встреча со Христом, взаимосвязь человеческих жизней и молитва за умерших; английская версия.",
+   "url": "https://www.vatican.va/content/benedict-xvi/en/encyclicals/documents/hf_ben-xvi_enc_20071130_spe-salvi.html"
+  },
+  "48": {
+   "title": "Деяния апостолов, глава 5, стихи 1–11",
+   "used": "Анания и Сапфира: обман, личное участие и немедленный суд; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/acts/5"
+  },
+  "49": {
+   "title": "Евангелие от Луки, глава 16, стихи 19–31",
+   "used": "Притча о богаче и Лазаре: земное положение и посмертная участь; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/luke/16"
+  },
+  "50": {
+   "title": "Послание к Римлянам, глава 2, стихи 4–6",
+   "used": "Долготерпение Божье, покаяние и ответственность; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/romans/2"
+  },
+  "51": {
+   "title": "Августин. «О граде Божием», книга I, глава 8",
+   "used": "Первичный святоотеческий текст: общие земные блага и беды, неодинаковое время воздаяния и окончательный суд; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/120101.htm"
+  },
+  "52": {
+   "title": "Катехизис Католической церкви, § 1459: удовлетворение и исправление вреда",
+   "used": "Отпущение греха и обязанность исправлять причинённый ближнему вред; официальный катехизис.",
+   "url": "https://www.vatican.va/content/catechism/en/part_two/section_two/chapter_two/article_4/vii_the_acts_of_the_penitent.html"
+  },
+  "53": {
+   "title": "Послание к Римлянам, глава 8",
+   "used": "Страдание творения и надежда на освобождение.",
+   "url": "https://bible.usccb.org/bible/romans/8"
+  },
+  "54": {
+   "title": "Книга Иова, глава 1",
+   "used": "Библейский текст. Пролог книги и образ обвинителя; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/job/1"
+  },
+  "55": {
+   "title": "Бытие, глава 50, стихи 15–21",
+   "used": "Библейский текст. Иосиф различает злое намерение братьев и Божье действие к сохранению жизни; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/genesis/50"
+  },
+  "56": {
+   "title": "Ириней Лионский. «Против ересей», IV, 38",
+   "used": "Возрастание сотворённого человека; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/0103438.htm"
+  },
+  "57": {
+   "title": "Fyodor Dostoyevsky. The Brothers Karamazov — «Братья Карамазовы»",
+   "used": "Первичный литературный текст. Перевод Constance Garnett, Project Gutenberg № 28054. В особенности книга V, глава 4 «Бунт».",
+   "url": "https://www.gutenberg.org/cache/epub/28054/pg28054.txt"
+  },
+  "58": {
+   "title": "Marilyn McCord Adams. Horrendous Evils and the Goodness of God",
+   "used": "Первичная философско-богословская статья, Proceedings of the Aristotelian Society, Supplementary Volumes 63 (1989). PDF содержит также ответ Stewart Sutherland; в исследовании рассматривается аргумент Адамс.",
+   "url": "https://andrewmbailey.com/mma/pdfs/HorrendousEvilsAndTheGoodnessOfGod.pdf"
+  },
+  "59": {
+   "title": "Первое послание к Коринфянам, глава 15",
+   "used": "Воскресение и смерть как последний враг.",
+   "url": "https://bible.usccb.org/bible/1corinthians/15"
+  },
+  "60": {
+   "title": "Откровение, глава 21",
+   "used": "Новое небо, новая земля и прекращение смерти и боли.",
+   "url": "https://bible.usccb.org/bible/revelation/21"
+  },
+  "61": {
+   "title": "Иоанн Павел II. Salvifici doloris, 1984",
+   "used": "О христианском смысле человеческого страдания.",
+   "url": "https://www.vatican.va/content/john-paul-ii/en/apost_letters/1984/documents/hf_jp-ii_apl_11021984_salvifici-doloris.html"
+  },
+  "62": {
+   "title": "Афанасий Великий. «О воплощении Слова»",
+   "used": "Тление, смерть и восстановление человека; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/2802.htm"
+  },
+  "63": {
+   "title": "Послание к Филиппийцам, глава 2",
+   "used": "В частности, стихи 12–13.",
+   "url": "https://bible.usccb.org/bible/philippians/2"
+  },
+  "64": {
+   "title": "Феофилакт Болгарский. Толкование на Первое послание апостола Иоанна, глава 3",
+   "used": "В частности, 1 Ин. 3:8.",
+   "url": "https://azbyka.ru/otechnik/Feofilakt_Bolgarskij/tolkovanie-na-pervoe-poslanie-svjatogo-apostola-ioanna/3"
+  },
+  "65": {
+   "title": "Откровение, глава 17",
+   "used": "Победа Агнца.",
+   "url": "https://bible.usccb.org/bible/revelation/17"
+  },
+  "66": {
+   "title": "Послание к Ефесянам, глава 6",
+   "used": "Образы духовной брани.",
+   "url": "https://bible.usccb.org/bible/ephesians/6"
+  },
+  "67": {
+   "title": "Катехизис Католической церкви, §§ 631–637",
+   "used": "Сошествие Христа к умершим.",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_two/article_5/paragraph_1_christ_descended_into_hell.html"
+  },
+  "68": {
+   "title": "Евангелие от Марка, глава 9",
+   "used": "Евангельские предостережения о геенне.",
+   "url": "https://bible.usccb.org/bible/mark/9"
+  },
+  "69": {
+   "title": "Откровение, глава 20",
+   "used": "Бездна, окончательный суд и озеро огненное.",
+   "url": "https://bible.usccb.org/bible/revelation/20"
+  },
+  "70": {
+   "title": "Евангелие от Луки, глава 8",
+   "used": "В частности, просьба бесов не отправлять их в бездну.",
+   "url": "https://bible.usccb.org/bible/luke/8"
+  },
+  "71": {
+   "title": "Второе послание Петра, глава 2",
+   "used": "Согрешившие ангелы и заключение под судом.",
+   "url": "https://bible.usccb.org/bible/2peter/2"
+  },
+  "72": {
+   "title": "Катехизис Католической церкви, §§ 1030–1032",
+   "used": "Окончательное очищение, или чистилище.",
+   "url": "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_three/article_12/iii_the_final_purification,_or_purgatory.html"
+  },
+  "73": {
+   "title": "Фома Аквинский. «Сумма теологии», I, вопрос 8, статьи 1 и 3",
+   "used": "Первичный богословский текст. Присутствие Бога как причины бытия и особое присутствие по благодати; английский перевод.",
+   "url": "https://www.newadvent.org/summa/1008.htm"
+  },
+  "74": {
+   "title": "Откровение Иоанна Богослова, глава 14, стих 10",
+   "used": "Библейский текст. Образ мучения перед ангелами и Агнцем; английский перевод USCCB.",
+   "url": "https://bible.usccb.org/bible/revelation/14"
+  },
+  "75": {
+   "title": "Иоанн Дамаскин. «Точное изложение православной веры», книга IV, глава 27",
+   "used": "Первичный святоотеческий текст. Воскресение тел, суд и отличие будущего огня от обычного земного огня; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/33044.htm"
+  },
+  "76": {
+   "title": "Августин. «О граде Божием», книга XXI, главы 9–10 и 23",
+   "used": "Первичный богословский текст. Телесное мучение, огонь и аргумент в пользу вечности наказания; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/120121.htm"
+  },
+  "77": {
+   "title": "Исаак Сирин. «Слова подвижнические», слово 18 (издание СТСЛ, 2008)",
+   "used": "Первичный святоотеческий текст в русском переводе. «О видении естества бесплотных, в вопросах и ответах»; заключительное рассуждение о любви и геенском мучении. Нумерация слов в других изданиях может отличаться.",
+   "url": "https://azbyka.ru/otechnik/Isaak_Sirin/slova-podvizhnicheskie/18"
+  },
+  "78": {
+   "title": "Orthodox Church in America. Heaven and Hell",
+   "used": "Православное изложение о Царстве, любви и окончательной участи.",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/spirituality/the-kingdom-of-heaven/heaven-and-hell"
+  },
+  "79": {
+   "title": "Фома Аквинский. «Сумма теологии», I, вопрос 49",
+   "used": "Причины зла и различение вины и наказания.",
+   "url": "https://www.newadvent.org/summa/1049.htm"
+  },
+  "80": {
+   "title": "Orthodox Church in America. Eternal Life",
+   "used": "Православное катехизическое изложение о вечной жизни и суде.",
+   "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/doctrine-scripture/the-symbol-of-faith/eternal-life"
+  },
+  "81": {
+   "title": "Григорий Нисский. «Большое огласительное слово», главы 5–32",
+   "used": "В частности, глава 26; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/29082.htm"
+  },
+  "82": {
+   "title": "Seventh-day Adventist Church. Death and Resurrection",
+   "used": "Официальное конфессиональное изложение. Основное положение 26 и объяснение второй смерти; условное бессмертие и окончательная погибель.",
+   "url": "https://adventist.org/beliefs/official/death-and-resurrection"
+  },
+  "83": {
+   "title": "Августин. «О граде Божием», книга XXII",
+   "used": "В частности, глава 30 о свободе в окончательном блаженстве.",
+   "url": "https://www.newadvent.org/fathers/120122.htm"
+  },
+  "84": {
+   "title": "GlebMutovkin.ru. «Почему человек не может снова пасть»",
+   "used": "Связанный авторский разбор на GlebMutovkin.ru с источниками; не церковное вероучительное определение.",
+   "url": "https://glebmutovkin.ru/razbory/pochemu-chelovek-ne-mozhet-snova-past/"
+  },
+  "85": {
+   "title": "Аугсбургское исповедание",
+   "used": "Статья XIX «О причине греха».",
+   "url": "https://bookofconcord.org/augsburg-confession/"
+  },
+  "86": {
+   "title": "Вестминстерское исповедание веры",
+   "used": "В особенности главы III и V.",
+   "url": "https://opc.org/wcf.html"
+  },
+  "87": {
+   "title": "Christian Science denies the reality of sin, sickness, and…",
+   "used": "Christian Science Sentinel, 1910. Первичное самоописание позиции: различие окончательной реальности и человеческого опыта зла.",
+   "url": "https://sentinel.christianscience.com/issues/1910/8/12-50/christian-science-denies-the-reality-of-sin-sickness-and"
+  },
+  "88": {
+   "title": "Вавилонский Талмуд. Брахот 10а",
+   "used": "Талмудический фрагмент в подборке Nashim of Text: Bruriah на Sefaria, с английским переводом. Молитва за покаяние грешников; позднейшая подборка служит местом публикации первичного текста.",
+   "url": "https://voices.sefaria.org/sheets/459826"
+  },
+  "89": {
+   "title": "Коран, сура 18, аят 50",
+   "used": "Иблис и его отнесение к джиннам.",
+   "url": "https://quran.com/al-kahf/50"
+  },
+  "90": {
+   "title": "Ангуттара-никая 3.69. Mūla Sutta — «Корни»",
+   "used": "Первичный буддийский текст, английский перевод Thanissaro Bhikkhu, Access to Insight. Алчность, отвращение и заблуждение.",
+   "url": "https://accesstoinsight.org/tipitaka/an/an03/an03.069.than.html"
+  },
+  "91": {
+   "title": "«Бхагавадгита», 16:21",
+   "used": "Текст и английское толкование Свами Мукундананды; одна из интерпретационных традиций.",
+   "url": "https://www.holy-bhagavad-gita.org/chapter/16/verse/21/"
+  },
+  "92": {
+   "title": "Stanford Encyclopedia of Philosophy. Kant’s Philosophy of Religion",
+   "used": "В том числе учение о радикальном зле.",
+   "url": "https://plato.stanford.edu/entries/kant-religion/"
+  },
+  "93": {
+   "title": "Stanford Encyclopedia of Philosophy. Hannah Arendt",
+   "used": "Контекст понятия банальности зла.",
+   "url": "https://plato.stanford.edu/entries/arendt/"
+  },
+  "94": {
+   "title": "Albert Bandura. Moral disengagement in the perpetration of inhumanities",
+   "used": "Personality and Social Psychology Review 3.3 (1999), 193–209; DOI: 10.1207/s15327957pspr0303_3. Использована аннотация оригинальной статьи в PubMed.",
+   "url": "https://pubmed.ncbi.nlm.nih.gov/15661671/"
+  },
+  "95": {
+   "title": "Thomas Aquinas. De ente et essentia — «О сущем и сущности»",
+   "used": "Первичный философский текст. Главы 1 и 4: сущее, сущность, определение и существование. Английский перевод.",
+   "url": "https://isidore.co/aquinas/english/DeEnte%26Essentia.htm"
+  },
+  "96": {
+   "title": "Иоанн Дамаскин. «Философские главы», глава 4",
+   "used": "Первичный философско-богословский текст. Сущее, субстанция и акциденция; русский перевод.",
+   "url": "https://azbyka.ru/otechnik/Ioann_Damaskin/filosofskie_glavy/4"
+  },
+  "97": {
+   "title": "Иоанн Дамаскин. «Философские главы», глава 42",
+   "used": "Первичный текст. Различные значения ипостаси; конкретный индивид.",
+   "url": "https://azbyka.ru/otechnik/Ioann_Damaskin/filosofskie_glavy/42"
+  },
+  "98": {
+   "title": "Aristotle. Categories — «Категории», разделы 2–5",
+   "used": "Первичный философский текст. Перевод E. M. Edghill; MIT Internet Classics Archive. Первичные и вторичные сущности.",
+   "url": "https://classics.mit.edu/Aristotle/categories.1.1.html"
+  },
+  "99": {
+   "title": "Basil of Caesarea. Letter 236, § 6",
+   "used": "Письмо Василия Великого Амфилохию. Различие ousia и hypostasis; английский перевод.",
+   "url": "https://www.newadvent.org/fathers/3202236.htm"
+  },
+  "100": {
+   "title": "Иларион (Алфеев). «Происхождение зла»",
+   "used": "Православное авторское изложение, Правмир, 6 сентября 2010. Природа зла и язык личного носителя; не соборное определение.",
+   "url": "https://www.pravmir.ru/proisxozhdenie-zla/"
+  },
+  "101": {
+   "title": "Книга пророка Исаии, глава 14",
+   "used": "Контекст образа утренней звезды и царя Вавилона.",
+   "url": "https://bible.usccb.org/bible/isaiah/14"
+  },
+  "102": {
+   "title": "Книга пророка Иезекииля, глава 28",
+   "used": "Библейский текст. Правитель и царь Тира, образы Эдема и херувима; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/ezekiel/28"
+  },
+  "103": {
+   "title": "Augustine. Contra Faustum, Book XX — «Против Фавста», книга XX",
+   "used": "Первичный полемический текст. В § 3 передана позиция манихея Фавста; далее — возражения Августина. Свидетельство оппонента требует исторической осторожности.",
+   "url": "https://www.newadvent.org/fathers/140620.htm"
+  },
+  "104": {
+   "title": "Plotinus. Enneads I.8 — «Эннеады», I.8",
+   "used": "Первичный философский текст о природе и происхождении зла. Английский перевод Stephen MacKenna; Wikisource.",
+   "url": "https://en.wikisource.org/wiki/Plotinus_(MacKenna)/Volume_1/Ennead_1.8"
+  },
+  "105": {
+   "title": "Н. А. Бердяев. «Философия свободного духа», глава V",
+   "used": "Первичный текст религиозного философа. Учение о свободе и происхождении зла; не православное вероучительное определение.",
+   "url": "https://www.vehi.net/berdyaev/fsduha/05.html"
+  },
+  "106": {
+   "title": "Л. Шестов. «Николай Бердяев. Гнозис и экзистенциальная философия»",
+   "used": "Первичный полемический текст. Критика объяснения зла через несотворённую свободу и вопрос о невинной жертве.",
+   "url": "https://www.vehi.net/shestov/berdyaev.html"
+  },
+  "107": {
+   "title": "Michael Tooley. The Problem of Evil",
+   "used": "Исследовательский обзор Stanford Encyclopedia of Philosophy. Логические и доказательные аргументы; защита и теодицея. Подход Плантинги здесь изложен по обзору.",
+   "url": "https://plato.stanford.edu/entries/evil/"
+  },
+  "108": {
+   "title": "William L. Rowe. The Problem of Evil and Some Varieties of Atheism",
+   "used": "Первичная философская статья. American Philosophical Quarterly 16.4 (1979), 335–341. Пример страдания животного и ограниченность вывода от наблюдения; PDF.",
+   "url": "https://www.allisonkrilethornton.com/wp-content/uploads/GSHNreadings/Rowe-1979-The-Problem-of-Evil-and-Some-Varieties-of-Atheism.pdf"
+  },
+  "109": {
+   "title": "Книга пророка Исаии, глава 45",
+   "used": "В частности, стих 7.",
+   "url": "https://bible.usccb.org/bible/isaiah/45"
+  },
+  "110": {
+   "title": "Исход, глава 9",
+   "used": "Библейский текст. В частности, стихи 12 и 34–35: язык ожесточения фараона; NABRE, USCCB.",
+   "url": "https://bible.usccb.org/bible/exodus/9"
+  },
+  "111": {
+   "title": "Бенедикт XVI. Verbum Domini, 2010",
+   "used": "§ 42 о трудных страницах Священного Писания.",
+   "url": "https://www.vatican.va/content/benedict-xvi/en/apost_exhortations/documents/hf_ben-xvi_exh_20100930_verbum-domini.html"
+  }
+ },
+ "slov": 14040,
+ "min": 88,
+ "nsrc": 111,
+ "nref": 168
+}

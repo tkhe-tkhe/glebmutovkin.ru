@@ -3,16 +3,17 @@
 
  "temy": [
   { "n": "01", "slug": "chelovek-pered-bogom", "title": "Человек перед Богом", "oblast": "богословие", "svoya_stranica": true },
-  { "n": "02", "slug": "pochemu-chelovek-ne-mozhet-snova-past", "title": "Почему человек в Новом Иерусалиме не может снова пасть", "oblast": "богословие" },
-  { "n": "03", "slug": "ad-i-ray", "title": "Ад, Рай и Царствие Небесное", "oblast": "богословие" },
-  { "n": "04", "slug": "angely", "title": "Ангельский мир в христианстве", "oblast": "богословие" },
-  { "n": "05", "slug": "voprosy-k-cerkvi", "title": "Вопросы к Христианской Церкви", "oblast": "богословие" },
-  { "n": "06", "slug": "o-bytii", "title": "О Бытии", "oblast": "богословие" },
-  { "n": "07", "slug": "instinkty", "title": "Инстинкты у человека", "oblast": "антропология" },
-  { "n": "08", "slug": "pochemu-umirayut-deti", "title": "Почему умирают дети и младенцы", "oblast": "богословие" },
-  { "n": "09", "slug": "pravoslavie-i-okkultizm", "title": "Православие, астрология и оккультизм", "oblast": "богословие" },
-  { "n": "10", "slug": "sem-vselenskih-soborov", "title": "Семь Вселенских Соборов", "oblast": "история Церкви" },
-  { "n": "11", "slug": "haos-i-bog", "title": "Хаос и Бог в христианской концепции", "oblast": "богословие" },
-  { "n": "12", "slug": "carskaya-semya", "title": "Царская семья: письма, дневники и последние дни", "oblast": "история", "tom": true }
+  { "n": "02", "slug": "o-zle", "title": "О зле", "oblast": "богословие" },
+  { "n": "03", "slug": "pochemu-chelovek-ne-mozhet-snova-past", "title": "Почему человек в Новом Иерусалиме не может снова пасть", "oblast": "богословие" },
+  { "n": "04", "slug": "ad-i-ray", "title": "Ад, Рай и Царствие Небесное", "oblast": "богословие" },
+  { "n": "05", "slug": "angely", "title": "Ангельский мир в христианстве", "oblast": "богословие" },
+  { "n": "06", "slug": "voprosy-k-cerkvi", "title": "Вопросы к Христианской Церкви", "oblast": "богословие" },
+  { "n": "07", "slug": "o-bytii", "title": "О Бытии", "oblast": "богословие" },
+  { "n": "08", "slug": "instinkty", "title": "Инстинкты у человека", "oblast": "антропология" },
+  { "n": "09", "slug": "pochemu-umirayut-deti", "title": "Почему умирают дети и младенцы", "oblast": "богословие" },
+  { "n": "10", "slug": "pravoslavie-i-okkultizm", "title": "Православие, астрология и оккультизм", "oblast": "богословие" },
+  { "n": "11", "slug": "sem-vselenskih-soborov", "title": "Семь Вселенских Соборов", "oblast": "история Церкви" },
+  { "n": "12", "slug": "haos-i-bog", "title": "Хаос и Бог в христианской концепции", "oblast": "богословие" },
+  { "n": "13", "slug": "carskaya-semya", "title": "Царская семья: письма, дневники и последние дни", "oblast": "история", "tom": true }
  ]
 }
