@@ -1,10 +1,15 @@
 ---
 // Обо мне: портрет слева, текст справа. Текст живёт в src/data/o-mne.ts,
 // чтобы правка слов не задевала разметку.
+//
+// Контакты стоят дважды — под портретом и в конце текста. Решение Глеба
+// от 16 сентября: строку должно быть видно независимо от того, сколько
+// текста на странице.
 import Base from '../../layouts/Base.astro';
 import { Image } from 'astro:assets';
 import portret from '../../images/portret.jpg';
 import { abzacy } from '../../data/o-mne';
+import Kontakty from '../../components/Kontakty.astro';
 ---
 
 <Base
@@ -17,19 +22,22 @@ import { abzacy } from '../../data/o-mne';
     </section>
 
     <section class="omne-row">
-      <figure>
-        <Image
-          src={portret}
-          alt="Глеб Мутовкин"
-          widths={[272, 544, 816]}
-          sizes="(min-width:900px) 17rem, (max-width:720px) 20rem, 100vw"
-        />
-        <figcaption>Арбат, 2026</figcaption>
-      </figure>
+      <div class="stolb">
+        <figure>
+          <Image
+            src={portret}
+            alt="Глеб Мутовкин"
+            widths={[272, 544, 816]}
+            sizes="(min-width:900px) 17rem, (max-width:720px) 20rem, 100vw"
+          />
+          <figcaption>Арбат, 2026</figcaption>
+        </figure>
+        <Kontakty />
+      </div>
 
       <div class="txt">
         {abzacy.map((p) => <p>{p}</p>)}
-        <p><a class="link" href="https://vk.ru/id49789194">ВКонтакте</a></p>
+        <Kontakty />
       </div>
     </section>
   </main>

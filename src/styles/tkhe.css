@@ -814,12 +814,30 @@ footer.site a:hover{color:var(--fg)}
 .omne .txt p{margin:0 0 1.15rem}
 .omne .txt p:last-child{margin:0}
 
+/* Контакты. Служебная строка, а не часть рассказа: моноширинная, отделена
+   сверху той же волосяной линией, что записи ленты. Ни кнопок, ни значков.
+   Стоит на странице дважды — под портретом и в конце текста, — чтобы её было
+   видно и на коротком тексте, и когда текст вырастет. */
+.omne .kontakty{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;
+  color:var(--fg-2);line-height:1.6;
+  margin:1.5rem 0 0;padding-top:1.1rem;border-top:1px solid var(--line);
+}
+.omne .kontakty .sep{color:var(--fg-3);margin:0 .5em}
+/* В текстовой колонке отступ больше: строка должна оторваться от последнего
+   абзаца. Селектор с тегом — иначе правило .txt p:last-child{margin:0} выше
+   окажется точнее и обнулит отступ. */
+.omne .txt p.kontakty{margin-top:2.2rem}
+
 .omne-row{display:grid;grid-template-columns:minmax(0,1fr);gap:2.5rem}
 @media(min-width:900px){
   .omne-row{grid-template-columns:17rem minmax(0,var(--measure));gap:3.5rem;align-items:start}
 }
-/* На телефоне снимок во всю ширину смотрится плакатом — держим его уже. */
+/* На телефоне снимок во всю ширину смотрится плакатом — держим его уже.
+   Столбец с портретом держим тем же пределом, иначе строка контактов
+   под ним растянется шире снимка. */
 @media(max-width:720px){
+  .omne .stolb{max-width:20rem}
   .omne figure{max-width:20rem}
 }
 
