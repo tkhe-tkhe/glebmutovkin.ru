@@ -1056,3 +1056,61 @@ article.razbor pre code:not(.ui){font-size:.7rem;color:var(--fg-2)}
 /* Заголовок, к которому прыгнули, не должен прятаться под полосой */
 body:has(.polosa) article.razbor :is(h2,h3,h4){scroll-margin-top:3.8rem}
 body:has(.polosa) .toc{top:4.2rem}
+
+/* --------------------------------------------------------------------------
+   Гайд-инструкция (Sennheiser EW-D): то, чего нет у соседей.
+   Лид раздела, схема-поток из четырёх звеньев, чек-лист, пометка источников
+   под разделом. Всё той же волосяной линией слева или сверху, без коробок.
+   -------------------------------------------------------------------------- */
+
+/* первая строка раздела: что здесь и зачем. Обычный абзац тут мало отличим
+   от основного текста, а раздел на двадцать подразделов нужно открывать
+   с одной понятной фразы */
+.gaid p.lead{color:var(--fg-2);font-size:1.02rem;margin:0 0 1.4rem}
+
+/* схема-поток: звенья в строку, между ними волосяная линия. На узком экране
+   складывается в столбец. Стрелок нет — порядок задаёт номер звена. */
+.gaid figure.potok{margin:2rem 0 2.2rem;max-width:var(--measure-wide)}
+.gaid figure.potok ol{
+  list-style:none;margin:0;padding:0;counter-reset:potok;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.gaid figure.potok li{
+  counter-increment:potok;margin:0;padding:.9rem 1rem .9rem 0;
+  font-size:.86rem;line-height:1.45;
+}
+.gaid figure.potok li + li{padding-left:1rem;border-left:1px solid var(--line)}
+.gaid figure.potok li::before{
+  content:counter(potok,decimal-leading-zero);display:block;margin-bottom:.35rem;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;color:var(--fg-3);
+}
+.gaid figure.potok b{display:block;font-weight:500}
+.gaid figure.potok small{display:block;margin-top:.25rem;font-size:.74rem;color:var(--fg-2)}
+.gaid figure.potok figcaption{
+  font-family:var(--mono);font-size:.66rem;line-height:1.6;color:var(--fg-3);
+  margin-top:.6rem;max-width:var(--measure);
+}
+@media(max-width:520px){
+  .gaid figure.potok ol{grid-template-columns:minmax(0,1fr)}
+  .gaid figure.potok li + li{padding-left:0;border-left:0;border-top:1px solid var(--line-soft)}
+}
+
+/* чек-лист «перед выходом»: строки со значком □ в самом тексте */
+.gaid .checklist{
+  margin:1.6rem 0;max-width:var(--measure-wide);
+  padding-left:1.1rem;border-left:1px solid var(--line);
+}
+.gaid .checklist p{margin:.4rem 0;font-size:.94rem;line-height:1.6}
+
+/* «Проверка по документации: [2], [1]» под разделом: служебная строка,
+   номера ведут к источникам внизу */
+.gaid .source-note{
+  font-family:var(--mono);font-size:.66rem;line-height:1.7;color:var(--fg-3);
+  margin:1.6rem 0 0;max-width:var(--measure);
+}
+.gaid .source-note a{
+  color:var(--ochre);text-decoration:none;border-bottom:1px dotted currentColor;
+  white-space:nowrap;
+}
+.gaid .source-note a:hover{color:var(--fg)}

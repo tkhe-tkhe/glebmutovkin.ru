@@ -18,3 +18,4 @@ export const STROKA: [string, string, string] = ['строка', 'строки',
 export const STRANICA: [string, string, string] = ['страница', 'страницы', 'страниц'];
 export const CHAS: [string, string, string] = ['час', 'часа', 'часов'];
 export const SSYLKA: [string, string, string] = ['ссылка', 'ссылки', 'ссылок'];
+export const ISTOCHNIK: [string, string, string] = ['источник', 'источника', 'источников'];

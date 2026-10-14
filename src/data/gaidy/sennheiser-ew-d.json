@@ -1,0 +1,307 @@
+{
+ "slug": "sennheiser-ew-d",
+ "title": "Sennheiser EW-D CI1 SET",
+ "lede": "Полная инструкция для инструментального комплекта R1-6: от первого включения до уверенной работы дома, на репетиции и на сцене",
+ "oblast": "звук",
+ "data": "Октябрь 2026",
+ "god": "2026",
+ "kak_chitat": "",
+ "toc": [
+  {
+   "href": "#about",
+   "label": "01. Какой комплект описан",
+   "uroven": 1
+  },
+  {
+   "href": "#start",
+   "label": "02. Первый запуск",
+   "uroven": 1
+  },
+  {
+   "href": "#receiver",
+   "label": "03. Приёмник EW-D EM",
+   "uroven": 1
+  },
+  {
+   "href": "#transmitter",
+   "label": "04. Передатчик EW-D SK",
+   "uroven": 1
+  },
+  {
+   "href": "#cables",
+   "label": "05. Кабели и схемы подключения",
+   "uroven": 1
+  },
+  {
+   "href": "#levels",
+   "label": "06. GAIN и AF OUT без путаницы",
+   "uroven": 1
+  },
+  {
+   "href": "#pairing",
+   "label": "07. Частота и синхронизация",
+   "uroven": 1
+  },
+  {
+   "href": "#menus",
+   "label": "08. Все пункты меню EW-D EM",
+   "uroven": 1
+  },
+  {
+   "href": "#indicators",
+   "label": "09. Индикаторы: читать по месту",
+   "uroven": 1
+  },
+  {
+   "href": "#radio",
+   "label": "10. Антенны и устойчивая радиосвязь",
+   "uroven": 1
+  },
+  {
+   "href": "#battery",
+   "label": "11. Питание и аккумуляторы",
+   "uroven": 1
+  },
+  {
+   "href": "#mounting",
+   "label": "12. Крепление на поясе и ремне гитары",
+   "uroven": 1
+  },
+  {
+   "href": "#fm9",
+   "label": "13. Дома: подключение к Fractal FM9",
+   "uroven": 1
+  },
+  {
+   "href": "#apollo",
+   "label": "14. Дома: Apollo Twin X и Logic",
+   "uroven": 1
+  },
+  {
+   "href": "#live",
+   "label": "15. Репетиция и концерт",
+   "uroven": 1
+  },
+  {
+   "href": "#multi",
+   "label": "16. Несколько систем и смена гитары",
+   "uroven": 1
+  },
+  {
+   "href": "#smart",
+   "label": "17. Приложение Smart Assist",
+   "uroven": 1
+  },
+  {
+   "href": "#firmware",
+   "label": "18. Обновление микропрограммы",
+   "uroven": 1
+  },
+  {
+   "href": "#rack",
+   "label": "19. Стойка и дополнительные принадлежности",
+   "uroven": 1
+  },
+  {
+   "href": "#trouble",
+   "label": "20. Диагностика по симптомам",
+   "uroven": 1
+  },
+  {
+   "href": "#care",
+   "label": "21. Уход, безопасность и частоты",
+   "uroven": 1
+  },
+  {
+   "href": "#cheat",
+   "label": "22. Памятка и карточка настройки",
+   "uroven": 1
+  },
+  {
+   "href": "#specs",
+   "label": "23. Характеристики и словарь",
+   "uroven": 1
+  },
+  {
+   "href": "#sources",
+   "label": "24. Источники и версия руководства",
+   "uroven": 1
+  }
+ ],
+ "istochniki": {
+  "1": {
+   "title": "Официальное руководство Sennheiser на русском",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/manual.html"
+  },
+  "2": {
+   "title": "EW-D CI1 SET R1-6: карточка комплекта",
+   "url": "https://www.sennheiser.com/en-fi/catalog/products/wireless-systems/ew-d-ci1-set/ew-d-ci1-set-r1-6-508731"
+  },
+  "3": {
+   "title": "EW-D EM: органы управления",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-overview.html"
+  },
+  "4": {
+   "title": "EW-D EM: дисплей",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-display-panel.html"
+  },
+  "5": {
+   "title": "EW-D EM: питание",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-connecting.html"
+  },
+  "6": {
+   "title": "EW-D EM: включение и ожидание",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-switching-on-off.html"
+  },
+  "7": {
+   "title": "EW-D EM: кнопки меню",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-making-settings.html"
+  },
+  "8": {
+   "title": "EW-D EM: открытие меню",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-open-menu.html"
+  },
+  "9": {
+   "title": "EW-D EM: блокировка кнопок",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-activating-lock.html"
+  },
+  "10": {
+   "title": "EW-D EM: светодиоды",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-led-meaning.html"
+  },
+  "11": {
+   "title": "EW-D SK: органы управления",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-sk-overview.html"
+  },
+  "12": {
+   "title": "EW-D SK: включение и выключение",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-sk-switching-transmitter.html"
+  },
+  "13": {
+   "title": "EW-D SK: светодиоды",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/reusable/ew-d-sk-led-meaning.html"
+  },
+  "14": {
+   "title": "EW-D SK: проверка батареи",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-sk-checking-battery.html"
+  },
+  "15": {
+   "title": "EW-D SK: Identify",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-sk-identifying-receiver.html"
+  },
+  "16": {
+   "title": "EW-D SK: выключатель звука",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-sk-muting-transmitter.html"
+  },
+  "17": {
+   "title": "EW-D EM: MUTE LOCK",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-menu-mute-lock.html"
+  },
+  "18": {
+   "title": "EW-D SK: инструмент и линейный источник",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-sk-connecting-instrument-or-line-source.html"
+  },
+  "19": {
+   "title": "EW-D EM: аудиовыходы",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-outputting-signals.html"
+  },
+  "20": {
+   "title": "EW-D EM: GAIN и Unity Gain",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-menu-gain.html"
+  },
+  "21": {
+   "title": "EW-D EM: AF OUT",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-menu-af-out.html"
+  },
+  "22": {
+   "title": "EW-D EM: AUTO SCAN",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-menu-auto-scan.html"
+  },
+  "23": {
+   "title": "EW-D EM: синхронизация",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-connecting-synchronizing-em.html"
+  },
+  "24": {
+   "title": "EW-D EM: CHANNEL",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-menu-channel.html"
+  },
+  "25": {
+   "title": "EW-D EM: TUNE",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-menu-tune.html"
+  },
+  "26": {
+   "title": "EW-D EM: RESET",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-menu-reset.html"
+  },
+  "27": {
+   "title": "EW-D EM: антенны",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-connecting-antennas.html"
+  },
+  "28": {
+   "title": "EW-D: дальность и условия радиосвязи",
+   "url": "https://help.sennheiser.com/hc/en-us/articles/29784235043218-Operating-distance-of-the-EW-D-and-EW-DX-systems"
+  },
+  "29": {
+   "title": "EW-D SK: установка элементов питания",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-sk-inserting-batteries.html"
+  },
+  "30": {
+   "title": "EW-D: батарейки AA, BA 70 и NiMH",
+   "url": "https://help.sennheiser.com/hc/en-us/articles/26418128697618-EW-D-EW-DX-EW-DP-Batteries"
+  },
+  "31": {
+   "title": "EW-D SK: снятие и установка зажима",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-sk-changing-belt-clip.html"
+  },
+  "32": {
+   "title": "Smart Assist: возможности",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/productinfo-app.html"
+  },
+  "33": {
+   "title": "Smart Assist: официальный сайт и загрузки",
+   "url": "https://www.sennheiser.com/en-us/catalog/products/software/smart-assist/smart-assist-app-111112"
+  },
+  "34": {
+   "title": "EW-D: официальная процедура обновления",
+   "url": "https://help.sennheiser.com/hc/en-us/articles/26889251111314-EW-D-Firmware-Update"
+  },
+  "35": {
+   "title": "EW-D EM: установка в стойку",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/ew-d-em-installing-rack.html"
+  },
+  "36": {
+   "title": "Очистка и уход",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/cleaning.html"
+  },
+  "37": {
+   "title": "Характеристики системы",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/specifications-system.html"
+  },
+  "38": {
+   "title": "Характеристики EW-D EM",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/specifications-ew-d-em.html"
+  },
+  "39": {
+   "title": "Характеристики EW-D SK",
+   "url": "https://docs.cloud.sennheiser.com/ru-ru/ew-d/ew-d/specifications-ew-d-sk.html"
+  },
+  "40": {
+   "title": "Universal Audio: выбор MIC, LINE и Hi-Z",
+   "url": "https://help.uaudio.com/hc/en-us/articles/360052214051-Apollo-Input-Connections-Explained"
+  },
+  "41": {
+   "title": "Fractal Audio: руководство FM9",
+   "url": "https://www.fractalaudio.com/downloads/manuals/FM9/FM9-Owners-Manual.pdf"
+  },
+  "42": {
+   "title": "EW-D: Mute и несколько передатчиков",
+   "url": "https://help.sennheiser.com/hc/en-us/articles/30321144342674-EW-D-Mute-function"
+  },
+  "43": {
+   "title": "Sennheiser International Frequency Advisor",
+   "url": "https://www.sennheiser.com/sifa"
+  }
+ },
+ "slov": 6531,
+ "min": 41
+}

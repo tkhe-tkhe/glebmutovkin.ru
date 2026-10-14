@@ -29,12 +29,20 @@ IMG_DIR = os.path.join(KOREN, 'src/images/gaidy', SLUG)
 s = open(ISHODNIK, encoding='utf-8').read()
 
 # --- какой это исходник ------------------------------------------------------
-# Три вёрстки, три профиля. Первые два (гайды про Logic и UAD) опознаются
+# Четыре вёрстки, три ветки кода. Первые два (гайды про Logic и UAD) опознаются
 # по обложке <section class='cover'>. Третий — «справочник»: у него своя
 # боковая панель с поиском, разделы набраны h2, подразделы h3, а название
-# стоит в единственном h1. Ветки не смешиваем: правка в одной не должна
-# ронять другую.
-SPRAVOCHNIK = "<section class='cover'>" not in s
+# стоит в единственном h1. Четвёртый — «инструкция» (Sennheiser EW-D): обложка
+# <div class="cover" id="top">, разделы <section id=…><h2>NN. …</h2>, врезки
+# <aside class="callout">, схемы <figure class="flow">, источники <ol class="sources">.
+# Ветки не смешиваем: правка в одной не должна ронять другую.
+INSTRUKCIYA = '<div class="cover" id="top">' in s
+SPRAVOCHNIK = not INSTRUKCIYA and "<section class='cover'>" not in s
+
+# Что скармливаем pandoc для EPUB. Обычно сам исходник; ветка «инструкция»
+# подменяет его очищенным телом: в её исходнике вся оснастка страницы
+# (панель, поиск, кнопки), и pandoc тащил бы её в книгу.
+EPUB_VHOD = ISHODNIK
 
 # Что уже лежит в мете. Поля, которых нет в исходнике (подводка, область,
 # текст плашки «Как читать»), проставляются руками — и должны пережить
@@ -46,7 +54,191 @@ BYLO = json.load(open(PUT_META, encoding='utf-8')) if os.path.exists(PUT_META) e
 # иначе в оглавление уезжает «Preamp &amp; EQ»
 tekst = lambda x: html.unescape(re.sub(r'<[^>]+>', '', x or '')).strip()
 
-if not SPRAVOCHNIK:
+if INSTRUKCIYA:
+    # ==========================================================================
+    # Профиль «инструкция»: <main> с обложкой <div class="cover" id="top">,
+    # своим оглавлением <div class="toc">, 24 разделами <section id=…> с h2
+    # «NN. Название», подразделами h3, врезками, схемами-потоками и списком
+    # источников <ol class="sources">. Панель сверху (поиск, шрифт, тема,
+    # печать), боковое оглавление и скрипт — оснастка страницы, сайт даёт свою.
+    # ==========================================================================
+    kartinki = []
+
+    telo = re.search(r'<main>(.*?)</main>', s, re.S).group(1)
+
+    # --- обложка: название, подводка, редакция ------------------------------
+    obl = re.search(r'<div class="cover" id="top">(.*?)</div><div class="toc">', telo, re.S)
+    if not obl:
+        sys.exit('ОШИБКА: обложка <div class="cover" id="top"> не найдена')
+    o = obl.group(1)
+    bez_br = lambda x: tekst(re.sub(r'<br\s*/?>', ' ', x))
+    nazvanie = bez_br(re.search(r'<h1>(.*?)</h1>', o, re.S).group(1))
+    podzagolovok = bez_br(re.search(r'<p class="subtitle">(.*?)</p>', o, re.S).group(1))
+    abzacy = [bez_br(x) for x in re.findall(r'<p>(.*?)</p>', o, re.S)]
+    redakciya = re.search(r'<p class="meta">(.*?)</p>', o, re.S)
+
+    # Подводка по умолчанию — слова обложки: подзаголовок и первая строка под ним.
+    # Правится руками в json, следующий прогон правку сохранит.
+    podvodka = podzagolovok
+    if abzacy:
+        podvodka += ': ' + abzacy[0][0].lower() + abzacy[0][1:].rstrip('.')
+
+    # дата редакции «14 октября 2026 года» -> «Октябрь 2026»
+    MESYACY = {'января': 'Январь', 'февраля': 'Февраль', 'марта': 'Март', 'апреля': 'Апрель',
+               'мая': 'Май', 'июня': 'Июнь', 'июля': 'Июль', 'августа': 'Август',
+               'сентября': 'Сентябрь', 'октября': 'Октябрь', 'ноября': 'Ноябрь',
+               'декабря': 'Декабрь'}
+    data_ish = ''
+    if redakciya:
+        d = re.search(r'(\d{1,2}) (' + '|'.join(MESYACY) + r') (\d{4})', tekst(redakciya.group(1)))
+        if d:
+            data_ish = f'{MESYACY[d.group(2)]} {d.group(3)}'
+
+    # обложку и своё оглавление снимаем целиком
+    telo = telo[obl.end() - len('<div class="toc">'):]
+    telo = re.sub(r'<div class="toc">.*?</ol></div>', '', telo, count=1, flags=re.S)
+
+    # --- оснастка страницы внутри разделов -----------------------------------
+    telo = re.sub(r'<div class="footer-nav">.*?</div>', '', telo, flags=re.S)  # «← →» между разделами
+    telo = re.sub(r'<p class="endmark">.*?</p>', '', telo, flags=re.S)         # повтор редакции
+    telo = re.sub(r'<button[^>]*>.*?</button>', '', telo, flags=re.S)          # «Сохранить карточку»
+    telo = re.sub(r'<a class="backtop[^>]*>.*?</a>', '', telo, flags=re.S)
+
+    # --- разделы: <section id=X><h2>T</h2> -> <h2 id=X>T</h2>, обёртку снимаем --
+    # Обёртки не оставляем: правило .gaid section[id] делает из них карточки
+    # справочника по плагинам (линия сверху, отступ), а здесь разделы плоские.
+    telo = re.sub(r'<section id="([^"]+)">\s*<h2>(.*?)</h2>', r'<h2 id="\1">\2</h2>', telo, flags=re.S)
+    telo = telo.replace('</section>', '')
+    if '<section' in telo:
+        sys.exit('ОШИБКА: остался <section> без h2 — раздел не распознан')
+    telo = re.sub(r'<h3 class="page-break-print">', '<h3>', telo)              # это про печать
+
+    # --- врезки: цветная коробка -> выноска с левой линией и меткой ----------
+    # callout good (зелёная) и callout note (жёлтая) сводим к одной .note:
+    # состояние показывается меткой, а не цветом.
+    def vrezka(m):
+        vnutri = m.group(1)
+        z = re.match(r'\s*<strong>(.*?)</strong>', vnutri, re.S)
+        metka = tekst(z.group(1)) if z else ''
+        if z:
+            vnutri = vnutri[z.end():]
+        if '<p' not in vnutri and '<ul' not in vnutri:
+            vnutri = f'<p>{vnutri.strip()}</p>'
+        return '<div class="note">' + (f'<b>{metka}</b>' if metka else '') + vnutri + '</div>'
+
+
+    telo = re.sub(r'<aside class="callout (?:note|good)">(.*?)</aside>', vrezka, telo, flags=re.S)
+    if '<aside' in telo:
+        sys.exit('ОШИБКА: остался <aside> неизвестного вида — врезка не распознана')
+
+    # --- схемы-потоки, пометки, таблицы, шаги ---------------------------------
+    telo = telo.replace('<figure class="flow">', '<figure class="potok">')
+    telo = re.sub(r'<span class="tag">(.*?)</span>', r'<b>\1</b>', telo, flags=re.S)
+    telo = telo.replace('<div class="table-wrap">', '<div class="tbl">')
+    telo = telo.replace('<ol class="steps">', '<ol>')
+
+    # --- карточка настройки ----------------------------------------------------
+    # В исходнике поля редактируются нажатием, а кнопка скачивает txt. На сайте
+    # скрипта нет, так что поля остаются бланком из подчёркиваний, а абзац,
+    # обещающий редактирование, заменяем: иначе он говорил бы неправду.
+    # Скачанный HTML остаётся рабочим — там скрипт на месте.
+    telo = re.sub(r'<span class="editable"[^>]*>(.*?)</span>', r'\1', telo, flags=re.S)
+    STARY = ('Поля в HTML редактируются нажатием; кнопка «Сохранить карточку» скачивает '
+             'отдельный текстовый файл. В PDF поля предназначены для печати и заполнения от руки.')
+    NOVYI = ('Поля можно заполнить в скачанном HTML: они редактируются нажатием, а кнопка '
+             '«Сохранить карточку» скачивает отдельный текстовый файл. В PDF поля предназначены '
+             'для печати и заполнения от руки.')
+    if STARY in telo:
+        telo = telo.replace(STARY, NOVYI)
+    else:
+        print('  ВНИМАНИЕ: абзац про редактирование карточки не найден — проверьте раздел '
+              '«Моя настройка»: на сайте поля не редактируются')
+
+    # --- источники: <ol class="sources"> -> <ol class="srclist"> -------------
+    # Берём id (на него ссылаются «Проверка по документации: [2]»), номер из
+    # «[N] Название» и адрес. Номер и порядок оставляем как в исходнике.
+    istochniki, punkty = {}, ''
+    spisok = re.search(r'<ol class="sources">(.*?)</ol>', telo, re.S)
+    if spisok:
+        for m in re.finditer(
+            r'<li id="(src-[^"]+)"><b>\[(\d+)\]\s*(.*?)</b>.*?<a href="([^"]+)"', spisok.group(1), re.S
+        ):
+            iid, n, nazv, url = m.group(1), m.group(2), tekst(m.group(3)), m.group(4)
+            istochniki[n] = {'title': nazv, 'url': url}
+            punkty += (f'<li id="{iid}"><span class="sn">{n}</span><div>{html.escape(nazv)}'
+                       f'<a class="link" href="{url}" target="_blank" rel="noopener">{url}</a>'
+                       f'</div></li>')
+        telo = telo.replace(spisok.group(0), f'<ol class="srclist">{punkty}</ol>')
+        if len(istochniki) != spisok.group(1).count('<li id="src-'):
+            print('  ВНИМАНИЕ: часть источников не разобрана — сверьте список внизу с исходником')
+    else:
+        print('  ВНИМАНИЕ: список источников <ol class="sources"> не найден')
+
+    # --- ссылки наружу: в новой вкладке, как у остальных гайдов ----------------
+    telo = re.sub(
+        r'<a href="(https?://[^"]+)"[^>]*>',
+        r'<a class="link" href="\1" target="_blank" rel="noopener">',
+        telo,
+    )
+
+    # --- примечание о редакции: во врезку наверх, как «Версии» у справочника ---
+    if redakciya:
+        telo = (f'<div class="note"><b>Версия руководства</b><p>{redakciya.group(1)}</p></div>\n'
+                + telo.lstrip())
+
+    # --- оглавление: только разделы --------------------------------------------
+    toc = [
+        {'href': '#' + m.group(1), 'label': tekst(m.group(2)), 'uroven': 1}
+        for m in re.finditer(r'<h2 id="([^"]+)"[^>]*>(.*?)</h2>', telo, re.S)
+    ]
+
+    # --- проверка якорей: каждая внутренняя ссылка должна куда-то вести ----------
+    idy = set(re.findall(r'\sid="([^"]+)"', telo))
+    bitye = sorted(set(re.findall(r'href="#([^"]+)"', telo)) - idy)
+    if bitye:
+        print(f'  ВНИМАНИЕ: ссылки без цели: {", ".join(bitye)}')
+
+    slov = len(re.sub(r'<[^>]+>', ' ', telo).split())
+
+    meta = {
+        'slug': SLUG,
+        # название, подводка и область — первые значения из обложки; правленые
+        # руками значения переживают следующий прогон
+        'title': BYLO.get('title') or nazvanie,
+        'lede': BYLO.get('lede') or podvodka,
+        'oblast': BYLO.get('oblast') or 'звук',
+        'data': BYLO.get('data') or data_ish or 'Август 2026',
+        'god': BYLO.get('god') or (data_ish.split()[-1] if data_ish else '2026'),
+        'kak_chitat': BYLO.get('kak_chitat', ''),
+        'toc': toc,
+        'istochniki': istochniki,
+        'slov': slov,
+        'min': max(1, round(slov / 160)),
+    }
+
+    os.makedirs(os.path.join(KOREN, 'src/content/gaidy'), exist_ok=True)
+    os.makedirs(os.path.join(KOREN, 'src/data/gaidy'), exist_ok=True)
+    open(os.path.join(KOREN, f'src/content/gaidy/{SLUG}.html'), 'w',
+         encoding='utf-8').write(telo)
+    open(os.path.join(KOREN, f'src/data/gaidy/{SLUG}.json'), 'w',
+         encoding='utf-8').write(json.dumps(meta, ensure_ascii=False, indent=1))
+
+    # EPUB собираем из очищенного тела, а не из исходника со всей оснасткой
+    import tempfile
+    _tmp = tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8')
+    _tmp.write(f'<!doctype html><html lang="ru"><head><meta charset="utf-8">'
+               f'<title>{html.escape(meta["title"])}</title></head><body>'
+               f'<h1>{html.escape(meta["title"])}</h1>{telo}</body></html>')
+    _tmp.close()
+    EPUB_VHOD = _tmp.name
+
+    print(f'{SLUG}: разделов {len(toc)}',
+          f'· подразделов {len(re.findall(r"<h3", telo))}',
+          f'· таблиц {len(re.findall(r"<table", telo))}',
+          f'· схем {len(re.findall(r"<figure", telo))}',
+          f'· источников {len(istochniki)} · слов {slov}')
+
+elif not SPRAVOCHNIK:
     # --- обложка: название, подводка, подпись ------------------------------------
     oblozhka = re.search(r"<section class='cover'>(.*?)</section>", s, re.S)
     nazvanie = podvodka = ''
@@ -363,7 +555,7 @@ polozheno.append('HTML')
 # без epub гайд выложится, просто кнопкой меньше.
 if shutil.which('pandoc'):
     itog = subprocess.run(
-        ['pandoc', ISHODNIK, '-f', 'html', '-t', 'epub3',
+        ['pandoc', EPUB_VHOD, '-f', 'html', '-t', 'epub3',
          '--metadata', f'title={nazvanie}',
          '--metadata', 'author=Глеб Мутовкин',
          '--metadata', 'lang=ru',
@@ -377,5 +569,8 @@ if shutil.which('pandoc'):
         print(f'  ВНИМАНИЕ: pandoc не собрал epub: {itog.stderr.strip()[:200]}')
 else:
     print('  ВНИМАНИЕ: pandoc не найден — epub не собран, кнопки EPUB не будет')
+
+if EPUB_VHOD != ISHODNIK and os.path.exists(EPUB_VHOD):
+    os.remove(EPUB_VHOD)  # временный файл ветки «инструкция»
 
 print(f'  для скачивания: {", ".join(polozheno)}')

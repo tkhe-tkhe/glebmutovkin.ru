@@ -8,6 +8,7 @@
 import Base from '../../layouts/Base.astro';
 import { poryadok } from '../../data/gaidy';
 import { vidno } from '../../data/razdely';
+import { sklon, ISTOCHNIK } from '../../lib/sklon';
 
 const meta = import.meta.glob('../../data/gaidy/*.json', { eager: true });
 
@@ -17,7 +18,7 @@ const gaidy = Object.entries(meta)
     return {
       slug: put.split('/').pop()!.replace('.json', ''),
       title: m.title,
-      podpis: `${m.oblast} · ${Object.keys(m.istochniki).length} источников · ~${m.min} мин`,
+      podpis: `${m.oblast} · ${Object.keys(m.istochniki).length} ${sklon(Object.keys(m.istochniki).length, ISTOCHNIK)} · ~${m.min} мин`,
       god: m.god,
     };
   })
